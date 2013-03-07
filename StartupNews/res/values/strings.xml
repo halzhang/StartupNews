@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="app_name">StartupNews</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    
+    <string-array name="section_titles">
+        <item >news</item>
+        <item >newest</item>
+        <item >comments</item>
+    </string-array>
+    
+    <string name="host">http://news.dbanotes.net<xliff:g id="PATH">%1$s</xliff:g></string>
+    
+    <string name="url_news">http://news.dbanotes.net/news</string>
+    <string name="url_newest">http://news.dbanotes.net/newest</string>
+    <string name="url_comments">http://news.dbanotes.net/news</string>
+
+</resources>
