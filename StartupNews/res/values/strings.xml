@@ -13,8 +13,11 @@
     
     <string name="host">http://news.dbanotes.net<xliff:g id="PATH">%1$s</xliff:g></string>
     
-    <string name="url_news">http://news.dbanotes.net/news</string>
+   <!--  <string name="url_news">http://news.dbanotes.net/news</string>
     <string name="url_newest">http://news.dbanotes.net/newest</string>
-    <string name="url_comments">http://news.dbanotes.net/news</string>
+    <string name="url_comments">http://news.dbanotes.net/newcomments</string> -->
 
+    <string name="error">哎呀，出错了!</string>
+    <string name="working">开发中~~~</string>
+    
 </resources>

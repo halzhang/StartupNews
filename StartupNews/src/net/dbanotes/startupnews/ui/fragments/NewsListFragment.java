@@ -8,12 +8,14 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import net.dbanotes.startupnews.R;
 import net.dbanotes.startupnews.entity.NewEntity;
+import net.dbanotes.startupnews.ui.BrowseActivity;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -23,7 +25,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,22 +62,22 @@ public class NewsListFragment extends AbsBaseListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new NewsAdapter();
+        if (mNewsTask == null) {
+            Bundle args = getArguments();
+            if (args != null) {
+                mNewsURL = args.getString(ARG_URL);
+            } else {
+                mNewsURL = getString(R.string.host, "/news");
+            }
+            mNewsTask = new NewsTask();
+            mNewsTask.execute(mNewsURL);
+        }
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setListAdapter(mAdapter);
-        if (mNewsTask == null) {
-            Bundle args = getArguments();
-            if (args != null) {
-                mNewsURL = args.getString(ARG_URL, "/news");
-            } else {
-                mNewsURL = "/news";
-            }
-            mNewsTask = new NewsTask();
-            mNewsTask.execute(getString(R.string.host, mNewsURL));
-        }
     }
 
     @Override
@@ -89,12 +93,20 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
-        Log.i(LOG_TAG, "onPullDownListViewRefresh");
         if (mNewsTask == null && !TextUtils.isEmpty(mMoreURLPath)) {
             mNewsTask = new NewsTask();
             mNewsTask.execute(getString(R.string.host, mMoreURLPath));
             mMoreURLPath = null;
         }
+    }
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        NewEntity entity =(NewEntity) mAdapter.getItem(position -1);
+        Intent intent = new Intent(getActivity(), BrowseActivity.class);
+        intent.putExtra(BrowseActivity.EXTRA_URL, entity.getUrl());
+        intent.putExtra(BrowseActivity.EXTRA_TITLE, entity.getTitle());
+        startActivity(intent);
     }
 
     private class NewsTask extends AsyncTask<String, Void, Boolean> {
@@ -102,6 +114,7 @@ public class NewsListFragment extends AbsBaseListFragment {
         @Override
         protected Boolean doInBackground(String... params) {
             try {
+                Log.d(LOG_TAG, "Doc request start! " + params[0]);
                 Document doc = Jsoup.connect(params[0]).get();
                 Log.d(LOG_TAG, "Doc init OK!");
                 Element body = doc.body();
@@ -146,6 +159,8 @@ public class NewsListFragment extends AbsBaseListFragment {
         protected void onPostExecute(Boolean result) {
             if (result) {
                 mAdapter.notifyDataSetChanged();
+            }else{
+                Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_LONG).show();
             }
             mNewsTask = null;
             getPullToRefreshListView().onRefreshComplete();

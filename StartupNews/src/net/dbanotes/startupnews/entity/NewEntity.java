@@ -29,6 +29,10 @@ public class NewEntity implements Serializable {
 
     private String subText;
 
+    private String discussUrl;
+
+    private User user;
+
     public NewEntity() {
     }
 
@@ -71,11 +75,28 @@ public class NewEntity implements Serializable {
     public void setSubText(String subText) {
         this.subText = subText;
     }
-    
+
+    public String getDiscussUrl() {
+        return discussUrl;
+    }
+
+    public void setDiscussUrl(String discussUrl) {
+        this.discussUrl = discussUrl;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("URL: ").append(url).append(" Title: ").append(title).append(" SubText: ").append(subText);
+        builder.append("URL: ").append(url).append(" Title: ").append(title).append(" SubText: ")
+                .append(subText);
         return builder.toString();
     }
 

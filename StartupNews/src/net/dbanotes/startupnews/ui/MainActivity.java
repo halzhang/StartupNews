@@ -12,6 +12,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 /**
  * @author Hal
@@ -36,6 +38,19 @@ public class MainActivity extends FragmentActivity {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                Toast.makeText(this, R.string.working, Toast.LENGTH_LONG).show();
+                break;
+
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -55,6 +70,7 @@ public class MainActivity extends FragmentActivity {
                     fragment = new NewsListFragment();
                     args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
                     fragment.setArguments(args);
+                    break;
                 case 1:
                     fragment = new NewsListFragment();
                     args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/newest"));

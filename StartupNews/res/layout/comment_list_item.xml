@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+    	
+    <TextView 
+        android:id="@+id/comment_item_user_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="5dip"
+        android:layout_marginTop="5dip"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Fenng"
+        />
+    <TextView 
+        android:id="@+id/comment_item_created"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dip"
+        android:layout_marginTop="5dip"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="1 hour ago"
+        />
+    
+    <TextView 
+        android:id="@+id/comment_item_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/comment_item_user_id"
+        android:layout_margin="5dip"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="的方式的放松放松东方时空恨死哈"/>
+
+</RelativeLayout>
