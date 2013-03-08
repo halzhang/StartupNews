@@ -2,7 +2,7 @@
  * Copyright (C) 2013 HalZhang
  */
 
-package net.dbanotes.startupnews.entity;
+package com.halzhang.android.apps.startupnews.entity;
 
 import java.io.Serializable;
 

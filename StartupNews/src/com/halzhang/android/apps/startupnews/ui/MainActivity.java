@@ -1,10 +1,11 @@
 
-package net.dbanotes.startupnews.ui;
+package com.halzhang.android.apps.startupnews.ui;
 
-import net.dbanotes.startupnews.R;
-import net.dbanotes.startupnews.ui.fragments.CommentsListFragment;
-import net.dbanotes.startupnews.ui.fragments.NewsListFragment;
+import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.ui.fragments.CommentsListFragment;
+import com.halzhang.android.apps.startupnews.ui.fragments.NewsListFragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -13,7 +14,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 /**
  * @author Hal
@@ -42,8 +42,8 @@ public class MainActivity extends FragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_settings:
-                Toast.makeText(this, R.string.working, Toast.LENGTH_LONG).show();
+            case R.id.menu_about:
+                startActivity(new Intent(this,AboutActivity.class));
                 break;
 
             default:

@@ -2,13 +2,12 @@
  * Copyright (C) 2013 HalZhang
  */
 
-package net.dbanotes.startupnews.ui.fragments;
+package com.halzhang.android.apps.startupnews.ui.fragments;
 
+import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.entity.NewEntity;
+import com.halzhang.android.apps.startupnews.ui.BrowseActivity;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
-import net.dbanotes.startupnews.R;
-import net.dbanotes.startupnews.entity.NewEntity;
-import net.dbanotes.startupnews.ui.BrowseActivity;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

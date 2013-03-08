@@ -1,13 +1,12 @@
 
-package net.dbanotes.startupnews.ui.fragments;
+package com.halzhang.android.apps.startupnews.ui.fragments;
 
+import com.halzhang.android.apps.startupnews.R;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
-import net.dbanotes.startupnews.R;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
