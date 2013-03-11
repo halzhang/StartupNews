@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2008 The Android Open Source Project
+<!--
+     Copyright (C) 2008 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -16,24 +17,28 @@
 
 <!-- This is a primitive example showing the different types of preferences available. -->
 
-<PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android">
-        <PreferenceScreen
-                android:title="@string/pref_title_startupnews">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-            <intent android:action="android.intent.action.VIEW"
-                    android:data="http://news.dbanotes.net" />
+    <ListPreference
+        android:entries="@array/html_provider_entries"
+        android:entryValues="@array/html_provider_entry_values"
+        android:key="@string/pref_key_html_provider"
+        android:title="@string/pref_title_html_provider"
+     android:defaultValue="@string/default_html_provider"/>
 
-        </PreferenceScreen>
-        <PreferenceScreen
-                android:title="@string/pref_title_athalzhang">
+    <PreferenceScreen android:title="@string/pref_title_startupnews" >
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://news.dbanotes.net" />
+    </PreferenceScreen>
+    <PreferenceScreen android:title="@string/pref_title_athalzhang" >
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://weibo.cn/halzhang" />
+    </PreferenceScreen>
 
-            <intent android:action="android.intent.action.VIEW"
-                    android:data="http://weibo.cn/halzhang" />
-
-        </PreferenceScreen>
-        <Preference android:title="@string/pref_title_version"
-            android:summary="@string/pref_summary_version"/>
+    <Preference
+        android:summary="@string/pref_summary_version"
+        android:title="@string/pref_title_version" />
 
 </PreferenceScreen>
-

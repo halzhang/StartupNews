@@ -13,12 +13,14 @@
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
+        android:description="@string/app_description"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:description="@string/app_description" >
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".ui.MainActivity"
+            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,11 +28,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.BrowseActivity" />
+        <activity
+            android:name=".ui.BrowseActivity"
+            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale" 
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.SubmitActivity"
+            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale" 
+            android:label="@string/title_shareto_startupnews"
+            android:screenOrientation="portrait">
+            <intent-filter >
+                <action android:name="android.intent.action.SEND"/>
+                <data android:mimeType="text/plain"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            
+        </activity>
         <activity
             android:name=".ui.AboutActivity"
+            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
             android:label="@string/title_about"
-            android:theme="@android:style/Theme.Holo" />
+            android:theme="@android:style/Theme.Holo"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

@@ -6,17 +6,13 @@
     <string name="hello_world">Hello world!</string>
     
     <string-array name="section_titles">
-        <item >news</item>
-        <item >newest</item>
-        <item >comments</item>
+        <item >NEWS</item>
+        <item >NEWEST</item>
+        <item >COMMENTS</item>
     </string-array>
     
     <string name="host">http://news.dbanotes.net<xliff:g id="PATH">%1$s</xliff:g></string>
     
-   <!--  <string name="url_news">http://news.dbanotes.net/news</string>
-    <string name="url_newest">http://news.dbanotes.net/newest</string>
-    <string name="url_comments">http://news.dbanotes.net/newcomments</string> -->
-
     <string name="error">哎呀，出错了!</string>
     <string name="working">开发中~~~</string>
     
@@ -27,8 +23,12 @@
     
     <!-- title string -->
     <string name="title_about">About</string>
+    <string name="title_shareto_startupnews">分享到StartupNews</string>
     
     <!-- preferences string -->
+    <string name="pref_title_html_provider">网页阅读模式</string>
+    <string name="pref_key_html_provider">pref_key_html_provider</string>
+    
     <string name="pref_title_athalzhang">\@HalZhang</string>
     
     <string name="pref_title_startupnews">Startup News</string>
@@ -36,6 +36,22 @@
     <string name="pref_title_opensrouce">开放源代码许可</string>
     <string name="pref_title_version">Version</string>
     <string name="pref_summary_version">V0.2.0.0</string>
+    
+    <string-array name="html_provider_entries">
+        <item >新浪</item>
+        <item >百度</item>
+        <item >Google</item>
+        <item >Viewtext</item>
+        <item >原网页</item>
+    </string-array>
+    <string-array name="html_provider_entry_values">
+        <item >http://weibo.cn/sinaurl?to=m&amp;u=</item>
+        <item >http://gate.baidu.com/tc?from=opentc&amp;src=</item>
+        <item >http://www.google.com/gwt/x?u=</item>
+        <item >http://viewtext.org/article?url=</item>
+        <item ></item>
+    </string-array>
+    <string name="default_html_provider">http://weibo.cn/sinaurl?to=m&amp;u=</string>
     
     
 </resources>

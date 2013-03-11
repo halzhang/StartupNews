@@ -9,7 +9,9 @@ import com.halzhang.android.apps.startupnews.R;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,21 +33,31 @@ import android.widget.ShareActionProvider;
  */
 public class BrowseActivity extends FragmentActivity {
 
-    @SuppressWarnings("unused")
     private static final String LOG_TAG = BrowseActivity.class.getSimpleName();
+
+    // private static final String HTMLPROVIDER_PREFIX_VIEWTEXT =
+    // "http://viewtext.org/article?url=";
+    //
+    // private static final String HTMLPROVIDER_PREFIX_GOOGLE =
+    // "http://www.google.com/gwt/x?u=";
+    //
+    // private static final String HTMLPROVIDER_PREFIX_SINA =
+    // "http://weibo.cn/sinaurl?to=m&u=";
 
     public static final String EXTRA_URL = "extra_url";
 
     public static final String EXTRA_TITLE = "extra_title";
 
     private WebView mWebView;
+
     private ProgressBar mProgressBar;
-    
+
     private ShareActionProvider mShareActionProvider;
-    
+
     private String mTitle;
+
     private String mUrl;
-    
+
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
@@ -70,8 +82,13 @@ public class BrowseActivity extends FragmentActivity {
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
         settings.setJavaScriptEnabled(true);
-        // settings.set
-        mWebView.loadUrl(mUrl);
+
+        String mHtmlProvider = PreferenceManager.getDefaultSharedPreferences(
+                getApplicationContext()).getString(getString(R.string.pref_key_html_provider),
+                getString(R.string.default_html_provider));
+        final String url = mHtmlProvider + mUrl;
+        Log.i(LOG_TAG, url);
+        mWebView.loadUrl(url);
     }
 
     private class MyWebViewClient extends WebViewClient {
@@ -88,13 +105,13 @@ public class BrowseActivity extends FragmentActivity {
         public void onProgressChanged(WebView view, int newProgress) {
             super.onProgressChanged(view, newProgress);
             mProgressBar.setProgress(newProgress);
-            if(newProgress == 100){
+            if (newProgress == 100) {
                 mProgressBar.animate().alpha(0).withEndAction(new Runnable() {
-                    
+
                     @Override
                     public void run() {
                         mProgressBar.setVisibility(View.GONE);
-                        
+
                     }
                 });
             }
@@ -106,11 +123,12 @@ public class BrowseActivity extends FragmentActivity {
         }
 
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_browse, menu);
-        mShareActionProvider = (ShareActionProvider) menu.findItem(R.id.menu_share).getActionProvider();
+        mShareActionProvider = (ShareActionProvider) menu.findItem(R.id.menu_share)
+                .getActionProvider();
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
