@@ -6,7 +6,9 @@ package com.halzhang.android.apps.startupnews.ui.fragments;
 
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.NewEntity;
+import com.halzhang.android.apps.startupnews.entity.User;
 import com.halzhang.android.apps.startupnews.ui.BrowseActivity;
+import com.halzhang.android.apps.startupnews.utils.DateUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.jsoup.Jsoup;
@@ -35,7 +37,6 @@ import java.util.Iterator;
 /**
  * StartupNews
  * <p>
- * 
  * </p>
  * 
  * @author <a href="http://weibo.com/halzhang">Hal</a>
@@ -68,7 +69,7 @@ public class NewsListFragment extends AbsBaseListFragment {
             } else {
                 mNewsURL = getString(R.string.host, "/news");
             }
-            mNewsTask = new NewsTask();
+            mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
             mNewsTask.execute(mNewsURL);
         }
     }
@@ -90,18 +91,29 @@ public class NewsListFragment extends AbsBaseListFragment {
     }
 
     @Override
+    protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
+        super.onPullDownListViewRefresh(refreshListView);
+        if (mNewsTask != null) {
+            mNewsTask.cancel(true);
+            mNewsTask = null;
+        }
+        mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
+        mNewsTask.execute(mNewsURL);
+    }
+
+    @Override
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
         if (mNewsTask == null && !TextUtils.isEmpty(mMoreURLPath)) {
-            mNewsTask = new NewsTask();
+            mNewsTask = new NewsTask(NewsTask.TYPE_LOADMORE);
             mNewsTask.execute(getString(R.string.host, mMoreURLPath));
             mMoreURLPath = null;
         }
     }
-    
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        NewEntity entity =(NewEntity) mAdapter.getItem(position -1);
+        NewEntity entity = (NewEntity) mAdapter.getItem(position - 1);
         Intent intent = new Intent(getActivity(), BrowseActivity.class);
         intent.putExtra(BrowseActivity.EXTRA_URL, entity.getUrl());
         intent.putExtra(BrowseActivity.EXTRA_TITLE, entity.getTitle());
@@ -110,31 +122,45 @@ public class NewsListFragment extends AbsBaseListFragment {
 
     private class NewsTask extends AsyncTask<String, Void, Boolean> {
 
+        public static final int TYPE_REFRESH = 1;
+
+        public static final int TYPE_LOADMORE = 2;
+
+        private int mType = 0;
+
+        public NewsTask(int type) {
+            mType = type;
+        }
+
         @Override
         protected Boolean doInBackground(String... params) {
             try {
-                Log.d(LOG_TAG, "Doc request start! " + params[0]);
                 Document doc = Jsoup.connect(params[0]).get();
-                Log.d(LOG_TAG, "Doc init OK!");
                 Element body = doc.body();
-                Elements titleEs = body.getElementsByClass("title");
-                Elements subTitleEs = body.getElementsByClass("subtext");
+                Elements titleEs = body.select("td.title");
+                Elements subTitleEs = body.select("td.subtext");
                 int index = 1;
                 if (!titleEs.isEmpty()) {
+                    if (mType == TYPE_REFRESH && mNews.size() > 0) {
+                        mNews.clear();
+                    }
                     Iterator<Element> iterator = titleEs.iterator();
                     Iterator<Element> subIt = subTitleEs.iterator();
                     NewEntity entity = null;
+                    User user = null;
                     while (iterator.hasNext()) {
                         Element e = iterator.next();
                         if (index % 2 == 0) {
                             Element subE = subIt.next();
-
-                            entity = new NewEntity(e.select("a").get(0).attr("href"), e.select("a")
-                                    .get(0).text(), /*
-                                                     * e.select("span").get(0).text
-                                                     * ()
-                                                     */null, subE.html());
-                            // Log.i(LOG_TAG, entity.toString());
+                            Elements aTag = e.select("a");
+                            Elements spanTag = e.select("span.comhead");
+                            Elements subEa = subE.select("a");
+                            user = new User();
+                            user.setId(subEa.get(0).text());
+                            entity = new NewEntity(aTag.get(0).attr("href"), aTag.get(0).text(),
+                                    spanTag.isEmpty() ? null : spanTag.get(0).text(), subE.html());
+                            entity.setDiscussUrl(subEa.get(1).attr("href"));
+                            Log.i(LOG_TAG, entity.toString());
                             mNews.add(entity);
                         }
                         index++;
@@ -157,11 +183,14 @@ public class NewsListFragment extends AbsBaseListFragment {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
+                onDataFirstLoadComplete();
                 mAdapter.notifyDataSetChanged();
-            }else{
+            } else {
                 Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_LONG).show();
             }
             mNewsTask = null;
+            getPullToRefreshListView().getLoadingLayoutProxy().setLastUpdatedLabel(
+                    DateUtils.getLastUpdateLabel(getActivity()));
             getPullToRefreshListView().onRefreshComplete();
             super.onPostExecute(result);
         }
@@ -202,8 +231,8 @@ public class NewsListFragment extends AbsBaseListFragment {
             ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
-                convertView = LayoutInflater.from(getActivity()).inflate(
-                        android.R.layout.simple_list_item_2, null);
+                convertView = LayoutInflater.from(getActivity()).inflate(R.layout.news_list_item,
+                        null);
                 holder.mText1 = (TextView) convertView.findViewById(android.R.id.text1);
                 holder.mText2 = (TextView) convertView.findViewById(android.R.id.text2);
                 convertView.setTag(holder);

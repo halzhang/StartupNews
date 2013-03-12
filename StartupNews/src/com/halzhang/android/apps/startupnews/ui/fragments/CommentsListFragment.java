@@ -6,6 +6,7 @@ package com.halzhang.android.apps.startupnews.ui.fragments;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.Comment;
 import com.halzhang.android.apps.startupnews.entity.User;
+import com.halzhang.android.apps.startupnews.utils.DateUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.jsoup.Jsoup;
@@ -51,7 +52,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new CommentsAdapter();
-        mTask = new CommentsTask();
+        mTask = new CommentsTask(CommentsTask.TYPE_REFRESH);
         mTask.execute(getString(R.string.host, "/newcomments"));
     }
     
@@ -72,17 +73,39 @@ public class CommentsListFragment extends AbsBaseListFragment {
     }
     
     @Override
+    protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
+        super.onPullDownListViewRefresh(refreshListView);
+        if(mTask != null){
+            mTask.cancel(true);
+            mTask = null;
+        }
+        mTask = new CommentsTask(CommentsTask.TYPE_REFRESH);
+        mTask.execute(getString(R.string.host,"/newcomments"));
+    }
+    
+    @Override
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullUpListViewRefresh(refreshListView);
         if(mTask != null){
             mTask.cancel(true);
             mTask = null;
         }
-        mTask = new CommentsTask();
+        mTask = new CommentsTask(CommentsTask.TYPE_LOADMORE);
         mTask.execute(getString(R.string.host,mMoreUrl));
     }
     
     private class CommentsTask extends AsyncTask<String, Void, Boolean>{
+        
+
+        public static final int TYPE_REFRESH = 1;
+
+        public static final int TYPE_LOADMORE = 2;
+
+        private int mType = 0;
+        
+        public CommentsTask(int type){
+            mType = type;
+        }
 
         @Override
         protected Boolean doInBackground(String... params) {
@@ -92,6 +115,9 @@ public class CommentsListFragment extends AbsBaseListFragment {
                 Elements commentSpans = body.select("span.comment");
                 Elements comHeadSpans = body.select("span.comhead");
                 if(!commentSpans.isEmpty()){
+                    if(mType == TYPE_REFRESH && mComments.size() > 0){
+                        mComments.clear();
+                    }
                     Iterator<Element> spanCommentIt = commentSpans.iterator();
                     Iterator<Element> spanComHeadIt = comHeadSpans.iterator();
                     Comment comment = null;
@@ -124,10 +150,13 @@ public class CommentsListFragment extends AbsBaseListFragment {
         @Override
         protected void onPostExecute(Boolean result) {
             if(result){
+                onDataFirstLoadComplete();
                 mAdapter.notifyDataSetChanged();
             }else{
                 Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_LONG).show();
             }
+            getPullToRefreshListView().getLoadingLayoutProxy().setLastUpdatedLabel(
+                    DateUtils.getLastUpdateLabel(getActivity()));
             getPullToRefreshListView().onRefreshComplete();
             mTask = null;
             super.onPostExecute(result);

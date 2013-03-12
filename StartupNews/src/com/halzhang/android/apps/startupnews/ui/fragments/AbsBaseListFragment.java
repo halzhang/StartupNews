@@ -36,6 +36,8 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
     private PullToRefreshListView mPullToRefreshListView;
 
     private ListAdapter mAdapter;
+    
+    private View mEmptyView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,10 +54,18 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
         }
         mPullToRefreshListView.setOnRefreshListener(this);
         mPullToRefreshListView.setOnLastItemVisibleListener(this);
-        mPullToRefreshListView.setMode(Mode.PULL_FROM_END);
+        mPullToRefreshListView.setMode(Mode.BOTH);
         mListView = mPullToRefreshListView.getRefreshableView();
         mListView.setOnItemClickListener(this);
         mListView.setOnScrollListener(this);
+        mEmptyView = view.findViewById(R.id.empty);
+        if(mEmptyView != null && mAdapter == null/*第一次初始化*/){
+            mPullToRefreshListView.setVisibility(View.INVISIBLE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        }else{
+            mPullToRefreshListView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.INVISIBLE);
+        }
         return view;
     }
 
@@ -68,6 +78,16 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
     public void setListAdapter(ListAdapter adapter) {
         mAdapter = adapter;
         mListView.setAdapter(adapter);
+    }
+    
+    /**
+     * hide loading view,show listview
+     */
+    protected void onDataFirstLoadComplete() {
+        if(mEmptyView != null){
+            mEmptyView.setVisibility(View.GONE);
+        }
+        mPullToRefreshListView.setVisibility(View.VISIBLE);
     }
 
     @Override

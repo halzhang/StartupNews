@@ -17,12 +17,13 @@
     <string name="working">开发中~~~</string>
     
     <!-- menu string -->
-    <string name="menu_share">Share</string>
-    <string name="menu_settings">Settings</string>
-    <string name="menu_about">About</string>
+    <string name="menu_share">分享</string>
+    <string name="menu_settings">设置</string>
+    <string name="menu_about">关于</string>
+    <string name="menu_feedback">反馈</string>
     
     <!-- title string -->
-    <string name="title_about">About</string>
+    <string name="title_about">关于</string>
     <string name="title_shareto_startupnews">分享到StartupNews</string>
     
     <!-- preferences string -->
@@ -30,11 +31,13 @@
     <string name="pref_key_html_provider">pref_key_html_provider</string>
     
     <string name="pref_title_athalzhang">\@HalZhang</string>
+    <string name="pref_summary_athalzhang">访问作者微博</string>
     
-    <string name="pref_title_startupnews">Startup News</string>
+    <string name="pref_title_startupnews">StartupNews</string>
+    <string name="pref_summary_startupnews">访问StartupNews网站</string>
     
     <string name="pref_title_opensrouce">开放源代码许可</string>
-    <string name="pref_title_version">Version</string>
+    <string name="pref_title_version">版本</string>
     <string name="pref_summary_version">V0.2.0.0</string>
     
     <string-array name="html_provider_entries">
@@ -52,6 +55,8 @@
         <item ></item>
     </string-array>
     <string name="default_html_provider">http://weibo.cn/sinaurl?to=m&amp;u=</string>
+    
+    <string name="tip_loading">加载中...</string>
     
     
 </resources>

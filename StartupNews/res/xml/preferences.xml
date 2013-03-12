@@ -20,18 +20,20 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <ListPreference
+        android:defaultValue="@string/default_html_provider"
         android:entries="@array/html_provider_entries"
         android:entryValues="@array/html_provider_entry_values"
         android:key="@string/pref_key_html_provider"
-        android:title="@string/pref_title_html_provider"
-     android:defaultValue="@string/default_html_provider"/>
+        android:title="@string/pref_title_html_provider" />
 
-    <PreferenceScreen android:title="@string/pref_title_startupnews" >
+    <PreferenceScreen android:title="@string/pref_title_startupnews"
+        android:summary="@string/pref_summary_startupnews" >
         <intent
             android:action="android.intent.action.VIEW"
             android:data="http://news.dbanotes.net" />
     </PreferenceScreen>
-    <PreferenceScreen android:title="@string/pref_title_athalzhang" >
+    <PreferenceScreen android:title="@string/pref_title_athalzhang"
+        android:summary="@string/pref_summary_athalzhang" >
         <intent
             android:action="android.intent.action.VIEW"
             android:data="http://weibo.cn/halzhang" />

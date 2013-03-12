@@ -4,6 +4,8 @@
 
 package com.halzhang.android.apps.startupnews.entity;
 
+import android.text.TextUtils;
+
 import java.io.Serializable;
 
 /**
@@ -61,7 +63,10 @@ public class NewEntity implements Serializable {
     }
 
     public String getComHead() {
-        return comHead;
+        if (TextUtils.isEmpty(comHead)) {
+            return null;
+        }
+        return comHead.substring(1, comHead.length() - 1);
     }
 
     public void setComHead(String comHead) {
@@ -96,7 +101,8 @@ public class NewEntity implements Serializable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("URL: ").append(url).append(" Title: ").append(title).append(" SubText: ")
-                .append(subText);
+                .append(subText).append(" Comhead: ").append(comHead).append(" DiscussURL: ")
+                .append(discussUrl);
         return builder.toString();
     }
 
