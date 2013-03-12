@@ -4,6 +4,7 @@ package com.halzhang.android.apps.startupnews.ui;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.ui.fragments.CommentsListFragment;
 import com.halzhang.android.apps.startupnews.ui.fragments.NewsListFragment;
+import com.halzhang.android.apps.startupnews.utils.AppUtils;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,12 +39,24 @@ public class MainActivity extends FragmentActivity {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_about:
-                startActivity(new Intent(this,AboutActivity.class));
+                startActivity(new Intent(this, AboutActivity.class));
+                break;
+            case R.id.menu_feedback:
+                Intent it = new Intent(Intent.ACTION_SEND);
+                it.putExtra(Intent.EXTRA_EMAIL, new String[] {
+                    "ghanguo@gmail.com"
+                });
+                StringBuilder builder = new StringBuilder();
+                builder.append(getString(R.string.app_name)).append(" v")
+                        .append(AppUtils.getVersionName(getApplicationContext())).append("反馈");
+                it.putExtra(Intent.EXTRA_SUBJECT, builder.toString());
+                it.setType("message/rfc822");
+                startActivity(Intent.createChooser(it, "StartupNews反馈"));
                 break;
 
             default:

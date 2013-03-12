@@ -5,10 +5,9 @@
 package com.halzhang.android.apps.startupnews.ui;
 
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.utils.AppUtils;
 
 import android.app.ActionBar;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -63,12 +62,8 @@ public class AboutActivity extends FragmentActivity {
             listPreference.setSummary(listPreference.getEntry());
 
             Preference versionPref = findPreference(getString(R.string.pref_key_version));
-            try {
-                PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-                versionPref.setSummary(getString(R.string.pref_summary_version, info.versionName));
-            } catch (NameNotFoundException e) {
-                
-            }
+            versionPref.setSummary(getString(R.string.pref_summary_version,
+                    AppUtils.getVersionName(getApplicationContext())));
         }
 
         @Override
