@@ -40,6 +40,7 @@
     </PreferenceScreen>
 
     <Preference
+        android:key="@string/pref_key_version"
         android:summary="@string/pref_summary_version"
         android:title="@string/pref_title_version" />
 

@@ -7,6 +7,8 @@ package com.halzhang.android.apps.startupnews.ui;
 import com.halzhang.android.apps.startupnews.R;
 
 import android.app.ActionBar;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -32,7 +34,6 @@ public class AboutActivity extends FragmentActivity {
         final ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        // Display the fragment as the main content.
         getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragment())
                 .commit();
     }
@@ -56,18 +57,26 @@ public class AboutActivity extends FragmentActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.preferences);
             ListPreference listPreference = (ListPreference) findPreference(getString(R.string.pref_key_html_provider));
             listPreference.setOnPreferenceChangeListener(this);
             listPreference.setSummary(listPreference.getEntry());
+
+            Preference versionPref = findPreference(getString(R.string.pref_key_version));
+            try {
+                PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+                versionPref.setSummary(getString(R.string.pref_summary_version, info.versionName));
+            } catch (NameNotFoundException e) {
+                
+            }
         }
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             if (preference instanceof ListPreference) {
                 ListPreference listPreference = (ListPreference) preference;
-                preference.setSummary(listPreference.getEntries()[listPreference.findIndexOfValue((String) newValue)]);
+                preference.setSummary(listPreference.getEntries()[listPreference
+                        .findIndexOfValue((String) newValue)]);
             }
             return true;
         }
