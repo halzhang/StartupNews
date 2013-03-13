@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/menu_share"
-        android:actionProviderClass="android.widget.ShareActionProvider"
+        android:actionProviderClass="com.actionbarsherlock.widget.ShareActionProvider"
         android:showAsAction="always"
         android:title="@string/menu_share"/>
 

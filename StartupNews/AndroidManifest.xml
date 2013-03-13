@@ -5,7 +5,7 @@
     android:versionName="0.2.0.0" >
 
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="10"
         android:targetSdkVersion="16" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -47,7 +47,7 @@
         <activity
             android:name=".ui.AboutActivity"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
-            android:label="@string/title_about"
+            android:label="@string/title_settings"
             android:theme="@android:style/Theme.Holo"
             android:screenOrientation="portrait" />
     </application>

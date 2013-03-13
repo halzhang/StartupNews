@@ -24,6 +24,7 @@
     
     <!-- title string -->
     <string name="title_about">关于</string>
+    <string name="title_settings">设置</string>
     <string name="title_shareto_startupnews">分享到StartupNews</string>
     
     <!-- preferences string -->

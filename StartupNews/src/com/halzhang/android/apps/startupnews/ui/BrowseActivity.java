@@ -4,23 +4,23 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
+import com.actionbarsherlock.widget.ShareActionProvider;
 import com.halzhang.android.apps.startupnews.R;
 
-import android.app.ActionBar;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-import android.widget.ShareActionProvider;
 
 /**
  * StartupNews
@@ -31,7 +31,7 @@ import android.widget.ShareActionProvider;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class BrowseActivity extends FragmentActivity {
+public class BrowseActivity extends SherlockActivity {
 
     private static final String LOG_TAG = BrowseActivity.class.getSimpleName();
 
@@ -52,7 +52,7 @@ public class BrowseActivity extends FragmentActivity {
 
     private ProgressBar mProgressBar;
 
-    private ShareActionProvider mShareActionProvider;
+    private com.actionbarsherlock.widget.ShareActionProvider mShareActionProvider;
 
     private String mTitle;
 
@@ -60,19 +60,22 @@ public class BrowseActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle arg0) {
+        setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);//注释掉，ShareActionProvider无法解析
         super.onCreate(arg0);
+        requestWindowFeature(Window.FEATURE_PROGRESS);
         setContentView(R.layout.activity_browse);
         mWebView = (WebView) findViewById(R.id.webview);
         mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
         mProgressBar.setMax(100);
+        mProgressBar.setVisibility(View.GONE);
         mUrl = getIntent().getStringExtra(EXTRA_URL);
         mTitle = getIntent().getStringExtra(EXTRA_TITLE);
 
-        final ActionBar actionBar = getActionBar();
+        final com.actionbarsherlock.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        setTitle(mTitle);
+        //setTitle(mTitle);
 
         mWebView.setWebChromeClient(new MyWebChromeClient());
         mWebView.setWebViewClient(new MyWebViewClient());
@@ -80,7 +83,9 @@ public class BrowseActivity extends FragmentActivity {
         WebSettings settings = mWebView.getSettings();
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
-        settings.setDisplayZoomControls(false);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+            settings.setDisplayZoomControls(false);
+        }
         settings.setJavaScriptEnabled(true);
 
         String mHtmlProvider = PreferenceManager.getDefaultSharedPreferences(
@@ -104,17 +109,8 @@ public class BrowseActivity extends FragmentActivity {
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
             super.onProgressChanged(view, newProgress);
-            mProgressBar.setProgress(newProgress);
-            if (newProgress == 100) {
-                mProgressBar.animate().alpha(0).withEndAction(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        mProgressBar.setVisibility(View.GONE);
-
-                    }
-                });
-            }
+            int progress = (Window.PROGRESS_END - Window.PROGRESS_START) / 100 * newProgress;
+            setSupportProgress(progress);
         }
 
         @Override
@@ -125,10 +121,13 @@ public class BrowseActivity extends FragmentActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_browse, menu);
-        mShareActionProvider = (ShareActionProvider) menu.findItem(R.id.menu_share)
-                .getActionProvider();
+    public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.activity_browse, menu);
+        MenuItem actionItem = menu.findItem(
+                R.id.menu_share);
+        mShareActionProvider = (ShareActionProvider) actionItem.getActionProvider();
+        mShareActionProvider.setShareHistoryFileName(ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
+        
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
@@ -140,7 +139,7 @@ public class BrowseActivity extends FragmentActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();

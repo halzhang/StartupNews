@@ -9,17 +9,14 @@ import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.Menu;
-import android.view.MenuItem;
 
 /**
  * @author Hal
  */
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends BaseFragmentActivity {
     private ViewPager mViewPager;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -34,16 +31,15 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_main, menu);
+    public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
-
+    
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_about:
+            case R.id.menu_settings:
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
             case R.id.menu_feedback:
