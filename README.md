@@ -19,6 +19,8 @@ Android 4.x以上（后续完善并支持2.3系统）
 
 [Pull-to-Refresh](https://github.com/chrisbanes/Android-PullToRefresh)
 
+[ViewPagerIndicator](http://viewpagerindicator.com/)
+
 感谢以上作者的贡献.THX
 
 Changelog
