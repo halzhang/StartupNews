@@ -1,7 +1,7 @@
 # [Startup News](http://news.dbanotes.net) Android App  [![Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews) 
 支持系统
 ---
-Android 4.x以上（后续完善并支持2.3系统）
+Android 2.3以上
 
 反馈
 ---
