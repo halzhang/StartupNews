@@ -21,7 +21,9 @@ Android 4.x以上（后续完善并支持2.3系统）
 
 [ViewPagerIndicator](http://viewpagerindicator.com/)
 
-感谢以上作者的贡献.THX
+[Jsoup](http://www.jsoup.org)
+
+感谢以上作者的贡献.同时感谢  [@Fenng](http://www.weibo.com/fenng) 创建了Startup News.
 
 Changelog
 ---
