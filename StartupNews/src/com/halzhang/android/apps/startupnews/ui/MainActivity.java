@@ -5,6 +5,7 @@ import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.ui.fragments.CommentsListFragment;
 import com.halzhang.android.apps.startupnews.ui.fragments.NewsListFragment;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
+import com.viewpagerindicator.TitlePageIndicator;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,8 +27,11 @@ public class MainActivity extends BaseFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mViewPager = (ViewPager) findViewById(R.id.pager);
+        
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        TitlePageIndicator indicator = (TitlePageIndicator) findViewById(R.id.titles);
+        indicator.setViewPager(mViewPager);
     }
 
     @Override

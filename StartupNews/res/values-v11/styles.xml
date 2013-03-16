@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="AutoCompleteTextViewAppTheme" parent="android:Widget.Holo.AutoCompleteTextView">
+      <item name="android:dropDownSelector">@drawable/list_selector_holo_dark</item>
+	    <item name="android:background">@drawable/edit_text_holo_dark</item>
+  </style>
+
+  <style name="ButtonAppTheme" parent="android:Widget.Holo.Button">
+	  <item name="android:background">@drawable/btn_default_holo_dark</item>
+  </style>
+
+  <style name="ImageButtonAppTheme" parent="android:Widget.Holo.ImageButton">
+	  <item name="android:background">@drawable/btn_default_holo_dark</item>
+  </style>
+
+  <style name="SpinnerAppTheme" parent="android:Widget.Holo.Spinner">
+      <item name="android:background">@drawable/spinner_background_holo_dark</item>
+      <item name="android:dropDownSelector">@drawable/list_selector_holo_dark</item>
+  </style>
+
+  <style name="ProgressBarAppTheme" parent="android:Widget.Holo.ProgressBar.Horizontal">
+      <item name="android:progressDrawable">@drawable/progress_horizontal_holo_dark</item>
+      <item name="android:indeterminateDrawable">@drawable/progress_indeterminate_horizontal_holo_dark</item>
+  </style>
+
+  <style name="SeekBarAppTheme" parent="android:Widget.Holo.SeekBar">
+      <item name="android:progressDrawable">@drawable/scrubber_progress_horizontal_holo_dark</item>
+      <item name="android:indeterminateDrawable">@drawable/scrubber_progress_horizontal_holo_dark</item>
+      <item name="android:thumb">@drawable/scrubber_control_selector_holo_dark</item>
+  </style>
+
+</resources>

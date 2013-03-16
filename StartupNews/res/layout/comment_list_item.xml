@@ -12,6 +12,8 @@
         android:layout_marginLeft="5dip"
         android:layout_marginTop="5dip"
         android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textStyle="bold"
+        android:textColor="@color/pressed_sn"
         android:text="Fenng"
         />
     <TextView 

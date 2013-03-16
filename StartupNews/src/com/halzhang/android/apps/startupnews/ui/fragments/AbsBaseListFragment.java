@@ -87,7 +87,9 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
         if(mEmptyView != null){
             mEmptyView.setVisibility(View.GONE);
         }
-        mPullToRefreshListView.setVisibility(View.VISIBLE);
+        if(mPullToRefreshListView != null){
+            mPullToRefreshListView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

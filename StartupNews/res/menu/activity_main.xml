@@ -3,13 +3,13 @@
     <item
         android:id="@+id/menu_feedback"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:showAsAction="never"
         android:icon="@drawable/ic_action_email"
         android:title="@string/menu_feedback"/>
     <item
         android:id="@+id/menu_settings"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:showAsAction="never"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/menu_settings"/>
 

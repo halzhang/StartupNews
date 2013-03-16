@@ -60,7 +60,7 @@ public class BrowseActivity extends SherlockActivity {
 
     @Override
     protected void onCreate(Bundle arg0) {
-        setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);//注释掉，ShareActionProvider无法解析
+        setTheme(R.style.Theme_Sn_Light_DarkActionBar);// 注释掉，ShareActionProvider无法解析
         super.onCreate(arg0);
         requestWindowFeature(Window.FEATURE_PROGRESS);
         setContentView(R.layout.activity_browse);
@@ -75,7 +75,7 @@ public class BrowseActivity extends SherlockActivity {
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        //setTitle(mTitle);
+        // setTitle(mTitle);
 
         mWebView.setWebChromeClient(new MyWebChromeClient());
         mWebView.setWebViewClient(new MyWebViewClient());
@@ -83,7 +83,7 @@ public class BrowseActivity extends SherlockActivity {
         WebSettings settings = mWebView.getSettings();
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             settings.setDisplayZoomControls(false);
         }
         settings.setJavaScriptEnabled(true);
@@ -123,16 +123,20 @@ public class BrowseActivity extends SherlockActivity {
     @Override
     public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
         getSupportMenuInflater().inflate(R.menu.activity_browse, menu);
-        MenuItem actionItem = menu.findItem(
-                R.id.menu_share);
+        MenuItem actionItem = menu.findItem(R.id.menu_share);
         mShareActionProvider = (ShareActionProvider) actionItem.getActionProvider();
-        mShareActionProvider.setShareHistoryFileName(ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
-        
+        mShareActionProvider
+                .setShareHistoryFileName(ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
+
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
         StringBuilder builder = new StringBuilder();
         builder.append(mTitle).append(" ").append(mUrl);
+        builder.append(" （")
+                .append("分享自StartupNews: ")
+                .append("https://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews")
+                .append("）");
         intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
         mShareActionProvider.setShareIntent(intent);
         return true;

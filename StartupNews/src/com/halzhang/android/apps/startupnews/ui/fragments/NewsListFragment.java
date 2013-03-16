@@ -62,15 +62,11 @@ public class NewsListFragment extends AbsBaseListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new NewsAdapter();
-        if (mNewsTask == null) {
-            Bundle args = getArguments();
-            if (args != null) {
-                mNewsURL = args.getString(ARG_URL);
-            } else {
-                mNewsURL = getString(R.string.host, "/news");
-            }
-            mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
-            mNewsTask.execute(mNewsURL);
+        Bundle args = getArguments();
+        if (args != null) {
+            mNewsURL = args.getString(ARG_URL);
+        } else {
+            mNewsURL = getString(R.string.host, "/news");
         }
     }
 
@@ -78,6 +74,10 @@ public class NewsListFragment extends AbsBaseListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setListAdapter(mAdapter);
+        if (mNewsTask == null && mAdapter.isEmpty()) {
+            mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
+            mNewsTask.execute(mNewsURL);
+        }
     }
 
     @Override
@@ -104,10 +104,18 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
-        if (mNewsTask == null && !TextUtils.isEmpty(mMoreURLPath)) {
+        if (mNewsTask != null) {
+            mNewsTask.cancel(true);
+            mNewsTask = null;
+        }
+        if (!TextUtils.isEmpty(mMoreURLPath)) {
             mNewsTask = new NewsTask(NewsTask.TYPE_LOADMORE);
             mNewsTask.execute(getString(R.string.host, mMoreURLPath));
             mMoreURLPath = null;
+        } else {
+            // 防止moreurl解析错误
+            mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
+            mNewsTask.execute(mNewsURL);
         }
     }
 
@@ -169,9 +177,7 @@ public class NewsListFragment extends AbsBaseListFragment {
                 Elements more = doc.getElementsByAttributeValueStarting("href", "/x?fnid=");
                 if (!more.isEmpty()) {
                     mMoreURLPath = more.get(1).attr("href");
-                    Log.i(LOG_TAG, "More Path: " + mMoreURLPath);
                 }
-
                 return true;
             } catch (IOException e) {
                 Log.e(LOG_TAG, "", e);
