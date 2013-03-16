@@ -63,7 +63,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setListAdapter(mAdapter);
-        if(mTask == null && mAdapter.isEmpty()){
+        if (mTask == null && mAdapter.isEmpty()) {
             mTask = new CommentsTask(CommentsTask.TYPE_REFRESH);
             mTask.execute(getString(R.string.host, NEWCOMMENTS_URL_PATH));
         }
@@ -83,8 +83,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
     protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
         if (mTask != null) {
-            mTask.cancel(true);
-            mTask = null;
+            return;
         }
         mTask = new CommentsTask(CommentsTask.TYPE_REFRESH);
         mTask.execute(getString(R.string.host, NEWCOMMENTS_URL_PATH));
@@ -94,8 +93,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullUpListViewRefresh(refreshListView);
         if (mTask != null) {
-            mTask.cancel(true);
-            mTask = null;
+            return;
         }
         mTask = new CommentsTask(CommentsTask.TYPE_LOADMORE);
         mTask.execute(getString(R.string.host, TextUtils.isEmpty(mMoreUrl) ? NEWCOMMENTS_URL_PATH

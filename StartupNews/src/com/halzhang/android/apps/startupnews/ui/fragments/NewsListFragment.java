@@ -94,8 +94,7 @@ public class NewsListFragment extends AbsBaseListFragment {
     protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
         if (mNewsTask != null) {
-            mNewsTask.cancel(true);
-            mNewsTask = null;
+            return;
         }
         mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
         mNewsTask.execute(mNewsURL);
@@ -105,8 +104,7 @@ public class NewsListFragment extends AbsBaseListFragment {
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
         if (mNewsTask != null) {
-            mNewsTask.cancel(true);
-            mNewsTask = null;
+            return;
         }
         if (!TextUtils.isEmpty(mMoreURLPath)) {
             mNewsTask = new NewsTask(NewsTask.TYPE_LOADMORE);
@@ -168,7 +166,7 @@ public class NewsListFragment extends AbsBaseListFragment {
                             entity = new NewEntity(aTag.get(0).attr("href"), aTag.get(0).text(),
                                     spanTag.isEmpty() ? null : spanTag.get(0).text(), subE.html());
                             entity.setDiscussUrl(subEa.get(1).attr("href"));
-                            Log.i(LOG_TAG, entity.toString());
+                            //Log.i(LOG_TAG, entity.toString());
                             mNews.add(entity);
                         }
                         index++;

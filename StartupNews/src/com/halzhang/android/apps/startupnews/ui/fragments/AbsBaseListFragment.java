@@ -36,7 +36,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
     private PullToRefreshListView mPullToRefreshListView;
 
     private ListAdapter mAdapter;
-    
+
     private View mEmptyView;
 
     @Override
@@ -59,13 +59,14 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
         mListView.setOnItemClickListener(this);
         mListView.setOnScrollListener(this);
         mEmptyView = view.findViewById(R.id.empty);
-        if(mEmptyView != null && mAdapter == null/*第一次初始化*/){
-            mPullToRefreshListView.setVisibility(View.INVISIBLE);
-            mEmptyView.setVisibility(View.VISIBLE);
-        }else{
-            mPullToRefreshListView.setVisibility(View.VISIBLE);
-            mEmptyView.setVisibility(View.INVISIBLE);
-        }
+        // if(mEmptyView != null && mAdapter == null/*第一次初始化*/){
+        // mPullToRefreshListView.setVisibility(View.INVISIBLE);
+        // mEmptyView.setVisibility(View.VISIBLE);
+        // }else{
+        // mPullToRefreshListView.setVisibility(View.VISIBLE);
+        // mEmptyView.setVisibility(View.INVISIBLE);
+        // }
+        mListView.setEmptyView(mEmptyView);
         return view;
     }
 
@@ -79,17 +80,17 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
         mAdapter = adapter;
         mListView.setAdapter(adapter);
     }
-    
+
     /**
      * hide loading view,show listview
      */
     protected void onDataFirstLoadComplete() {
-        if(mEmptyView != null){
-            mEmptyView.setVisibility(View.GONE);
-        }
-        if(mPullToRefreshListView != null){
-            mPullToRefreshListView.setVisibility(View.VISIBLE);
-        }
+        // if(mEmptyView != null){
+        // mEmptyView.setVisibility(View.GONE);
+        // }
+        // if(mPullToRefreshListView != null){
+        // mPullToRefreshListView.setVisibility(View.VISIBLE);
+        // }
     }
 
     @Override
@@ -155,6 +156,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
 
     /**
      * 向上拖动刷新
+     * 
      * @param refreshListView
      */
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
@@ -163,6 +165,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
 
     /**
      * 向下拖动刷新
+     * 
      * @param refreshListView
      */
     protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
