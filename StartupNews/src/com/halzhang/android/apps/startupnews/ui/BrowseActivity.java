@@ -9,11 +9,11 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.actionbarsherlock.widget.ShareActionProvider;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -88,9 +88,7 @@ public class BrowseActivity extends SherlockActivity {
         }
         settings.setJavaScriptEnabled(true);
 
-        String mHtmlProvider = PreferenceManager.getDefaultSharedPreferences(
-                getApplicationContext()).getString(getString(R.string.pref_key_html_provider),
-                getString(R.string.default_html_provider));
+        String mHtmlProvider = PreferenceUtils.getHtmlProvider(getApplicationContext());
         final String url = mHtmlProvider + mUrl;
         Log.i(LOG_TAG, url);
         mWebView.loadUrl(url);

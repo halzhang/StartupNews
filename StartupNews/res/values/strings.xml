@@ -12,6 +12,7 @@
     </string-array>
     
     <string name="host">http://news.dbanotes.net<xliff:g id="PATH">%1$s</xliff:g></string>
+    <string name="comment_artist_title">on:<xliff:g id="TITLE">%1$s</xliff:g></string>
     
     <string name="error">哎呀，出错了!</string>
     <string name="working">开发中~~~</string>
@@ -36,6 +37,11 @@
     
     <string name="pref_title_startupnews">StartupNews</string>
     <string name="pref_summary_startupnews">访问StartupNews网站</string>
+    
+    <string name="pref_key_default_browse">pref_key_default_browse</string>
+    <string name="pref_title_default_browse">使用内置浏览器</string>
+    <string name="pref_summary_on_default_browse">用内置浏览器打开连接</string>
+    <string name="pref_summary_off_default_browse">用系统浏览器打开连接</string>
     
     <string name="pref_title_opensrouce">开放源代码许可</string>
     

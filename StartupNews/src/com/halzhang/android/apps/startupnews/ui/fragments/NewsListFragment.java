@@ -9,6 +9,7 @@ import com.halzhang.android.apps.startupnews.entity.NewEntity;
 import com.halzhang.android.apps.startupnews.entity.User;
 import com.halzhang.android.apps.startupnews.ui.BrowseActivity;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
+import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.jsoup.Jsoup;
@@ -17,6 +18,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -120,9 +122,16 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         NewEntity entity = (NewEntity) mAdapter.getItem(position - 1);
-        Intent intent = new Intent(getActivity(), BrowseActivity.class);
-        intent.putExtra(BrowseActivity.EXTRA_URL, entity.getUrl());
-        intent.putExtra(BrowseActivity.EXTRA_TITLE, entity.getTitle());
+        Intent intent = null;
+        if (PreferenceUtils.isUseInnerBrowse(getActivity())) {
+            intent = new Intent(getActivity(), BrowseActivity.class);
+            intent.putExtra(BrowseActivity.EXTRA_URL, entity.getUrl());
+            intent.putExtra(BrowseActivity.EXTRA_TITLE, entity.getTitle());
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(PreferenceUtils.getHtmlProvider(getActivity())
+                    + entity.getUrl()));
+        }
         startActivity(intent);
     }
 
@@ -166,7 +175,7 @@ public class NewsListFragment extends AbsBaseListFragment {
                             entity = new NewEntity(aTag.get(0).attr("href"), aTag.get(0).text(),
                                     spanTag.isEmpty() ? null : spanTag.get(0).text(), subE.html());
                             entity.setDiscussUrl(subEa.get(1).attr("href"));
-                            //Log.i(LOG_TAG, entity.toString());
+                            // Log.i(LOG_TAG, entity.toString());
                             mNews.add(entity);
                         }
                         index++;

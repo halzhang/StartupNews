@@ -26,14 +26,23 @@
         android:key="@string/pref_key_html_provider"
         android:title="@string/pref_title_html_provider" />
 
-    <PreferenceScreen android:title="@string/pref_title_startupnews"
-        android:summary="@string/pref_summary_startupnews" >
+    <CheckBoxPreference
+        android:key="@string/pref_key_default_browse"
+        android:summaryOff="@string/pref_summary_off_default_browse"
+        android:summaryOn="@string/pref_summary_on_default_browse"
+        android:title="@string/pref_title_default_browse"
+        android:defaultValue="true" />
+
+    <PreferenceScreen
+        android:summary="@string/pref_summary_startupnews"
+        android:title="@string/pref_title_startupnews" >
         <intent
             android:action="android.intent.action.VIEW"
             android:data="http://news.dbanotes.net" />
     </PreferenceScreen>
-    <PreferenceScreen android:title="@string/pref_title_athalzhang"
-        android:summary="@string/pref_summary_athalzhang" >
+    <PreferenceScreen
+        android:summary="@string/pref_summary_athalzhang"
+        android:title="@string/pref_title_athalzhang" >
         <intent
             android:action="android.intent.action.VIEW"
             android:data="http://weibo.cn/halzhang" />

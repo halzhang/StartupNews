@@ -29,10 +29,12 @@ public class Comment implements Serializable {
     private String discuss;
 
     private String text;
-    
+
     private String created;
 
     private User user;
+
+    private String artistTitle;//文章标题
 
     public String getLink() {
         return link;
@@ -81,7 +83,13 @@ public class Comment implements Serializable {
     public void setCreated(String created) {
         this.created = created;
     }
-    
-    
+
+    public String getArtistTitle() {
+        return artistTitle;
+    }
+
+    public void setArtistTitle(String artistTitle) {
+        this.artistTitle = artistTitle;
+    }
 
 }

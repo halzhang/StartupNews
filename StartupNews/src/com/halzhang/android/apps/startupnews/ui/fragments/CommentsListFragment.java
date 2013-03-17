@@ -137,12 +137,14 @@ public class CommentsListFragment extends AbsBaseListFragment {
                         String link = as.get(1).attr("href");
                         String parent = as.get(2).attr("href");
                         String discuss = as.get(3).attr("href");
+                        String title = as.get(3).text();
                         comment = new Comment();
                         comment.setUser(user);
                         comment.setLink(link);
                         comment.setParent(parent);
                         comment.setDiscuss(discuss);
                         comment.setText(commentText);
+                        comment.setArtistTitle(title);
                         mComments.add(comment);
                     }
                 }
@@ -204,6 +206,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
                 holder.mUserId = (TextView) convertView.findViewById(R.id.comment_item_user_id);
                 holder.mCreated = (TextView) convertView.findViewById(R.id.comment_item_created);
                 holder.mCommentText = (TextView) convertView.findViewById(R.id.comment_item_text);
+                holder.mArtistTitle = (TextView) convertView.findViewById(R.id.comment_item_artist_titile);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -212,7 +215,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
             holder.mUserId.setText(comment.getUser().getId());
             holder.mCreated.setText(comment.getCreated());
             holder.mCommentText.setText(comment.getText());
-
+            holder.mArtistTitle.setText(getString(R.string.comment_artist_title, comment.getArtistTitle()));
             return convertView;
         }
 
@@ -222,6 +225,8 @@ public class CommentsListFragment extends AbsBaseListFragment {
             TextView mCreated;
 
             TextView mCommentText;
+            
+            TextView mArtistTitle;
         }
 
     }

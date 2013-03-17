@@ -2,38 +2,50 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight">
-    	
-    <TextView 
+    android:minHeight="?android:attr/listPreferredItemHeight" >
+
+    <TextView
         android:id="@+id/comment_item_user_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="5dip"
         android:layout_marginTop="5dip"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textStyle="bold"
-        android:textColor="@color/pressed_sn"
         android:text="Fenng"
-        />
-    <TextView 
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/pressed_sn"
+        android:textStyle="bold" />
+
+    <TextView
         android:id="@+id/comment_item_created"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dip"
         android:layout_marginTop="5dip"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="1 hour ago"
-        />
-    
-    <TextView 
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
         android:id="@+id/comment_item_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/comment_item_user_id"
         android:layout_margin="5dip"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="的方式的放松放松东方时空恨死哈"/>
+        android:text="的方式的放松放松东方时空恨死哈"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/comment_item_artist_titile"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/comment_item_text"
+        android:layout_marginBottom="5dip"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:ellipsize="start"
+        android:gravity="right"
+        android:text="startup news Android client!"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>
