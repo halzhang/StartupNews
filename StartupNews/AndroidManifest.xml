@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.halzhang.android.apps.startupnews"
-    android:versionCode="3"
-    android:versionName="0.3.0.0" >
+    android:versionCode="4"
+    android:versionName="0.3.1.0" >
 
     <uses-sdk
         android:minSdkVersion="10"
@@ -32,7 +32,7 @@
             android:name=".ui.BrowseActivity"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale" 
             android:screenOrientation="portrait"/>
-        <activity
+    <!--     <activity
             android:name=".ui.SubmitActivity"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale" 
             android:label="@string/title_shareto_startupnews"
@@ -43,7 +43,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
             
-        </activity>
+        </activity> -->
         <activity
             android:name=".ui.AboutActivity"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
