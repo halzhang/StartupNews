@@ -133,7 +133,7 @@ public class BrowseActivity extends SherlockActivity {
         builder.append(mTitle).append(" ").append(mUrl);
         builder.append(" （")
                 .append("分享自StartupNews: ")
-                .append("https://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews")
+                .append("http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews")
                 .append("）");
         intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
         mShareActionProvider.setShareIntent(intent);
