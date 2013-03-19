@@ -11,10 +11,10 @@
         android:divider="#CCFF8800"
         android:dividerHeight="0dp"
         android:fadingEdge="none"
-        android:fastScrollEnabled="false"
+        android:fastScrollEnabled="true"
         android:footerDividersEnabled="false"
         android:headerDividersEnabled="false"
-        android:smoothScrollbar="true" />
+        android:smoothScrollbar="true"/>
     <LinearLayout 
         android:id="@+id/empty"
         android:layout_width="fill_parent"

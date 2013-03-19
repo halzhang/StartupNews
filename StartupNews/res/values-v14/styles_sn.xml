@@ -17,7 +17,7 @@
      limitations under the License.
 -->
 
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="Theme.Sn" parent="@style/Theme.Sherlock">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_sn</item>
@@ -44,6 +44,7 @@
         <item name="android:listViewStyle">@style/ListViewAppTheme</item>
         <item name="android:listViewWhiteStyle">@style/ListViewAppTheme.White</item>
         <item name="android:spinnerItemStyle">@style/SpinnerItemAppTheme</item>
+        <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_holo</item>
     </style>
 
     <style name="Theme.Sn.Light.DarkActionBar" parent="@style/Theme.Sherlock.Light.DarkActionBar">
@@ -74,6 +75,7 @@
         <item name="android:listViewStyle">@style/ListViewAppTheme</item>
         <item name="android:listViewWhiteStyle">@style/ListViewAppTheme.White</item>
         <item name="android:spinnerItemStyle">@style/SpinnerItemAppTheme</item>
+        <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_holo</item>
     </style>
 
     <style name="ActionBar.Solid.Sn.Light.DarkActionBar" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
