@@ -15,49 +15,66 @@ import java.io.Serializable;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class Comment implements Serializable {
+public class SNComment implements Serializable {
 
     /**
      * 
      */
     private static final long serialVersionUID = 5194737515600100830L;
 
-    private String link;
+    private String linkURL;
 
-    private String parent;
+    private String parentURL;
 
-    private String discuss;
+    private String discussURL;
 
     private String text;
 
     private String created;
 
-    private User user;
+    private SNUser user;
 
     private String artistTitle;//文章标题
+    
+    private String voteURL;
+    
+    public SNComment(){}
+
+    public SNComment(String linkURL, String parentURL, String discussURL, String text,
+            String created, SNUser user, String artistTitle, String voteURL) {
+        super();
+        this.linkURL = linkURL;
+        this.parentURL = parentURL;
+        this.discussURL = discussURL;
+        this.text = text;
+        this.created = created;
+        this.user = user;
+        this.artistTitle = artistTitle;
+        this.voteURL = voteURL;
+    }
 
     public String getLink() {
-        return link;
+        return linkURL;
     }
 
     public void setLink(String link) {
-        this.link = link;
+        this.linkURL = link;
     }
 
     public String getParent() {
-        return parent;
+        return parentURL;
     }
 
     public void setParent(String parent) {
-        this.parent = parent;
+        this.parentURL = parent;
     }
 
     public String getDiscuss() {
-        return discuss;
+        return discussURL;
     }
 
     public void setDiscuss(String discuss) {
-        this.discuss = discuss;
+        this.discussURL = discuss;
     }
 
     public String getText() {
@@ -68,11 +85,11 @@ public class Comment implements Serializable {
         this.text = text;
     }
 
-    public User getUser() {
+    public SNUser getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(SNUser user) {
         this.user = user;
     }
 
@@ -91,5 +108,15 @@ public class Comment implements Serializable {
     public void setArtistTitle(String artistTitle) {
         this.artistTitle = artistTitle;
     }
+
+    public String getVoteURL() {
+        return voteURL;
+    }
+
+    public void setVoteURL(String voteURL) {
+        this.voteURL = voteURL;
+    }
+    
+    
 
 }

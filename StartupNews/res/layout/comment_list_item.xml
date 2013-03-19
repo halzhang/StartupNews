@@ -43,7 +43,8 @@
         android:layout_marginBottom="5dip"
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"
-        android:ellipsize="start"
+        android:lines="1"
+        android:ellipsize="end"
         android:gravity="right"
         android:text="startup news Android client!"
         android:textAppearance="?android:attr/textAppearanceSmall" />

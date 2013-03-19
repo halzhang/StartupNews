@@ -5,19 +5,19 @@
 package com.halzhang.android.apps.startupnews.ui.fragments;
 
 import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.entity.Comment;
-import com.halzhang.android.apps.startupnews.entity.User;
+import com.halzhang.android.apps.startupnews.entity.SNComment;
+import com.halzhang.android.apps.startupnews.entity.SNComments;
+import com.halzhang.android.apps.startupnews.parser.SNCommentsParser;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * StartupNews
@@ -40,16 +38,17 @@ import java.util.Iterator;
  */
 public class CommentsListFragment extends AbsBaseListFragment {
 
-    @SuppressWarnings("unused")
     private static final String LOG_TAG = CommentsListFragment.class.getSimpleName();
 
-    private ArrayList<Comment> mComments = new ArrayList<Comment>(24);
+    // private ArrayList<SNComment> mComments = new ArrayList<SNComment>(24);
 
     private CommentsAdapter mAdapter;
 
     private CommentsTask mTask;
 
-    private String mMoreUrl;
+    // private String mMoreUrl;
+
+    private SNComments mSnComments = new SNComments();;
 
     private static final String NEWCOMMENTS_URL_PATH = "/newcomments";
 
@@ -95,10 +94,13 @@ public class CommentsListFragment extends AbsBaseListFragment {
         if (mTask != null) {
             return;
         }
-        mTask = new CommentsTask(CommentsTask.TYPE_LOADMORE);
-        mTask.execute(getString(R.string.host, TextUtils.isEmpty(mMoreUrl) ? NEWCOMMENTS_URL_PATH
-                : mMoreUrl));
-        mMoreUrl = null;
+        if (TextUtils.isEmpty(mSnComments.getMoreURL())) {
+            Toast.makeText(getActivity(), R.string.tip_last_page, Toast.LENGTH_SHORT).show();
+            getPullToRefreshListView().onRefreshComplete();
+        } else {
+            mTask = new CommentsTask(CommentsTask.TYPE_LOADMORE);
+            mTask.execute(mSnComments.getMoreURL());
+        }
     }
 
     private class CommentsTask extends AsyncTask<String, Void, Boolean> {
@@ -117,40 +119,21 @@ public class CommentsListFragment extends AbsBaseListFragment {
         protected Boolean doInBackground(String... params) {
             try {
                 Document doc = Jsoup.connect(params[0]).get();
-                Element body = doc.body();
-                Elements commentSpans = body.select("span.comment");
-                Elements comHeadSpans = body.select("span.comhead");
-                if (!commentSpans.isEmpty()) {
-                    if (mType == TYPE_REFRESH && mComments.size() > 0) {
-                        mComments.clear();
-                    }
-                    Iterator<Element> spanCommentIt = commentSpans.iterator();
-                    Iterator<Element> spanComHeadIt = comHeadSpans.iterator();
-                    Comment comment = null;
-                    User user = null;
-                    while (spanComHeadIt.hasNext() && spanCommentIt.hasNext()) {
-                        String commentText = spanCommentIt.next().text();
-                        Element span = spanComHeadIt.next();
-                        Elements as = span.getElementsByTag("a");
-                        user = new User();
-                        user.setId(as.get(0).text());
-                        String link = as.get(1).attr("href");
-                        String parent = as.get(2).attr("href");
-                        String discuss = as.get(3).attr("href");
-                        String title = as.get(3).text();
-                        comment = new Comment();
-                        comment.setUser(user);
-                        comment.setLink(link);
-                        comment.setParent(parent);
-                        comment.setDiscuss(discuss);
-                        comment.setText(commentText);
-                        comment.setArtistTitle(title);
-                        mComments.add(comment);
-                    }
+                long start = System.currentTimeMillis();
+                SNCommentsParser parser = new SNCommentsParser();
+                SNComments comments = parser.parseDocument(doc);
+                if (mType == TYPE_REFRESH && mSnComments.size() > 0) {
+                    mSnComments.clear();
                 }
-                mMoreUrl = body.select("a[href^=/x?fnid=]").get(1).attr("href");
+                mSnComments.addComments(comments.getSnComments());
+                mSnComments.setMoreURL(comments.getMoreURL());
+                Log.i(LOG_TAG, "Take Time: " + (System.currentTimeMillis() - start));
                 return true;
             } catch (IOException e) {
+                Log.e(LOG_TAG, "", e);
+                return false;
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "", e);
                 return false;
             }
         }
@@ -183,12 +166,12 @@ public class CommentsListFragment extends AbsBaseListFragment {
 
         @Override
         public int getCount() {
-            return mComments.size();
+            return mSnComments.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mComments.get(position);
+            return mSnComments.getSnComments().get(position);
         }
 
         @Override
@@ -206,16 +189,19 @@ public class CommentsListFragment extends AbsBaseListFragment {
                 holder.mUserId = (TextView) convertView.findViewById(R.id.comment_item_user_id);
                 holder.mCreated = (TextView) convertView.findViewById(R.id.comment_item_created);
                 holder.mCommentText = (TextView) convertView.findViewById(R.id.comment_item_text);
-                holder.mArtistTitle = (TextView) convertView.findViewById(R.id.comment_item_artist_titile);
+                holder.mArtistTitle = (TextView) convertView
+                        .findViewById(R.id.comment_item_artist_titile);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            Comment comment = mComments.get(position);
+            SNComment comment = mSnComments.getSnComments().get(position);
             holder.mUserId.setText(comment.getUser().getId());
             holder.mCreated.setText(comment.getCreated());
             holder.mCommentText.setText(comment.getText());
-            holder.mArtistTitle.setText(getString(R.string.comment_artist_title, comment.getArtistTitle()));
+            Log.i(LOG_TAG, comment.getArtistTitle());
+            holder.mArtistTitle.setText(getString(R.string.comment_artist_title,
+                    comment.getArtistTitle()));
             return convertView;
         }
 
@@ -225,7 +211,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
             TextView mCreated;
 
             TextView mCommentText;
-            
+
             TextView mArtistTitle;
         }
 

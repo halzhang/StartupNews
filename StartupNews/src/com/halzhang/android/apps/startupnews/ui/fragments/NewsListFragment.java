@@ -5,8 +5,9 @@
 package com.halzhang.android.apps.startupnews.ui.fragments;
 
 import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.entity.NewEntity;
-import com.halzhang.android.apps.startupnews.entity.User;
+import com.halzhang.android.apps.startupnews.entity.SNFeed;
+import com.halzhang.android.apps.startupnews.entity.SNNew;
+import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
 import com.halzhang.android.apps.startupnews.ui.BrowseActivity;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
 import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
@@ -14,8 +15,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -33,8 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * StartupNews
@@ -50,13 +47,11 @@ public class NewsListFragment extends AbsBaseListFragment {
 
     private NewsTask mNewsTask;
 
-    private String mMoreURLPath;
-
     private String mNewsURL;
 
     public static final String ARG_URL = "new_url";
 
-    private ArrayList<NewEntity> mNews = new ArrayList<NewEntity>(32);
+    private SNFeed mSnFeed = new SNFeed();
 
     private NewsAdapter mAdapter;
 
@@ -108,20 +103,18 @@ public class NewsListFragment extends AbsBaseListFragment {
         if (mNewsTask != null) {
             return;
         }
-        if (!TextUtils.isEmpty(mMoreURLPath)) {
-            mNewsTask = new NewsTask(NewsTask.TYPE_LOADMORE);
-            mNewsTask.execute(getString(R.string.host, mMoreURLPath));
-            mMoreURLPath = null;
+        if (TextUtils.isEmpty(mSnFeed.getMoreUrl())) {
+            Toast.makeText(getActivity(), R.string.tip_last_page, Toast.LENGTH_SHORT).show();
+            getPullToRefreshListView().onRefreshComplete();
         } else {
-            // 防止moreurl解析错误
-            mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
-            mNewsTask.execute(mNewsURL);
+            mNewsTask = new NewsTask(NewsTask.TYPE_LOADMORE);
+            mNewsTask.execute(mSnFeed.getMoreUrl());
         }
     }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        NewEntity entity = (NewEntity) mAdapter.getItem(position - 1);
+        SNNew entity = (SNNew) mAdapter.getItem(position - 1);
         Intent intent = null;
         if (PreferenceUtils.isUseInnerBrowse(getActivity())) {
             intent = new Intent(getActivity(), BrowseActivity.class);
@@ -151,42 +144,18 @@ public class NewsListFragment extends AbsBaseListFragment {
         protected Boolean doInBackground(String... params) {
             try {
                 Document doc = Jsoup.connect(params[0]).get();
-                Element body = doc.body();
-                Elements titleEs = body.select("td.title");
-                Elements subTitleEs = body.select("td.subtext");
-                int index = 1;
-                if (!titleEs.isEmpty()) {
-                    if (mType == TYPE_REFRESH && mNews.size() > 0) {
-                        mNews.clear();
-                    }
-                    Iterator<Element> iterator = titleEs.iterator();
-                    Iterator<Element> subIt = subTitleEs.iterator();
-                    NewEntity entity = null;
-                    User user = null;
-                    while (iterator.hasNext()) {
-                        Element e = iterator.next();
-                        if (index % 2 == 0) {
-                            Element subE = subIt.next();
-                            Elements aTag = e.select("a");
-                            Elements spanTag = e.select("span.comhead");
-                            Elements subEa = subE.select("a");
-                            user = new User();
-                            user.setId(subEa.get(0).text());
-                            entity = new NewEntity(aTag.get(0).attr("href"), aTag.get(0).text(),
-                                    spanTag.isEmpty() ? null : spanTag.get(0).text(), subE.html());
-                            entity.setDiscussUrl(subEa.get(1).attr("href"));
-                            // Log.i(LOG_TAG, entity.toString());
-                            mNews.add(entity);
-                        }
-                        index++;
-                    }
+                SNFeedParser parser = new SNFeedParser();
+                SNFeed feed = parser.parseDocument(doc);
+                if (mType == TYPE_REFRESH && mSnFeed.size() > 0) {
+                    mSnFeed.clear();
                 }
-                Elements more = doc.getElementsByAttributeValueStarting("href", "/x?fnid=");
-                if (!more.isEmpty()) {
-                    mMoreURLPath = more.get(1).attr("href");
-                }
+                mSnFeed.addNews(feed.getSnNews());
+                mSnFeed.setMoreUrl(feed.getMoreUrl());
                 return true;
             } catch (IOException e) {
+                Log.e(LOG_TAG, "", e);
+                return false;
+            } catch (Exception e) {
                 Log.e(LOG_TAG, "", e);
                 return false;
             }
@@ -226,12 +195,12 @@ public class NewsListFragment extends AbsBaseListFragment {
 
         @Override
         public int getCount() {
-            return mNews.size();
+            return mSnFeed.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mNews.get(position);
+            return mSnFeed.getSnNews().get(position);
         }
 
         @Override
@@ -252,7 +221,7 @@ public class NewsListFragment extends AbsBaseListFragment {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            NewEntity entity = mNews.get(position);
+            SNNew entity = mSnFeed.getSnNews().get(position);
             holder.mText1.setText(entity.getTitle());
             holder.mText2.setText(Html.fromHtml(entity.getSubText()));
             return convertView;

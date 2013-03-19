@@ -66,6 +66,7 @@
     <string name="default_html_provider">http://weibo.cn/sinaurl?to=m&amp;u=</string>
     
     <string name="tip_loading">加载中...</string>
+    <string name="tip_last_page">亲，最后一页了...</string>
     
     
 </resources>

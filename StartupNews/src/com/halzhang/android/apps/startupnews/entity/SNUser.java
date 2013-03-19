@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class User implements Serializable {
+public class SNUser implements Serializable {
 
     /**
      * 
@@ -24,6 +24,8 @@ public class User implements Serializable {
     private static final long serialVersionUID = -6123600100177508491L;
 
     private String id;
+    
+    private String name;
 
     private String created;
 
@@ -31,11 +33,11 @@ public class User implements Serializable {
 
     private String about;
 
-    public User() {
+    public SNUser() {
 
     }
 
-    public User(String id, String created, String karma, String about) {
+    public SNUser(String id, String created, String karma, String about) {
         super();
         this.id = id;
         this.created = created;
@@ -74,5 +76,15 @@ public class User implements Serializable {
     public void setAbout(String about) {
         this.about = about;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    
 
 }
