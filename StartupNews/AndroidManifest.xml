@@ -32,6 +32,11 @@
             android:name=".ui.BrowseActivity"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale" 
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.DiscussActivity"
+            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale" 
+            android:screenOrientation="portrait"
+            android:label="@string/title_discuss"/>
     <!--     <activity
             android:name=".ui.SubmitActivity"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale" 

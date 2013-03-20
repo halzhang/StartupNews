@@ -38,10 +38,12 @@ public class SNComment implements Serializable {
     
     private String voteURL;
     
+    private String replayURL;
+    
     public SNComment(){}
 
     public SNComment(String linkURL, String parentURL, String discussURL, String text,
-            String created, SNUser user, String artistTitle, String voteURL) {
+            String created, SNUser user, String artistTitle, String voteURL,String replayURL) {
         super();
         this.linkURL = linkURL;
         this.parentURL = parentURL;
@@ -51,6 +53,7 @@ public class SNComment implements Serializable {
         this.user = user;
         this.artistTitle = artistTitle;
         this.voteURL = voteURL;
+        this.replayURL = replayURL;
     }
 
     public String getLink() {
@@ -115,6 +118,14 @@ public class SNComment implements Serializable {
 
     public void setVoteURL(String voteURL) {
         this.voteURL = voteURL;
+    }
+
+    public String getReplayURL() {
+        return replayURL;
+    }
+
+    public void setReplayURL(String replayURL) {
+        this.replayURL = replayURL;
     }
     
     

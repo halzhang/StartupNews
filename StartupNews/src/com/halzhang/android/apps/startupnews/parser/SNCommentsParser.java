@@ -84,7 +84,7 @@ public class SNCommentsParser extends BaseHTMLParser<SNComments> {
                         voteURL = resolveRelativeSNURL(voteAElement.attr("href"));
                     }
                     comments.addComment(new SNComment(linkURL, parentURL, discussURL, text, created,
-                            user, artistTitle, voteURL));
+                            user, artistTitle, voteURL,null));
                 }
             }
         }

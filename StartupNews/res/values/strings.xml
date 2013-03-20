@@ -22,11 +22,14 @@
     <string name="menu_settings">设置</string>
     <string name="menu_about">关于</string>
     <string name="menu_feedback">反馈</string>
+    <string name="menu_show_comment">查看评论</string>
+    <string name="menu_show_article">查看原文</string>
     
     <!-- title string -->
     <string name="title_about">关于</string>
     <string name="title_settings">设置</string>
     <string name="title_shareto_startupnews">分享到StartupNews</string>
+    <string name="title_discuss">查看评论</string>
     
     <!-- preferences string -->
     <string name="pref_title_html_provider">网页阅读模式</string>

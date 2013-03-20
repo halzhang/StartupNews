@@ -79,22 +79,23 @@ public class SNFeedParser extends BaseHTMLParser<SNFeed> {
                     break;
                 case 1:
                     // 副标题
-                    subText = rowElement.select("tr > td:eq(1)").first().html();
-                    points = getIntValueFollowedBySuffix(rowElement.select("tr > td:eq(1) > span")
+                    Element tdElement = rowElement.select("tr > td:eq(1)").first();
+                    subText = tdElement.html();
+                    points = getIntValueFollowedBySuffix(tdElement.select("td > span")
                             .text(), " p");
 
-                    String author = rowElement.select("tr > td:eq(1) > a[href*=user]").text();
+                    String author = tdElement.select("td > a[href*=user]").text();
                     user = new SNUser();
                     user.setName(author);
                     user.setId(author);
-                    Element e2 = rowElement.select("tr > td:eq(1) > a[href*=item]").first();
+                    Element e2 = tdElement.select("td > a[href*=item]").first();
                     if (e2 != null) {
                         commentsCount = getIntValueFollowedBySuffix(e2.text(), " c");
                         if (commentsCount == BaseHTMLParser.UNDEFINED
                                 && e2.text().contains("discuss"))
                             commentsCount = 0;
                         postID = getStringValuePrefixedByPrefix(e2.attr("href"), "id=");
-                        discussURL = e2.attr("href");
+                        discussURL = resolveRelativeSNURL(e2.attr("href"));
                     } else {
                         commentsCount = BaseHTMLParser.UNDEFINED;
                     }

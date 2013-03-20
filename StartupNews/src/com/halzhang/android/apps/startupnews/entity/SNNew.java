@@ -108,14 +108,6 @@ public class SNNew implements Serializable {
         this.subText = subText;
     }
 
-    public String getDiscussUrl() {
-        return discussURL;
-    }
-
-    public void setDiscussUrl(String discussUrl) {
-        this.discussURL = discussUrl;
-    }
-
     public SNUser getUser() {
         return user;
     }
@@ -124,12 +116,44 @@ public class SNNew implements Serializable {
         this.user = user;
     }
 
-    public String getVoteUrl() {
+    public String getUrlDomain() {
+        return urlDomain;
+    }
+
+    public void setUrlDomain(String urlDomain) {
+        this.urlDomain = urlDomain;
+    }
+
+    public String getVoteURL() {
         return voteURL;
     }
 
-    public void setVoteUrl(String voteUrl) {
-        this.voteURL = voteUrl;
+    public void setVoteURL(String voteURL) {
+        this.voteURL = voteURL;
+    }
+
+    public int getCommentsCount() {
+        return commentsCount;
+    }
+
+    public void setCommentsCount(int commentsCount) {
+        this.commentsCount = commentsCount;
+    }
+
+    public String getDiscussURL() {
+        return discussURL;
+    }
+
+    public void setDiscussURL(String discussURL) {
+        this.discussURL = discussURL;
+    }
+
+    public String getPostID() {
+        return postID;
+    }
+
+    public void setPostID(String postID) {
+        this.postID = postID;
     }
 
     public int getPoints() {
@@ -138,14 +162,6 @@ public class SNNew implements Serializable {
 
     public void setPoints(int points) {
         this.points = points;
-    }
-
-    public int getComments() {
-        return commentsCount;
-    }
-
-    public void setComments(int comments) {
-        this.commentsCount = comments;
     }
 
     @Override

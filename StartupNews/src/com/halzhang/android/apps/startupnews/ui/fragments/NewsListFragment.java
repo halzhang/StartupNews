@@ -9,6 +9,7 @@ import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
 import com.halzhang.android.apps.startupnews.ui.BrowseActivity;
+import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
 import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -23,9 +24,13 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -70,6 +75,7 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        registerForContextMenu(getListView());
         setListAdapter(mAdapter);
         if (mNewsTask == null && mAdapter.isEmpty()) {
             mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
@@ -85,6 +91,30 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        int position = ((AdapterContextMenuInfo) item.getMenuInfo()).position;
+        SNNew snNew = (SNNew) mAdapter.getItem(position - 1);
+        switch (item.getItemId()) {
+            case R.id.menu_show_comment:
+                Intent intent = new Intent(getActivity(), DiscussActivity.class);
+                intent.putExtra(DiscussActivity.ARG_SNNEW, snNew);
+                startActivity(intent);
+                break;
+            case R.id.menu_show_article:
+                openArticle(snNew);
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     @Override
@@ -115,17 +145,25 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
+        openArticle(entity);
+    }
+
+    private void openArticle(SNNew snNew) {
+        if (snNew == null) {
+            return;
+        }
         Intent intent = null;
         if (PreferenceUtils.isUseInnerBrowse(getActivity())) {
             intent = new Intent(getActivity(), BrowseActivity.class);
-            intent.putExtra(BrowseActivity.EXTRA_URL, entity.getUrl());
-            intent.putExtra(BrowseActivity.EXTRA_TITLE, entity.getTitle());
+            intent.putExtra(BrowseActivity.EXTRA_URL, snNew.getUrl());
+            intent.putExtra(BrowseActivity.EXTRA_TITLE, snNew.getTitle());
         } else {
             intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(PreferenceUtils.getHtmlProvider(getActivity())
-                    + entity.getUrl()));
+                    + snNew.getUrl()));
         }
         startActivity(intent);
+
     }
 
     private class NewsTask extends AsyncTask<String, Void, Boolean> {
