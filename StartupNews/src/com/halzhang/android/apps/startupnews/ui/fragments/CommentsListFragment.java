@@ -8,12 +8,14 @@ import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNComments;
 import com.halzhang.android.apps.startupnews.parser.SNCommentsParser;
+import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +79,14 @@ public class CommentsListFragment extends AbsBaseListFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        SNComment comment = mSnComments.getSnComments().get(position - 1);
+        Intent intent = new Intent(getActivity(), DiscussActivity.class);
+        intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, comment.getDiscussURL());
+        startActivity(intent);
     }
 
     @Override

@@ -50,9 +50,9 @@ public class SNCommentsParserV1 extends BaseHTMLParser<SNComments> {
                 String title = as.get(3).text();
                 comment = new SNComment();
                 comment.setUser(user);
-                comment.setLink(resolveRelativeSNURL(link));
-                comment.setParent(resolveRelativeSNURL(parent));
-                comment.setDiscuss(resolveRelativeSNURL(discuss));
+                comment.setLinkURL(resolveRelativeSNURL(link));
+                comment.setParentURL(resolveRelativeSNURL(parent));
+                comment.setDiscussURL(resolveRelativeSNURL(discuss));
                 comment.setText(commentText);
                 comment.setArtistTitle(title);
                 comments.addComment(comment);

@@ -8,17 +8,15 @@ import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
-import com.halzhang.android.apps.startupnews.ui.BrowseActivity;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
+import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
-import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -108,7 +106,7 @@ public class NewsListFragment extends AbsBaseListFragment {
                 openDiscuss(snNew);
                 break;
             case R.id.menu_show_article:
-                openArticle(snNew);
+                ActivityUtils.openArticle(getActivity(), snNew);
                 break;
             default:
                 break;
@@ -144,34 +142,21 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
-        if(entity.isDiscuss()){
-            //对于讨论贴，默认打开是查看评论
+        if (entity.isDiscuss()) {
+            // 对于讨论贴，默认打开是查看评论
             openDiscuss(entity);
-        }else{
-            openArticle(entity);
-        }
-    }
-
-    private void openArticle(SNNew snNew) {
-        if (snNew == null) {
-            return;
-        }
-        Intent intent = null;
-        if (PreferenceUtils.isUseInnerBrowse(getActivity())) {
-            intent = new Intent(getActivity(), BrowseActivity.class);
-            intent.putExtra(BrowseActivity.EXTRA_URL, snNew.getUrl());
-            intent.putExtra(BrowseActivity.EXTRA_TITLE, snNew.getTitle());
         } else {
-            intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(PreferenceUtils.getHtmlProvider(getActivity())
-                    + snNew.getUrl()));
+            ActivityUtils.openArticle(getActivity(), entity);
         }
-        startActivity(intent);
     }
 
     private void openDiscuss(SNNew snNew) {
+        if(snNew == null){
+            return;
+        }
         Intent intent = new Intent(getActivity(), DiscussActivity.class);
         intent.putExtra(DiscussActivity.ARG_SNNEW, snNew);
+        intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, snNew.getDiscussURL());
         startActivity(intent);
     }
 

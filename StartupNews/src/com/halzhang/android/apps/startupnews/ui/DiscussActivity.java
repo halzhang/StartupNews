@@ -13,6 +13,7 @@ import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNDiscussParser;
+import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -74,8 +75,8 @@ public class DiscussActivity extends SherlockListActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mSnDiscuss = new SNDiscuss();
         SNNew snNew = (SNNew) getIntent().getSerializableExtra(ARG_SNNEW);
+        mDiscussURL = getIntent().getStringExtra(ARG_DISCUSS_URL);
         mSnDiscuss.setSnNew(snNew);
-        mDiscussURL = snNew.getDiscussURL();
         mAdapter = new DiscussCommentAdapter();
         View view = getLayoutInflater().inflate(R.layout.discuss_header_view, null);
         mTitle = (TextView) view.findViewById(R.id.discuss_news_title);
@@ -104,6 +105,14 @@ public class DiscussActivity extends SherlockListActivity {
         mOptionsMenu = menu;
         getSupportMenuInflater().inflate(R.menu.activity_discuss, menu);
         return true;
+    }
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        if(position == 0){
+            //查看文章
+            ActivityUtils.openArticle(this, mSnDiscuss.getSnNew());
+        }
     }
 
     private void wrapHeaderView(SNNew snNew) {
@@ -185,7 +194,7 @@ public class DiscussActivity extends SherlockListActivity {
             } else {
                 Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
             }
-//            mListView.getEmptyView().setVisibility(View.GONE);
+            // mListView.getEmptyView().setVisibility(View.GONE);
             mDiscussTask = null;
             super.onPostExecute(result);
         }
@@ -222,9 +231,12 @@ public class DiscussActivity extends SherlockListActivity {
                 holder = new ViewHolder();
                 convertView = LayoutInflater.from(DiscussActivity.this).inflate(
                         R.layout.discuss_comment_item, null);
-                holder.mUserId = (TextView) convertView.findViewById(R.id.discuss_comment_item_user_id);
-                holder.mCreated = (TextView) convertView.findViewById(R.id.discuss_comment_item_created);
-                holder.mCommentText = (TextView) convertView.findViewById(R.id.discuss_comment_item_text);
+                holder.mUserId = (TextView) convertView
+                        .findViewById(R.id.discuss_comment_item_user_id);
+                holder.mCreated = (TextView) convertView
+                        .findViewById(R.id.discuss_comment_item_created);
+                holder.mCommentText = (TextView) convertView
+                        .findViewById(R.id.discuss_comment_item_text);
                 holder.mArtistTitle = (TextView) convertView
                         .findViewById(R.id.discuss_comment_item_artist_titile);
                 convertView.setTag(holder);

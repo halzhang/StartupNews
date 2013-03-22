@@ -108,7 +108,7 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
                 SNUser user = new SNUser();
                 user.setId(aElements.first().text());
                 comment.setUser(user);
-                comment.setLink(resolveRelativeSNURL(aElements.last().attr("href")));
+                comment.setLinkURL(resolveRelativeSNURL(aElements.last().attr("href")));
                 comment.setText(rowElement.select("tr > td:eq(2) > span").first().text());
                 comment.setReplayURL(resolveRelativeSNURL(rowElement.select("tr > td:eq(2) a[href^=reply]")
                         .first().attr("href")));

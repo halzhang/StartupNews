@@ -29,7 +29,7 @@
         android:layout_marginLeft="5dip"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginRight="5dip"
-        android:text="gfdfgfsdffffffffffffffffffffffffffffffffffffffff"
+        android:visibility="gone"
         android:background="@drawable/bg_discuss_article" />
 
 </LinearLayout>

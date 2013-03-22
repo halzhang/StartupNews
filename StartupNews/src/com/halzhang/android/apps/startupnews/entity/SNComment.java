@@ -56,28 +56,28 @@ public class SNComment implements Serializable {
         this.replayURL = replayURL;
     }
 
-    public String getLink() {
+    public String getLinkURL() {
         return linkURL;
     }
 
-    public void setLink(String link) {
-        this.linkURL = link;
+    public void setLinkURL(String linkURL) {
+        this.linkURL = linkURL;
     }
 
-    public String getParent() {
+    public String getParentURL() {
         return parentURL;
     }
 
-    public void setParent(String parent) {
-        this.parentURL = parent;
+    public void setParentURL(String parentURL) {
+        this.parentURL = parentURL;
     }
 
-    public String getDiscuss() {
+    public String getDiscussURL() {
         return discussURL;
     }
 
-    public void setDiscuss(String discuss) {
-        this.discussURL = discuss;
+    public void setDiscussURL(String discussURL) {
+        this.discussURL = discussURL;
     }
 
     public String getText() {

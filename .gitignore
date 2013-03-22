@@ -22,3 +22,4 @@ local.properties
 #build
 ant.properties
 *.keystore
+res_bak.zip
