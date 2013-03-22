@@ -101,12 +101,11 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         int position = ((AdapterContextMenuInfo) item.getMenuInfo()).position;
-        SNNew snNew = (SNNew) mAdapter.getItem(position - 1);
+        final SNNew snNew = (SNNew) mAdapter.getItem(position - 1);
+        Log.i(LOG_TAG, snNew.toString());
         switch (item.getItemId()) {
             case R.id.menu_show_comment:
-                Intent intent = new Intent(getActivity(), DiscussActivity.class);
-                intent.putExtra(DiscussActivity.ARG_SNNEW, snNew);
-                startActivity(intent);
+                openDiscuss(snNew);
                 break;
             case R.id.menu_show_article:
                 openArticle(snNew);
@@ -145,7 +144,12 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
-        openArticle(entity);
+        if(entity.isDiscuss()){
+            //对于讨论贴，默认打开是查看评论
+            openDiscuss(entity);
+        }else{
+            openArticle(entity);
+        }
     }
 
     private void openArticle(SNNew snNew) {
@@ -163,7 +167,12 @@ public class NewsListFragment extends AbsBaseListFragment {
                     + snNew.getUrl()));
         }
         startActivity(intent);
+    }
 
+    private void openDiscuss(SNNew snNew) {
+        Intent intent = new Intent(getActivity(), DiscussActivity.class);
+        intent.putExtra(DiscussActivity.ARG_SNNEW, snNew);
+        startActivity(intent);
     }
 
     private class NewsTask extends AsyncTask<String, Void, Boolean> {

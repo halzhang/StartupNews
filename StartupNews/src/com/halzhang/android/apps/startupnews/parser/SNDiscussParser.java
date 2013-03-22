@@ -13,6 +13,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.util.Log;
+
 /**
  * StartupNews
  * <p>
@@ -22,6 +24,7 @@ import org.jsoup.select.Elements;
  * @version Mar 19, 2013
  */
 public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
+    private static final String LOG_TAG = SNDiscussParser.class.getSimpleName();
 
     @Override
     public SNDiscuss parseDocument(Document doc) throws Exception {
@@ -30,20 +33,24 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
             return discuss;
         }
         // news
-        Elements tableRows = doc.select("table tr table");
-        if (tableRows != null && tableRows.size() > 1) {
+        Elements tableElements = doc.select("table tr table");
+        if (tableElements != null && tableElements.size() > 1) {
             String voteURL = null;
             String title = null;
             String url = null;
             String urlDomain = null;
             String subText = null;
+            boolean isDiscuss = false;
             SNUser user = null;
             int points = 0;
             int commentsCount = 0;
             String postID = null;
             String discussURL = null;
-            Element newsTableElement = tableRows.get(1);
+            String text = null;
+            String fnid = null;
+            Element newsTableElement = tableElements.get(1);
             Elements trElements = newsTableElement.getElementsByTag("tr");
+            isDiscuss = trElements.size() > 4;// 讨论帖的有6个tr
             Element titleTrElement = trElements.get(0);
             Element voteElement = titleTrElement.select("tr > td:eq(0) a").first();
             if (voteElement != null) {
@@ -74,19 +81,23 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
             } else {
                 commentsCount = BaseHTMLParser.UNDEFINED;
             }
-
-            discuss.setSnNew(new SNNew(url, title, urlDomain, voteURL, points, commentsCount,
-                    subText, discussURL, user, postID));
-
-            String fnid = trElements.get(3).getElementsByTag("input").first().attr("value");
+            if (isDiscuss) {
+                text = trElements.get(3).text();
+                fnid = trElements.get(5).getElementsByTag("input").first().attr("value");
+            } else {
+                fnid = trElements.get(3).getElementsByTag("input").first().attr("value");
+            }
             discuss.setFnid(fnid);
+            discuss.setSnNew(new SNNew(url, title, urlDomain, voteURL, points, commentsCount,
+                    subText, discussURL, user, postID, isDiscuss, text));
 
         }
-        tableRows = doc.select("table tr table tr table tr");
+        Elements tableRows = doc.select("table tr table tr table tr");
         if (tableRows != null && tableRows.size() > 0) {
             Element rowElement = null;
             SNComment comment = null;
             for (int row = 0; row < tableRows.size(); row++) {
+                Log.i(LOG_TAG, "ROW: " + row);
                 comment = new SNComment();
                 rowElement = tableRows.get(row);
                 Element voteAElement = rowElement.select("tr > td:eq(1) a").first();
@@ -99,7 +110,7 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
                 comment.setUser(user);
                 comment.setLink(resolveRelativeSNURL(aElements.last().attr("href")));
                 comment.setText(rowElement.select("tr > td:eq(2) > span").first().text());
-                comment.setReplayURL(resolveRelativeSNURL(rowElement.select("tr > td:eq(2) > p a")
+                comment.setReplayURL(resolveRelativeSNURL(rowElement.select("tr > td:eq(2) a[href^=reply]")
                         .first().attr("href")));
                 discuss.getComments().add(comment);
             }

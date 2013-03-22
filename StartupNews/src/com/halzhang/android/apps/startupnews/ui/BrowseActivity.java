@@ -60,7 +60,7 @@ public class BrowseActivity extends SherlockActivity {
 
     @Override
     protected void onCreate(Bundle arg0) {
-        setTheme(R.style.Theme_Sn_Light_DarkActionBar);// 注释掉，ShareActionProvider无法解析
+        setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);// 注释掉，ShareActionProvider无法解析
         super.onCreate(arg0);
         requestWindowFeature(Window.FEATURE_PROGRESS);
         setContentView(R.layout.activity_browse);

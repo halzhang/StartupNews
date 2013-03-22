@@ -63,6 +63,10 @@ public class SNDiscuss implements Serializable {
             mComments.add(comment);
         }
     }
+    
+    public void clearComments(){
+        mComments.clear();
+    }
 
     /**
      * 数据拷贝
@@ -73,6 +77,7 @@ public class SNDiscuss implements Serializable {
         if (discuss != null && discuss != this) {
             addComments(discuss.getComments());
             setFnid(discuss.getFnid());
+            setSnNew(discuss.getSnNew());
         }
     }
 

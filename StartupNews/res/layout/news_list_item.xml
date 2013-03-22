@@ -23,7 +23,7 @@
         android:layout_marginBottom="8dip"
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"
-        android:textColorLink="@color/pressed_sn"
+        android:textColorLink="@android:color/holo_blue_dark"
         />
 
 </LinearLayout>

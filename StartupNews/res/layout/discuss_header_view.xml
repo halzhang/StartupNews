@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/discuss_news_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_margin="5dip" />
+
+    <TextView
+        android:id="@+id/discuss_news_subtitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dip"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:textColorLink="@color/holo_blue_dark" />
+
+    <TextView
+        android:id="@+id/discuss_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dip"
+        android:layout_marginLeft="5dip"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginRight="5dip"
+        android:text="gfdfgfsdffffffffffffffffffffffffffffffffffffffff"
+        android:background="@drawable/bg_discuss_article" />
+
+</LinearLayout>

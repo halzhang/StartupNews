@@ -10,8 +10,7 @@
         android:id="@+id/titles"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/ab_solid_sn"
-        app:footerColor="@color/pressed_sn" />
+        android:background="@drawable/ab_solid_sn" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"

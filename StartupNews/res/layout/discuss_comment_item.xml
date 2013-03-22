@@ -5,7 +5,7 @@
     android:minHeight="?android:attr/listPreferredItemHeight" >
 
     <TextView
-        android:id="@+id/comment_item_user_id"
+        android:id="@+id/discuss_comment_item_user_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -17,7 +17,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/comment_item_created"
+        android:id="@+id/discuss_comment_item_created"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -27,19 +27,19 @@
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
-        android:id="@+id/comment_item_text"
+        android:id="@+id/discuss_comment_item_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/comment_item_user_id"
+        android:layout_below="@id/discuss_comment_item_user_id"
         android:layout_margin="5dip"
         android:text="的方式的放松放松东方时空恨死哈"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
-        android:id="@+id/comment_item_artist_titile"
+        android:id="@+id/discuss_comment_item_artist_titile"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/comment_item_text"
+        android:layout_below="@id/discuss_comment_item_text"
         android:layout_marginBottom="5dip"
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"

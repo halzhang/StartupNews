@@ -40,8 +40,12 @@ public class SNNew implements Serializable {
     private String discussURL;
 
     private SNUser user;
-    
+
     private String postID;
+
+    private boolean isDiscuss = false;// 是否是討論貼
+
+    private String text;// 讨论帖内容
 
     public SNNew() {
     }
@@ -50,14 +54,13 @@ public class SNNew implements Serializable {
         super();
         this.url = url;
         this.title = title;
-        this.urlDomain = urlDomain;
+        setUrlDomain(urlDomain);
         this.subText = subText;
     }
 
-
-
     public SNNew(String url, String title, String urlDomain, String voteURL, int points,
-            int commentsCount, String subText, String discussURL, SNUser user,String postID) {
+            int commentsCount, String subText, String discussURL, SNUser user, String postID,
+            boolean isDiscuss, String text) {
         super();
         this.url = url;
         this.title = title;
@@ -69,9 +72,41 @@ public class SNNew implements Serializable {
         this.discussURL = discussURL;
         this.user = user;
         this.postID = postID;
+        this.isDiscuss = isDiscuss;
+        this.text = text;
     }
 
+    public SNNew(String url, String title, String urlDomain, String voteURL, int points,
+            int commentsCount, String subText, String discussURL, SNUser user, String postID,
+            boolean isDiscuss) {
+        super();
+        this.url = url;
+        this.title = title;
+        this.urlDomain = urlDomain;
+        this.voteURL = voteURL;
+        this.points = points;
+        this.commentsCount = commentsCount;
+        this.subText = subText;
+        this.discussURL = discussURL;
+        this.user = user;
+        this.postID = postID;
+        this.isDiscuss = isDiscuss;
+    }
 
+    public SNNew(String url, String title, String urlDomain, String voteURL, int points,
+            int commentsCount, String subText, String discussURL, SNUser user, String postID) {
+        super();
+        this.url = url;
+        this.title = title;
+        setUrlDomain(urlDomain);
+        this.voteURL = voteURL;
+        this.points = points;
+        this.commentsCount = commentsCount;
+        this.subText = subText;
+        this.discussURL = discussURL;
+        this.user = user;
+        this.postID = postID;
+    }
 
     public String getUrl() {
         return url;
@@ -122,6 +157,8 @@ public class SNNew implements Serializable {
 
     public void setUrlDomain(String urlDomain) {
         this.urlDomain = urlDomain;
+        // news里面的讨论帖
+        this.isDiscuss = this.urlDomain != null && this.urlDomain.endsWith("dbanotes.net");
     }
 
     public String getVoteURL() {
@@ -164,12 +201,28 @@ public class SNNew implements Serializable {
         this.points = points;
     }
 
+    public boolean isDiscuss() {
+        return isDiscuss;
+    }
+
+    public void setDiscuss(boolean isDiscuss) {
+        this.isDiscuss = isDiscuss;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("URL: ").append(url).append(" Title: ").append(title).append(" SubText: ")
                 .append(subText).append(" Comhead: ").append(urlDomain).append(" DiscussURL: ")
-                .append(discussURL);
+                .append(discussURL).append(" isDiscuss: ").append(isDiscuss);
         return builder.toString();
     }
 

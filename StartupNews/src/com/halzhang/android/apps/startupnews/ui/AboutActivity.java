@@ -26,7 +26,7 @@ public class AboutActivity extends SherlockPreferenceActivity implements OnPrefe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.Theme_Sn);
+        setTheme(R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
 
         final ActionBar actionBar = getSupportActionBar();

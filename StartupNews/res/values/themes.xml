@@ -3,25 +3,11 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="@style/Theme.Sn.Light.DarkActionBar">
+    <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="AppBaseTheme" parent="android:Theme">
-        <item name="android:editTextStyle">@style/EditTextAppTheme</item>
-        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewAppTheme</item>
-        <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
-        <item name="android:radioButtonStyle">@style/RadioButtonAppTheme</item>
-        <item name="android:buttonStyle">@style/ButtonAppTheme</item>
-        <item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>
-        <item name="android:spinnerStyle">@style/SpinnerAppTheme</item>
-        <item name="android:dropDownSpinnerStyle">@style/SpinnerAppTheme.DropDown</item>
-        <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemAppTheme</item>
-        <item name="android:progressBarStyleHorizontal">@style/ProgressBarAppTheme</item>
-        <item name="android:seekBarStyle">@style/SeekBarAppTheme</item>
-        <item name="android:listViewStyle">@style/ListViewAppTheme</item>
-        <item name="android:listViewWhiteStyle">@style/ListViewAppTheme.White</item>
-        <item name="android:spinnerItemStyle">@style/SpinnerItemAppTheme</item>
+    <style name="AppBaseTheme" parent="@style/Theme.Sherlock.Light.DarkActionBar">
     </style>
 
 </resources>

@@ -19,7 +19,7 @@ public class BaseFragmentActivity extends SherlockFragmentActivity {
     
     @Override
     protected void onCreate(Bundle arg0) {
-        setTheme(R.style.Theme_Sn_Light_DarkActionBar);
+        setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
         super.onCreate(arg0);
     }
 

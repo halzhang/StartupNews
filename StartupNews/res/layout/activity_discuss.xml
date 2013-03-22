@@ -3,13 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+  <!--   
+    <include layout="@layout/discuss_header_view"/> -->
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:dividerHeight="1dip"
+        android:divider="@android:color/holo_blue_dark"
+        android:headerDividersEnabled="true" />
 
-    <LinearLayout
+   <!--  <LinearLayout
         android:id="@android:id/empty"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -26,6 +32,6 @@
             android:layout_height="wrap_content"
             android:text="@string/tip_loading"
             android:textSize="12sp" />
-    </LinearLayout>
+    </LinearLayout> -->
 
 </LinearLayout>
