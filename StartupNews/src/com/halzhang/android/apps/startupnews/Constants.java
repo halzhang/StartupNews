@@ -1,7 +1,6 @@
 package com.halzhang.android.apps.startupnews;
 /**
- * WoPlus<br/>
- * Constants used by WoPlus application
+ * Constants used by StartupNews application
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Jan 16, 2013 11:46:03 AM
  */
