@@ -13,7 +13,7 @@
         android:layout_marginTop="5dip"
         android:text="Fenng"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@android:color/holo_blue_dark"
+        android:textColor="@color/holo_blue_dark"
         android:textStyle="bold" />
 
     <TextView

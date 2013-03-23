@@ -55,6 +55,7 @@ public class SNFeedParser extends BaseHTMLParser<SNFeed> {
         String subText = null;
         SNUser user = null;
         String postID = null;
+        String createat = null;
         boolean endParse = false;
         for (int row = 0; row < tableRows.size(); row++) {
             int rowInPost = row % 3;
@@ -80,9 +81,9 @@ public class SNFeedParser extends BaseHTMLParser<SNFeed> {
                 case 1:
                     // 副标题
                     Element tdElement = rowElement.select("tr > td:eq(1)").first();
-                    subText = tdElement.html();
-                    points = getIntValueFollowedBySuffix(tdElement.select("td > span")
-                            .text(), " p");
+                    subText = tdElement.text();
+                    createat = getCreateAt(subText);
+                    points = getIntValueFollowedBySuffix(tdElement.select("td > span").text(), " p");
 
                     String author = tdElement.select("td > a[href*=user]").text();
                     user = new SNUser();
@@ -100,7 +101,7 @@ public class SNFeedParser extends BaseHTMLParser<SNFeed> {
                         commentsCount = BaseHTMLParser.UNDEFINED;
                     }
                     snNews.add(new SNNew(url, title, urlDomain, voteURL, points, commentsCount,
-                            subText, discussURL, user, postID));
+                            subText, discussURL, user, postID, createat));
                     break;
                 default:
                     break;

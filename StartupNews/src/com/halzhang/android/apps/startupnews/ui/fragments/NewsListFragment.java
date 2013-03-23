@@ -19,7 +19,6 @@ import org.jsoup.nodes.Document;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -151,7 +150,7 @@ public class NewsListFragment extends AbsBaseListFragment {
     }
 
     private void openDiscuss(SNNew snNew) {
-        if(snNew == null){
+        if (snNew == null) {
             return;
         }
         Intent intent = new Intent(getActivity(), DiscussActivity.class);
@@ -247,22 +246,35 @@ public class NewsListFragment extends AbsBaseListFragment {
                 holder = new ViewHolder();
                 convertView = LayoutInflater.from(getActivity()).inflate(R.layout.news_list_item,
                         null);
-                holder.mText1 = (TextView) convertView.findViewById(android.R.id.text1);
-                holder.mText2 = (TextView) convertView.findViewById(android.R.id.text2);
+                holder.user = (TextView) convertView.findViewById(R.id.news_item_user);
+                holder.createat = (TextView) convertView.findViewById(R.id.news_item_createat);
+                holder.title = (TextView) convertView.findViewById(R.id.news_item_title);
+                holder.subText = (TextView) convertView.findViewById(R.id.news_item_subtext);
+                holder.domain = (TextView) convertView.findViewById(R.id.news_item_domain);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
             SNNew entity = mSnFeed.getSnNews().get(position);
-            holder.mText1.setText(entity.getTitle());
-            holder.mText2.setText(Html.fromHtml(entity.getSubText()));
+            holder.user.setText(entity.getUser().getId());
+            holder.title.setText(entity.getTitle());
+            holder.subText.setText(getString(R.string.news_subtext, entity.getPoints(),
+                    entity.getCommentsCount()));
+            holder.createat.setText(entity.getCreateat());
+            holder.domain.setText(entity.getUrlDomain());
             return convertView;
         }
 
         class ViewHolder {
-            TextView mText1;
+            TextView user;
 
-            TextView mText2;
+            TextView createat;
+
+            TextView title;
+
+            TextView subText;
+
+            TextView domain;
         }
 
     }

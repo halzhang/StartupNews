@@ -210,7 +210,6 @@ public class CommentsListFragment extends AbsBaseListFragment {
             holder.mUserId.setText(comment.getUser().getId());
             holder.mCreated.setText(comment.getCreated());
             holder.mCommentText.setText(comment.getText());
-            Log.i(LOG_TAG, comment.getArtistTitle());
             holder.mArtistTitle.setText(getString(R.string.comment_artist_title,
                     comment.getArtistTitle()));
             return convertView;

@@ -13,8 +13,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.util.Log;
-
 /**
  * StartupNews
  * <p>
@@ -24,6 +22,7 @@ import android.util.Log;
  * @version Mar 19, 2013
  */
 public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
+    @SuppressWarnings("unused")
     private static final String LOG_TAG = SNDiscussParser.class.getSimpleName();
 
     @Override
@@ -47,6 +46,7 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
             String postID = null;
             String discussURL = null;
             String text = null;
+            String createat = null;
             String fnid = null;
             Element newsTableElement = tableElements.get(1);
             Elements trElements = newsTableElement.getElementsByTag("tr");
@@ -65,6 +65,7 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
 
             Element subTextTdeElement = trElements.get(1).select("td.subtext").first();
             subText = subTextTdeElement.html();
+            createat = getCreateAt(subText);
             points = getIntValueFollowedBySuffix(subTextTdeElement.select("td > span").text(), " p");
 
             String author = subTextTdeElement.select("td > a[href*=user]").text();
@@ -89,7 +90,7 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
             }
             discuss.setFnid(fnid);
             discuss.setSnNew(new SNNew(url, title, urlDomain, voteURL, points, commentsCount,
-                    subText, discussURL, user, postID, isDiscuss, text));
+                    subText, discussURL, user, postID, isDiscuss, text, createat));
 
         }
         Elements tableRows = doc.select("table tr table tr table tr");
@@ -97,7 +98,6 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
             Element rowElement = null;
             SNComment comment = null;
             for (int row = 0; row < tableRows.size(); row++) {
-                Log.i(LOG_TAG, "ROW: " + row);
                 comment = new SNComment();
                 rowElement = tableRows.get(row);
                 Element voteAElement = rowElement.select("tr > td:eq(1) a").first();
@@ -110,8 +110,8 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
                 comment.setUser(user);
                 comment.setLinkURL(resolveRelativeSNURL(aElements.last().attr("href")));
                 comment.setText(rowElement.select("tr > td:eq(2) > span").first().text());
-                comment.setReplayURL(resolveRelativeSNURL(rowElement.select("tr > td:eq(2) a[href^=reply]")
-                        .first().attr("href")));
+                comment.setReplayURL(resolveRelativeSNURL(rowElement
+                        .select("tr > td:eq(2) a[href^=reply]").first().attr("href")));
                 discuss.getComments().add(comment);
             }
         }

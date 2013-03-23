@@ -10,7 +10,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_margin="5dip" />
+        android:layout_margin="5dip"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/discuss_news_subtitle"

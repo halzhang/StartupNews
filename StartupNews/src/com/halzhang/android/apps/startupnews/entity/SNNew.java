@@ -47,20 +47,14 @@ public class SNNew implements Serializable {
 
     private String text;// 讨论帖内容
 
-    public SNNew() {
-    }
+    private String createat;
 
-    public SNNew(String url, String title, String urlDomain, String subText) {
-        super();
-        this.url = url;
-        this.title = title;
-        setUrlDomain(urlDomain);
-        this.subText = subText;
+    public SNNew() {
     }
 
     public SNNew(String url, String title, String urlDomain, String voteURL, int points,
             int commentsCount, String subText, String discussURL, SNUser user, String postID,
-            boolean isDiscuss, String text) {
+            boolean isDiscuss, String text, String createat) {
         super();
         this.url = url;
         this.title = title;
@@ -74,30 +68,16 @@ public class SNNew implements Serializable {
         this.postID = postID;
         this.isDiscuss = isDiscuss;
         this.text = text;
+        this.createat = createat;
     }
 
     public SNNew(String url, String title, String urlDomain, String voteURL, int points,
             int commentsCount, String subText, String discussURL, SNUser user, String postID,
-            boolean isDiscuss) {
+            String createat) {
         super();
         this.url = url;
         this.title = title;
-        this.urlDomain = urlDomain;
-        this.voteURL = voteURL;
-        this.points = points;
-        this.commentsCount = commentsCount;
-        this.subText = subText;
-        this.discussURL = discussURL;
-        this.user = user;
-        this.postID = postID;
-        this.isDiscuss = isDiscuss;
-    }
-
-    public SNNew(String url, String title, String urlDomain, String voteURL, int points,
-            int commentsCount, String subText, String discussURL, SNUser user, String postID) {
-        super();
-        this.url = url;
-        this.title = title;
+        // this.urlDomain = urlDomain;
         setUrlDomain(urlDomain);
         this.voteURL = voteURL;
         this.points = points;
@@ -106,6 +86,7 @@ public class SNNew implements Serializable {
         this.discussURL = discussURL;
         this.user = user;
         this.postID = postID;
+        this.createat = createat;
     }
 
     public String getUrl() {
@@ -215,6 +196,14 @@ public class SNNew implements Serializable {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getCreateat() {
+        return createat;
+    }
+
+    public void setCreateat(String createat) {
+        this.createat = createat;
     }
 
     @Override

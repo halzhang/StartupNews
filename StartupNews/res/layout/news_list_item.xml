@@ -1,29 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="vertical" >
 
     <TextView
-        android:id="@android:id/text1"
-        android:layout_width="match_parent"
+        android:id="@+id/news_item_user"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dip"
-        android:layout_marginRight="5dip"
-        android:layout_marginTop="8dip"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:layout_margin="5dip"
+        android:lines="1"
+        android:text="halzhang"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/holo_blue_dark"
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@android:id/text2"
+        android:id="@+id/news_item_createat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_margin="5dip"
+        android:gravity="right"
+        android:lines="1"
+        android:text="1 hour age"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/news_item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@android:id/text1"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_marginBottom="8dip"
+        android:layout_below="@id/news_item_user"
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"
-        android:textColorLink="@android:color/holo_blue_dark"
-        />
+        android:text="Androodban"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+         />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/news_item_subtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/news_item_title"
+        android:layout_margin="5dip"
+        android:text="subtext"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColorLink="@color/holo_blue_dark" />
+
+    <TextView
+        android:id="@+id/news_item_domain"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/news_item_subtext"
+        android:layout_below="@id/news_item_title"
+        android:gravity="right"
+        android:layout_margin="5dip"
+        android:lines="1"
+        android:text="halahznddddddddddddddddddddddddddddddagcom"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</RelativeLayout>

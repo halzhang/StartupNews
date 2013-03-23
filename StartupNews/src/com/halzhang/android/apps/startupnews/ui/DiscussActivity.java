@@ -7,7 +7,6 @@ package com.halzhang.android.apps.startupnews.ui;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
@@ -69,7 +68,7 @@ public class DiscussActivity extends SherlockListActivity {
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
         setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        // requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_discuss);
         mListView = getListView();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -106,11 +105,11 @@ public class DiscussActivity extends SherlockListActivity {
         getSupportMenuInflater().inflate(R.menu.activity_discuss, menu);
         return true;
     }
-    
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        if(position == 0){
-            //查看文章
+        if (position == 0) {
+            // 查看文章
             ActivityUtils.openArticle(this, mSnDiscuss.getSnNew());
         }
     }

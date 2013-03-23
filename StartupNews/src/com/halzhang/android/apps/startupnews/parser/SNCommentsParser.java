@@ -60,8 +60,10 @@ public class SNCommentsParser extends BaseHTMLParser<SNComments> {
                     }
                     text = textElement.text();
                     user = new SNUser();
-
-                    Elements aElements = rowElement.select("tr > td:eq(1) > div > span > a");
+                    
+                    Element spanElement = rowElement.select("tr > td:eq(1) > div > span").first();
+                    created = getCreateAt(spanElement.text());
+                    Elements aElements = spanElement.select("span > a");
                     if (aElements != null && aElements.size() >= 4) {
                         int size = aElements.size();
                         Element anthorURLElement = aElements.first();

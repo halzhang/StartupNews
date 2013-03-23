@@ -10,8 +10,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.w3c.dom.Node;
 
+import android.text.TextUtils;
+
 import java.net.URI;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -26,6 +30,8 @@ import javax.xml.xpath.XPathConstants;
  * @version Mar 18, 2013
  */
 public abstract class BaseHTMLParser<T> {
+
+    public static final Pattern CREATEAT_PATTERN = Pattern.compile("\\d{1,2}\\s\\w+\\sago");
 
     public static final int UNDEFINED = -1;
 
@@ -95,19 +101,30 @@ public abstract class BaseHTMLParser<T> {
         }
         return null;
     }
-    
+
     public static String resolveRelativeSNURL(String url) {
         if (url == null)
             return null;
-        
+
         String hnurl = "http://news.dbanotes.net/";
-        
+
         if (url.startsWith("http") || url.startsWith("ftp")) {
             return url;
         } else if (url.startsWith("/"))
             return hnurl + url.substring(1);
         else
             return hnurl + url;
+    }
+
+    public String getCreateAt(String text) {
+        if (TextUtils.isEmpty(text)) {
+            return null;
+        }
+        Matcher matcher = CREATEAT_PATTERN.matcher(text);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return null;
     }
 
 }

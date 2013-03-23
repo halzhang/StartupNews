@@ -13,6 +13,7 @@
     
     <string name="host">http://news.dbanotes.net<xliff:g id="PATH">%1$s</xliff:g></string>
     <string name="comment_artist_title">on:<xliff:g id="TITLE">%1$s</xliff:g></string>
+    <string name="news_subtext"><xliff:g id="POINTS">%1$d</xliff:g> points · <xliff:g id="COMMENTS">%2$d</xliff:g> comments</string>
     
     <string name="error">哎呀，出错了!</string>
     <string name="working">开发中~~~</string>
