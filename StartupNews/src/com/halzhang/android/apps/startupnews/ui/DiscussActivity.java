@@ -102,6 +102,15 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mDiscussTask != null) {
+            mDiscussTask.cancel(true);
+            mDiscussTask = null;
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         mOptionsMenu = menu;
@@ -173,7 +182,7 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
                 mSnDiscuss.clearComments();
                 mSnDiscuss.copy(discuss);
             } catch (Exception e) {
-                //Log.e(LOG_TAG, "", e);
+                // Log.e(LOG_TAG, "", e);
                 EasyTracker.getTracker().sendException("DiscussTask", e, false);
                 return false;
             }
@@ -261,7 +270,8 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (position == 0) {
-            EasyTracker.getTracker().sendEvent("ui_action", "list_item_click", "discuss_activity_list_header_click", 0L);
+            EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
+                    "discuss_activity_list_header_click", 0L);
             // 查看文章
             ActivityUtils.openArticle(this, mSnDiscuss.getSnNew());
         }

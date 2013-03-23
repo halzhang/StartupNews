@@ -91,6 +91,10 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(mNewsTask != null){
+            mNewsTask.cancel(true);
+            mNewsTask = null;
+        }
     }
 
     @Override

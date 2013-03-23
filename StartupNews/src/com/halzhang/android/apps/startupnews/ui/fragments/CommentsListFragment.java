@@ -73,6 +73,10 @@ public class CommentsListFragment extends AbsBaseListFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if(mTask != null){
+            mTask.cancel(true);
+            mTask = null;
+        }
     }
 
     @Override
