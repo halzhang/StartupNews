@@ -4,6 +4,7 @@
 
 package com.halzhang.android.apps.startupnews.ui.fragments;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNComments;
@@ -27,8 +28,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.IOException;
 
 /**
  * StartupNews
@@ -83,6 +82,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
     
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
+        EasyTracker.getTracker().sendEvent("ui_action", "list_item_click", "comments_list_fragment_list_item_click", 0L);
         SNComment comment = mSnComments.getSnComments().get(position - 1);
         Intent intent = new Intent(getActivity(), DiscussActivity.class);
         intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, comment.getDiscussURL());
@@ -140,11 +140,9 @@ public class CommentsListFragment extends AbsBaseListFragment {
                 mSnComments.setMoreURL(comments.getMoreURL());
                 Log.i(LOG_TAG, "Take Time: " + (System.currentTimeMillis() - start));
                 return true;
-            } catch (IOException e) {
+            }  catch (Exception e) {
                 Log.e(LOG_TAG, "", e);
-                return false;
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "", e);
+                EasyTracker.getTracker().sendException("CommentsTask", e, false);
                 return false;
             }
         }

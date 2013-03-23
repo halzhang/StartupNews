@@ -4,7 +4,6 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.actionbarsherlock.widget.ShareActionProvider;
@@ -31,7 +30,7 @@ import android.widget.ProgressBar;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class BrowseActivity extends SherlockActivity {
+public class BrowseActivity extends BaseFragmentActivity {
 
     private static final String LOG_TAG = BrowseActivity.class.getSimpleName();
 

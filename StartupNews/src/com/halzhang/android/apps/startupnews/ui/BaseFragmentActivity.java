@@ -4,6 +4,7 @@
 package com.halzhang.android.apps.startupnews.ui;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 
 import android.os.Bundle;
@@ -21,6 +22,18 @@ public class BaseFragmentActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle arg0) {
         setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
         super.onCreate(arg0);
+    }
+    
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EasyTracker.getInstance().activityStart(this);
+    }
+    
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EasyTracker.getInstance().activityStop(this);
     }
 
 }

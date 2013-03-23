@@ -6,6 +6,7 @@ package com.halzhang.android.apps.startupnews.ui;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 
@@ -64,6 +65,18 @@ public class AboutActivity extends SherlockPreferenceActivity implements OnPrefe
                     .findIndexOfValue((String) newValue)]);
         }
         return true;
+    }
+    
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EasyTracker.getInstance().activityStart(this);
+    }
+    
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EasyTracker.getInstance().activityStop(this);
     }
 
 }

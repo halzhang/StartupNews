@@ -1,5 +1,4 @@
 # built application files
-*.apk
 *.ap_
 
 # files for the dex VM
@@ -23,3 +22,4 @@ local.properties
 ant.properties
 *.keystore
 res_bak.zip
+StartupNews/res/values/analytics.xml

@@ -3,7 +3,7 @@
  */
 package com.halzhang.android.apps.startupnews;
 
-import com.halzhang.android.apps.startupnews.utils.CrashHandler;
+import com.google.analytics.tracking.android.EasyTracker;
 
 import android.app.Application;
 
@@ -20,7 +20,8 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        CrashHandler.getInstance().init(this);
+        EasyTracker.getInstance().setContext(this);
+       //CrashHandler.getInstance().init(this);
     }
 
 }

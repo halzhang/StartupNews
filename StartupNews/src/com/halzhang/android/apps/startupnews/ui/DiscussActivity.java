@@ -4,9 +4,9 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
@@ -24,6 +24,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,7 +40,7 @@ import android.widget.Toast;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 17, 2013
  */
-public class DiscussActivity extends SherlockListActivity {
+public class DiscussActivity extends BaseFragmentActivity implements OnItemClickListener {
 
     private static final String LOG_TAG = DiscussActivity.class.getSimpleName();
 
@@ -70,7 +72,8 @@ public class DiscussActivity extends SherlockListActivity {
         setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
         // requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_discuss);
-        mListView = getListView();
+        mListView = (ListView) findViewById(android.R.id.list);
+        mListView.setOnItemClickListener(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mSnDiscuss = new SNDiscuss();
         SNNew snNew = (SNNew) getIntent().getSerializableExtra(ARG_SNNEW);
@@ -104,14 +107,6 @@ public class DiscussActivity extends SherlockListActivity {
         mOptionsMenu = menu;
         getSupportMenuInflater().inflate(R.menu.activity_discuss, menu);
         return true;
-    }
-
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        if (position == 0) {
-            // 查看文章
-            ActivityUtils.openArticle(this, mSnDiscuss.getSnNew());
-        }
     }
 
     private void wrapHeaderView(SNNew snNew) {
@@ -178,7 +173,8 @@ public class DiscussActivity extends SherlockListActivity {
                 mSnDiscuss.clearComments();
                 mSnDiscuss.copy(discuss);
             } catch (Exception e) {
-                Log.e(LOG_TAG, "", e);
+                //Log.e(LOG_TAG, "", e);
+                EasyTracker.getTracker().sendException("DiscussTask", e, false);
                 return false;
             }
             return true;
@@ -260,6 +256,15 @@ public class DiscussActivity extends SherlockListActivity {
             TextView mArtistTitle;
         }
 
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (position == 0) {
+            EasyTracker.getTracker().sendEvent("ui_action", "list_item_click", "discuss_activity_list_header_click", 0L);
+            // 查看文章
+            ActivityUtils.openArticle(this, mSnDiscuss.getSnNew());
+        }
     }
 
 }

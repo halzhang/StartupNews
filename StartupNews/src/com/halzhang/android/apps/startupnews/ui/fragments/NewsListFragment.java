@@ -4,6 +4,7 @@
 
 package com.halzhang.android.apps.startupnews.ui.fragments;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
@@ -34,8 +35,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.IOException;
 
 /**
  * StartupNews
@@ -144,6 +143,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
+        EasyTracker.getTracker().sendEvent("ui_action", "list_item_click", "news_list_fragment_list_item_click", 0L);
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
         ActivityUtils.openArticle(getActivity(), entity);
         // if (entity.isDiscuss()) {
@@ -188,11 +188,9 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                 mSnFeed.addNews(feed.getSnNews());
                 mSnFeed.setMoreUrl(feed.getMoreUrl());
                 return true;
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "", e);
-                return false;
             } catch (Exception e) {
-                Log.e(LOG_TAG, "", e);
+                // Log.e(LOG_TAG, "", e);
+                EasyTracker.getTracker().sendException("NewsTask", e, false);
                 return false;
             }
 
@@ -286,6 +284,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        EasyTracker.getTracker().sendEvent("ui_action", "list_item_long_click", "news_list_fragment_list_item_long_click", 0L);
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
         openDiscuss(entity);
         return true;
