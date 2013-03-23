@@ -56,7 +56,7 @@ public class MainActivity extends BaseFragmentActivity {
                         .append(AppUtils.getVersionName(getApplicationContext())).append("反馈");
                 it.putExtra(Intent.EXTRA_SUBJECT, builder.toString());
                 it.setType("message/rfc822");
-                startActivity(Intent.createChooser(it, "StartupNews反馈"));
+                startActivity(it);
                 break;
 
             default:
