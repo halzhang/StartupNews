@@ -27,7 +27,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,7 +45,7 @@ import java.io.IOException;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class NewsListFragment extends AbsBaseListFragment {
+public class NewsListFragment extends AbsBaseListFragment implements OnItemLongClickListener {
 
     private static final String LOG_TAG = NewsListFragment.class.getSimpleName();
 
@@ -72,11 +74,13 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        registerForContextMenu(getListView());
+        getListView().setOnItemLongClickListener(this);
+        // registerForContextMenu(getListView());
         setListAdapter(mAdapter);
         if (mNewsTask == null && mAdapter.isEmpty()) {
             mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
             mNewsTask.execute(mNewsURL);
+            getPullToRefreshListView().setRefreshing(true);
         }
     }
 
@@ -141,12 +145,13 @@ public class NewsListFragment extends AbsBaseListFragment {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
-        if (entity.isDiscuss()) {
-            // 对于讨论贴，默认打开是查看评论
-            openDiscuss(entity);
-        } else {
-            ActivityUtils.openArticle(getActivity(), entity);
-        }
+        ActivityUtils.openArticle(getActivity(), entity);
+        // if (entity.isDiscuss()) {
+        // // 对于讨论贴，默认打开是查看评论
+        // openDiscuss(entity);
+        // } else {
+        // ActivityUtils.openArticle(getActivity(), entity);
+        // }
     }
 
     private void openDiscuss(SNNew snNew) {
@@ -277,6 +282,13 @@ public class NewsListFragment extends AbsBaseListFragment {
             TextView domain;
         }
 
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        SNNew entity = (SNNew) mAdapter.getItem(position - 1);
+        openDiscuss(entity);
+        return true;
     }
 
 }

@@ -105,6 +105,9 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
                     comment.setVoteURL(resolveRelativeSNURL(voteAElement.attr("href")));
                 }
                 Elements aElements = rowElement.select("tr > td:eq(2) a");
+                if(aElements == null || aElements.size() < 1){
+                    continue;
+                }
                 SNUser user = new SNUser();
                 user.setId(aElements.first().text());
                 comment.setUser(user);

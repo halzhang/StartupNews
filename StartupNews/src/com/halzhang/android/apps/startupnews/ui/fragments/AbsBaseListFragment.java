@@ -58,7 +58,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
         mListView = mPullToRefreshListView.getRefreshableView();
         mListView.setOnItemClickListener(this);
         mListView.setOnScrollListener(this);
-        mEmptyView = view.findViewById(R.id.empty);
+        mEmptyView = view.findViewById(android.R.id.empty);
         // if(mEmptyView != null && mAdapter == null/*第一次初始化*/){
         // mPullToRefreshListView.setVisibility(View.INVISIBLE);
         // mEmptyView.setVisibility(View.VISIBLE);

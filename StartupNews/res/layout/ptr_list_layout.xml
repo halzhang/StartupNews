@@ -16,7 +16,7 @@
         android:headerDividersEnabled="false"
         android:smoothScrollbar="true"/>
     <LinearLayout 
-        android:id="@+id/empty"
+        android:id="@android:id/empty"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
