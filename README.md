@@ -1,7 +1,7 @@
 # [Startup News](http://news.dbanotes.net) Android App  
 [![Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews) 
 ![image](https://raw.github.com/halzhang/StartupNews/master/StartupNews/QR.jpg)
-[本地下载](http://github.com/halzhang/StartupNews/blob/master/release/StartupNews-release.apk)
+[本地下载](https://github.com/halzhang/StartupNews/raw/master/release/StartupNews-release.apk)
 支持系统
 ---
 Android 2.3以上
