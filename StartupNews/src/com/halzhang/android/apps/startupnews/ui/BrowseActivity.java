@@ -41,8 +41,6 @@ public class BrowseActivity extends BaseFragmentActivity {
 
     private ProgressBar mProgressBar;
 
-    private com.actionbarsherlock.widget.ShareActionProvider mShareActionProvider;
-
     private String mTitle;
 
     private String mUrl;
@@ -63,8 +61,6 @@ public class BrowseActivity extends BaseFragmentActivity {
         final com.actionbarsherlock.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        // setTitle(mTitle);
 
         mWebView.setWebChromeClient(new MyWebChromeClient());
         mWebView.setWebViewClient(new MyWebViewClient());
@@ -103,6 +99,7 @@ public class BrowseActivity extends BaseFragmentActivity {
         @Override
         public void onReceivedTitle(WebView view, String title) {
             super.onReceivedTitle(view, title);
+            setTitle(title);
         }
 
     }
