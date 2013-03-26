@@ -24,6 +24,10 @@
     <string name="menu_about">关于</string>
     <string name="menu_feedback">反馈</string>
     <string name="menu_refresh">刷新</string>
+    <string name="menu_back">后退</string>
+    <string name="menu_forward">前进</string>
+    <string name="menu_readabilily">阅读</string>
+    <string name="menu_website">用浏览器打开</string>
     <string name="menu_show_comment">查看评论</string>
     <string name="menu_show_article">查看原文</string>
     
@@ -55,6 +59,7 @@
     <string name="pref_summary_version">V<xliff:g id="VERSION_NAME">%1$s</xliff:g></string>
     
     <string-array name="html_provider_entries">
+        <item >Readabilily</item>
         <item >新浪</item>
         <item >百度</item>
         <item >Google</item>
@@ -62,13 +67,14 @@
         <item >原网页</item>
     </string-array>
     <string-array name="html_provider_entry_values">
+        <item >http://www.readability.com/m?url=</item>
         <item >http://weibo.cn/sinaurl?to=m&amp;u=</item>
         <item >http://gate.baidu.com/tc?from=opentc&amp;src=</item>
         <item >http://www.google.com/gwt/x?u=</item>
         <item >http://viewtext.org/article?url=</item>
         <item ></item>
     </string-array>
-    <string name="default_html_provider">http://weibo.cn/sinaurl?to=m&amp;u=</string>
+    <string name="default_html_provider"></string>
     
     <string name="tip_loading">加载中...</string>
     <string name="tip_last_page">亲，最后一页了...</string>

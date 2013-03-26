@@ -127,7 +127,5 @@ public class SNComment implements Serializable {
     public void setReplayURL(String replayURL) {
         this.replayURL = replayURL;
     }
-    
-    
 
 }

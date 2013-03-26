@@ -4,13 +4,12 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
-import com.actionbarsherlock.widget.ShareActionProvider;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,15 +32,6 @@ import android.widget.ProgressBar;
 public class BrowseActivity extends BaseFragmentActivity {
 
     private static final String LOG_TAG = BrowseActivity.class.getSimpleName();
-
-    // private static final String HTMLPROVIDER_PREFIX_VIEWTEXT =
-    // "http://viewtext.org/article?url=";
-    //
-    // private static final String HTMLPROVIDER_PREFIX_GOOGLE =
-    // "http://www.google.com/gwt/x?u=";
-    //
-    // private static final String HTMLPROVIDER_PREFIX_SINA =
-    // "http://weibo.cn/sinaurl?to=m&u=";
 
     public static final String EXTRA_URL = "extra_url";
 
@@ -120,22 +110,23 @@ public class BrowseActivity extends BaseFragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
         getSupportMenuInflater().inflate(R.menu.activity_browse, menu);
-        MenuItem actionItem = menu.findItem(R.id.menu_share);
-        mShareActionProvider = (ShareActionProvider) actionItem.getActionProvider();
-        mShareActionProvider
-                .setShareHistoryFileName(ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
-
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
-        StringBuilder builder = new StringBuilder();
-        builder.append(mTitle).append(" ").append(mUrl);
-        builder.append(" （")
-                .append("分享自StartupNews: ")
-                .append("http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews")
-                .append("）");
-        intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
-        mShareActionProvider.setShareIntent(intent);
+        // MenuItem actionItem = menu.findItem(R.id.menu_share);
+        // mShareActionProvider = (ShareActionProvider)
+        // actionItem.getActionProvider();
+        // mShareActionProvider
+        // .setShareHistoryFileName(ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
+        //
+        // Intent intent = new Intent(Intent.ACTION_SEND);
+        // intent.setType("text/plain");
+        // intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
+        // StringBuilder builder = new StringBuilder();
+        // builder.append(mTitle).append(" ").append(mUrl);
+        // builder.append(" （")
+        // .append("分享自StartupNews: ")
+        // .append("http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews")
+        // .append("）");
+        // intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
+        // mShareActionProvider.setShareIntent(intent);
         return true;
     }
 
@@ -144,12 +135,44 @@ public class BrowseActivity extends BaseFragmentActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
-                break;
+                return true;
+            case R.id.menu_back:
+                mWebView.goBack();
+                return true;
+            case R.id.menu_forward:
+                mWebView.goForward();
+                return true;
+            case R.id.menu_readability:
+                mWebView.loadUrl("http://www.readability.com/m?url=" + mUrl);
+                return true;
+            case R.id.menu_refresh:
+                mWebView.reload();
+                return true;
+            case R.id.menu_share: {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
+                StringBuilder builder = new StringBuilder();
+                builder.append(mTitle).append(" ").append(mUrl);
+                builder.append(" （")
+                        .append("分享自StartupNews: ")
+                        .append("http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews")
+                        .append("）");
+                intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
+                startActivity(Intent.createChooser(intent, "分享文章的方式:"));
+            }
+                return true;
+            case R.id.menu_website: {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(mUrl));
+                startActivity(intent);
+            }
+                return true;
 
             default:
                 break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
 }
