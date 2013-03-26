@@ -57,22 +57,29 @@ public class AboutActivity extends SherlockPreferenceActivity implements OnPrefe
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        if (preference instanceof ListPreference) {
+        final String key = preference.getKey();
+        if (getString(R.string.pref_key_html_provider).equals(key)) {
+            EasyTracker.getTracker().sendEvent("preference_change_action",
+                    "preference_change_html_provider", (String) newValue, 0L);
             ListPreference listPreference = (ListPreference) preference;
             preference.setSummary(listPreference.getEntries()[listPreference
                     .findIndexOfValue((String) newValue)]);
+        } else if (getString(R.string.pref_key_default_browse).equals(key)) {
+            EasyTracker.getTracker().sendEvent("preference_change_action",
+                    "preference_change_default_browse", String.valueOf(newValue), 0L);
         }
         return true;
     }
-    
+
     @Override
     protected void onStart() {
         super.onStart();
         EasyTracker.getInstance().activityStart(this);
     }
-    
+
     @Override
     protected void onStop() {
         super.onStop();

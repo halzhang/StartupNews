@@ -5,6 +5,7 @@
 package com.halzhang.android.apps.startupnews.ui;
 
 import com.actionbarsherlock.view.Window;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
 
@@ -140,12 +141,16 @@ public class BrowseActivity extends BaseFragmentActivity {
                 mWebView.goForward();
                 return true;
             case R.id.menu_readability:
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "browseactivity_menu_readability", 0L);
                 mWebView.loadUrl("http://www.readability.com/m?url=" + mUrl);
                 return true;
             case R.id.menu_refresh:
                 mWebView.reload();
                 return true;
             case R.id.menu_share: {
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "browseactivity_menu_share", 0L);
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
@@ -160,6 +165,8 @@ public class BrowseActivity extends BaseFragmentActivity {
             }
                 return true;
             case R.id.menu_website: {
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "browseactivity_menu_website", 0L);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(mUrl));
                 startActivity(intent);
