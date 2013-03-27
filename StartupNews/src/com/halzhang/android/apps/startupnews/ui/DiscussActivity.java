@@ -163,6 +163,8 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
                 finish();
                 return true;
             case R.id.menu_refresh:
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "discussactivity_menu_refresh", 0L);
                 loadData();
                 return true;
             default:

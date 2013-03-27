@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -120,9 +121,13 @@ public class BrowseActivity extends BaseFragmentActivity {
                 finish();
                 return true;
             case R.id.menu_back:
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "browseactivity_menu_back", 0L);
                 mWebView.goBack();
                 return true;
             case R.id.menu_forward:
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "browseactivity_menu_forward", 0L);
                 mWebView.goForward();
                 return true;
             case R.id.menu_readability:
@@ -163,6 +168,25 @@ public class BrowseActivity extends BaseFragmentActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK: {
+                if (mWebView != null && mWebView.canGoBack()) {
+                    EasyTracker.getTracker().sendEvent("ui_action", "key_down",
+                            "browseactivity_webview_goback", 0L);
+                    mWebView.goBack();
+                    return true;
+                }
+            }
+                break;
+
+            default:
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }

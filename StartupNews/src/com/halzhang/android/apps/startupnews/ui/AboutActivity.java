@@ -40,6 +40,9 @@ public class AboutActivity extends SherlockPreferenceActivity implements OnPrefe
         listPreference.setOnPreferenceChangeListener(this);
         listPreference.setSummary(listPreference.getEntry());
 
+        (findPreference(getString(R.string.pref_key_default_browse)))
+                .setOnPreferenceChangeListener(this);
+
         Preference versionPref = findPreference(getString(R.string.pref_key_version));
         versionPref.setSummary(getString(R.string.pref_summary_version,
                 AppUtils.getVersionName(getApplicationContext())));
@@ -63,13 +66,15 @@ public class AboutActivity extends SherlockPreferenceActivity implements OnPrefe
         final String key = preference.getKey();
         if (getString(R.string.pref_key_html_provider).equals(key)) {
             EasyTracker.getTracker().sendEvent("preference_change_action",
-                    "preference_change_html_provider", (String) newValue, 0L);
+                    "preference_change_html_provider",
+                    String.format("html_provider_%1$s", (String) newValue), 0L);
             ListPreference listPreference = (ListPreference) preference;
             preference.setSummary(listPreference.getEntries()[listPreference
                     .findIndexOfValue((String) newValue)]);
         } else if (getString(R.string.pref_key_default_browse).equals(key)) {
             EasyTracker.getTracker().sendEvent("preference_change_action",
-                    "preference_change_default_browse", String.valueOf(newValue), 0L);
+                    "preference_change_default_browse",
+                    String.format("default_browse_%1$s", String.valueOf(newValue)), 0L);
         }
         return true;
     }
