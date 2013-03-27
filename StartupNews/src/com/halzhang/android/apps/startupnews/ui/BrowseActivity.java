@@ -44,7 +44,9 @@ public class BrowseActivity extends BaseFragmentActivity {
 
     private String mTitle;
 
-    private String mUrl;
+    private String mOriginalUrl;
+
+    private String mHtmlProvider;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -56,7 +58,7 @@ public class BrowseActivity extends BaseFragmentActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
         mProgressBar.setMax(100);
         mProgressBar.setVisibility(View.GONE);
-        mUrl = getIntent().getStringExtra(EXTRA_URL);
+        mOriginalUrl = getIntent().getStringExtra(EXTRA_URL);
         mTitle = getIntent().getStringExtra(EXTRA_TITLE);
 
         final com.actionbarsherlock.app.ActionBar actionBar = getSupportActionBar();
@@ -74,9 +76,9 @@ public class BrowseActivity extends BaseFragmentActivity {
         }
         settings.setJavaScriptEnabled(true);
 
-        String mHtmlProvider = PreferenceUtils.getHtmlProvider(getApplicationContext());
-        final String url = mHtmlProvider + mUrl;
-        Log.i(LOG_TAG, url);
+        mHtmlProvider = PreferenceUtils.getHtmlProvider(getApplicationContext());
+        final String url = mHtmlProvider + mOriginalUrl;
+        Log.i(LOG_TAG, "Open Url: " + url);
         mWebView.loadUrl(url);
     }
 
@@ -108,23 +110,6 @@ public class BrowseActivity extends BaseFragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
         getSupportMenuInflater().inflate(R.menu.activity_browse, menu);
-        // MenuItem actionItem = menu.findItem(R.id.menu_share);
-        // mShareActionProvider = (ShareActionProvider)
-        // actionItem.getActionProvider();
-        // mShareActionProvider
-        // .setShareHistoryFileName(ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
-        //
-        // Intent intent = new Intent(Intent.ACTION_SEND);
-        // intent.setType("text/plain");
-        // intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
-        // StringBuilder builder = new StringBuilder();
-        // builder.append(mTitle).append(" ").append(mUrl);
-        // builder.append(" （")
-        // .append("分享自StartupNews: ")
-        // .append("http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews")
-        // .append("）");
-        // intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
-        // mShareActionProvider.setShareIntent(intent);
         return true;
     }
 
@@ -143,7 +128,7 @@ public class BrowseActivity extends BaseFragmentActivity {
             case R.id.menu_readability:
                 EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
                         "browseactivity_menu_readability", 0L);
-                mWebView.loadUrl("http://www.readability.com/m?url=" + mUrl);
+                mWebView.loadUrl("http://www.readability.com/m?url=" + mWebView.getUrl());
                 return true;
             case R.id.menu_refresh:
                 mWebView.reload();
@@ -155,7 +140,7 @@ public class BrowseActivity extends BaseFragmentActivity {
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
                 StringBuilder builder = new StringBuilder();
-                builder.append(mTitle).append(" ").append(mUrl);
+                builder.append(mTitle).append(" ").append(mOriginalUrl);
                 builder.append(" （")
                         .append("分享自StartupNews: ")
                         .append("http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews")
@@ -165,10 +150,11 @@ public class BrowseActivity extends BaseFragmentActivity {
             }
                 return true;
             case R.id.menu_website: {
+                // 打开原链接，还是转码的链接呢？
                 EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
                         "browseactivity_menu_website", 0L);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(mUrl));
+                intent.setData(Uri.parse(mWebView.getUrl()));
                 startActivity(intent);
             }
                 return true;

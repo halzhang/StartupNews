@@ -21,6 +21,6 @@ public abstract class Constants {
     /**
      * Crash log dir
      */
-    public static final String CRASH_LOG_DIR = "/crash";
+    public static final String CRASH_LOG_DIR = "/crash/";
     
 }
