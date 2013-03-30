@@ -3,7 +3,7 @@
 
     <string name="app_name">StartupNews</string>
     <string name="app_description">An Android Startup News Client!</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">Hello World!</string>
     
     <string-array name="section_titles">
         <item >NEWS</item>
