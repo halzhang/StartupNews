@@ -73,7 +73,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if(mTask != null){
+        if (mTask != null) {
             mTask.cancel(true);
             mTask = null;
         }
@@ -83,10 +83,11 @@ public class CommentsListFragment extends AbsBaseListFragment {
     public void onDestroy() {
         super.onDestroy();
     }
-    
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        EasyTracker.getTracker().sendEvent("ui_action", "list_item_click", "comments_list_fragment_list_item_click", 0L);
+        EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
+                "comments_list_fragment_list_item_click", 0L);
         SNComment comment = mSnComments.getSnComments().get(position - 1);
         Intent intent = new Intent(getActivity(), DiscussActivity.class);
         intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, comment.getDiscussURL());
@@ -96,6 +97,8 @@ public class CommentsListFragment extends AbsBaseListFragment {
     @Override
     protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
+        EasyTracker.getTracker().sendEvent("ui_action", "pull_down_list_view_refresh",
+                "comments_list_fragment_pull_down_list_view_refresh", 0L);
         if (mTask != null) {
             return;
         }
@@ -106,6 +109,8 @@ public class CommentsListFragment extends AbsBaseListFragment {
     @Override
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullUpListViewRefresh(refreshListView);
+        EasyTracker.getTracker().sendEvent("ui_action", "pull_up_list_view_refresh",
+                "comments_list_fragment_pull_up_list_view_refresh", 0L);
         if (mTask != null) {
             return;
         }
@@ -144,8 +149,8 @@ public class CommentsListFragment extends AbsBaseListFragment {
                 mSnComments.setMoreURL(comments.getMoreURL());
                 Log.i(LOG_TAG, "Take Time: " + (System.currentTimeMillis() - start));
                 return true;
-            }  catch (Exception e) {
-                Log.e(LOG_TAG, "", e);
+            } catch (Exception e) {
+                // Log.e(LOG_TAG, "", e);
                 EasyTracker.getTracker().sendException("CommentsTask", e, false);
                 return false;
             }

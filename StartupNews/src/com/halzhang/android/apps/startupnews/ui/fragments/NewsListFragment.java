@@ -123,6 +123,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
+        EasyTracker.getTracker().sendEvent("ui_action", "pull_down_list_view_refresh", "news_list_fragment_pull_down_list_view_refresh", 0L);
         if (mNewsTask != null) {
             return;
         }
@@ -133,6 +134,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
+        EasyTracker.getTracker().sendEvent("ui_action", "pull_up_list_view_refresh", "news_list_fragment_pull_up_list_view_refresh", 0L);
         if (mNewsTask != null) {
             return;
         }
@@ -193,7 +195,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                 mSnFeed.setMoreUrl(feed.getMoreUrl());
                 return true;
             } catch (Exception e) {
-                Log.e(LOG_TAG, "", e);
+                //Log.e(LOG_TAG, "", e);
                 EasyTracker.getTracker().sendException("NewsTask", e, false);
                 return false;
             }

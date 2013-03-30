@@ -25,7 +25,7 @@ public class AppUtils {
                     0);
             return info.versionName;
         } catch (NameNotFoundException e) {
-            return null;
+            return "";
         }
     }
 

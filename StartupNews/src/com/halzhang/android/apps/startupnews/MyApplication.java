@@ -22,7 +22,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         EasyTracker.getInstance().setContext(this);
-        EasyTracker.getTracker().setExceptionParser(new MyExceptionParser());
+        EasyTracker.getTracker().setExceptionParser(new MyExceptionParser(getApplicationContext()));
         //CrashHandler.getInstance().init(this);
     }
 
