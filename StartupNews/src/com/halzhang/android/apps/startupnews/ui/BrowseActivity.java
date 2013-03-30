@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -170,23 +169,23 @@ public class BrowseActivity extends BaseFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK: {
-                if (mWebView != null && mWebView.canGoBack()) {
-                    EasyTracker.getTracker().sendEvent("ui_action", "key_down",
-                            "browseactivity_webview_goback", 0L);
-                    mWebView.goBack();
-                    return true;
-                }
-            }
-                break;
-
-            default:
-                break;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+    // @Override
+    // public boolean onKeyDown(int keyCode, KeyEvent event) {
+    // switch (keyCode) {
+    // case KeyEvent.KEYCODE_BACK: {
+    // if (mWebView != null && mWebView.canGoBack()) {
+    // EasyTracker.getTracker().sendEvent("ui_action", "key_down",
+    // "browseactivity_webview_goback", 0L);
+    // mWebView.goBack();
+    // return true;
+    // }
+    // }
+    // break;
+    //
+    // default:
+    // break;
+    // }
+    // return super.onKeyDown(keyCode, event);
+    // }
 
 }

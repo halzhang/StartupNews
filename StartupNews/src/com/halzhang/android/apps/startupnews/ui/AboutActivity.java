@@ -18,6 +18,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 /**
  * StartupNews
  * <p>
+ * 设置
  * </p>
  * 
  * @author <a href="http://weibo.com/halzhang">Hal</a>
@@ -29,23 +30,17 @@ public class AboutActivity extends SherlockPreferenceActivity implements OnPrefe
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
-
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        super.onCreate(savedInstanceState);
-
         addPreferencesFromResource(R.xml.preferences);
         ListPreference listPreference = (ListPreference) findPreference(getString(R.string.pref_key_html_provider));
         listPreference.setOnPreferenceChangeListener(this);
         listPreference.setSummary(listPreference.getEntry());
-
         (findPreference(getString(R.string.pref_key_default_browse)))
                 .setOnPreferenceChangeListener(this);
-
         Preference versionPref = findPreference(getString(R.string.pref_key_version));
         versionPref.setSummary(getString(R.string.pref_summary_version,
                 AppUtils.getVersionName(getApplicationContext())));
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

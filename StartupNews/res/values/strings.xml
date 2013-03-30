@@ -16,6 +16,7 @@
     <string name="news_subtext"><xliff:g id="POINTS">%1$d</xliff:g> points · <xliff:g id="COMMENTS">%2$d</xliff:g> comments</string>
     
     <string name="error">哎呀，出错了!</string>
+    <string name="error_noemailapp">不好意思，你未安装邮件客户端，无法通过邮件反馈。您可以通过PC发送反馈邮件到【ghanguo@gmail.com】。非常感谢!</string>
     <string name="working">开发中~~~</string>
     
     <!-- menu string -->
