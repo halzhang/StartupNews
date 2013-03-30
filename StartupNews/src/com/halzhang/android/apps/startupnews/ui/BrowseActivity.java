@@ -13,13 +13,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 
 /**
  * StartupNews
@@ -40,8 +39,6 @@ public class BrowseActivity extends BaseFragmentActivity {
 
     private WebView mWebView;
 
-    private ProgressBar mProgressBar;
-
     private String mTitle;
 
     private String mOriginalUrl;
@@ -55,10 +52,11 @@ public class BrowseActivity extends BaseFragmentActivity {
         requestWindowFeature(Window.FEATURE_PROGRESS);
         setContentView(R.layout.activity_browse);
         mWebView = (WebView) findViewById(R.id.webview);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
-        mProgressBar.setMax(100);
-        mProgressBar.setVisibility(View.GONE);
         mOriginalUrl = getIntent().getStringExtra(EXTRA_URL);
+        if (TextUtils.isEmpty(mOriginalUrl)) {
+            finish();
+            return;
+        }
         mTitle = getIntent().getStringExtra(EXTRA_TITLE);
 
         final com.actionbarsherlock.app.ActionBar actionBar = getSupportActionBar();
@@ -71,10 +69,12 @@ public class BrowseActivity extends BaseFragmentActivity {
         WebSettings settings = mWebView.getSettings();
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             settings.setDisplayZoomControls(false);
         }
         settings.setJavaScriptEnabled(true);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
 
         mHtmlProvider = PreferenceUtils.getHtmlProvider(getApplicationContext());
         final String url = mHtmlProvider + mOriginalUrl;
@@ -158,7 +158,9 @@ public class BrowseActivity extends BaseFragmentActivity {
                 EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
                         "browseactivity_menu_website", 0L);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(mWebView.getUrl()));
+                final String currentUrl = mWebView.getUrl();
+                //防止currentUrl为null
+                intent.setData(Uri.parse(TextUtils.isEmpty(currentUrl) ? mOriginalUrl : currentUrl));
                 startActivity(intent);
             }
                 return true;
