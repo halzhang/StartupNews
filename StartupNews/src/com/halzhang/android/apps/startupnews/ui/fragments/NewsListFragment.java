@@ -193,7 +193,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                 mSnFeed.setMoreUrl(feed.getMoreUrl());
                 return true;
             } catch (Exception e) {
-                // Log.e(LOG_TAG, "", e);
+                Log.e(LOG_TAG, "", e);
                 EasyTracker.getTracker().sendException("NewsTask", e, false);
                 return false;
             }

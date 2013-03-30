@@ -5,7 +5,6 @@ package com.halzhang.android.apps.startupnews;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.analytics.MyExceptionParser;
-import com.halzhang.android.apps.startupnews.utils.CrashHandler;
 
 import android.app.Application;
 
@@ -24,7 +23,7 @@ public class MyApplication extends Application {
         super.onCreate();
         EasyTracker.getInstance().setContext(this);
         EasyTracker.getTracker().setExceptionParser(new MyExceptionParser());
-        CrashHandler.getInstance().init(this);
+        //CrashHandler.getInstance().init(this);
     }
 
 }

@@ -18,3 +18,9 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keep class org.jsoup.** { *; }
+-keep interface org.jsoup.** { *; }
+
+-keep class com.viewpagerindicator.*
+-keep interface com.viewpagerindicator.*
