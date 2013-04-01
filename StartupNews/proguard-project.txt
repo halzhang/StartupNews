@@ -21,6 +21,3 @@
 
 -keep class org.jsoup.** { *; }
 -keep interface org.jsoup.** { *; }
-
--keep class com.viewpagerindicator.*
--keep interface com.viewpagerindicator.*

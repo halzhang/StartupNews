@@ -58,7 +58,11 @@ public class SNDiscussParser extends BaseHTMLParser<SNDiscuss> {
             }
             Element titleAElement = titleTrElement.select("tr > td:eq(1) a").first();
             if (titleAElement != null) {
-                url = titleAElement.attr("href");
+                /*
+                 * fixed #5 issue “No Activity found to handle Intent { act=android.intent.action.VIEW dat=item?id=2901 }”
+                 * 由于没有对url进行处理，对于讨论帖的标题的a标签的href（item?id=2901）是无法直接打开的
+                 */
+                url = resolveRelativeSNURL(titleAElement.attr("href"));
                 urlDomain = getDomainName(url);
                 title = titleAElement.text();
             }

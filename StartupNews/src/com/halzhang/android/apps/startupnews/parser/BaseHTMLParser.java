@@ -53,19 +53,22 @@ public abstract class BaseHTMLParser<T> {
     }
 
     public static <T extends Object> T getSafe(List<T> list, int index) {
-        if (list.size() - 1 >= index)
+        if (list.size() - 1 >= index) {
             return list.get(index);
-        else
+        } else {
             return null;
+        }
     }
 
     public static String getFirstTextValueInElementChildren(Element element) {
-        if (element == null)
+        if (element == null) {
             return "";
-
-        for (org.jsoup.nodes.Node node : element.childNodes())
-            if (node instanceof TextNode)
+        }
+        for (org.jsoup.nodes.Node node : element.childNodes()) {
+            if (node instanceof TextNode) {
                 return ((TextNode) node).text();
+            }
+        }
         return "";
     }
 
@@ -103,17 +106,19 @@ public abstract class BaseHTMLParser<T> {
     }
 
     public static String resolveRelativeSNURL(String url) {
-        if (url == null)
+        if (TextUtils.isEmpty(url)) {
             return null;
+        }
 
         String hnurl = "http://news.dbanotes.net/";
 
         if (url.startsWith("http") || url.startsWith("ftp")) {
             return url;
-        } else if (url.startsWith("/"))
+        } else if (url.startsWith("/")) {
             return hnurl + url.substring(1);
-        else
+        } else {
             return hnurl + url;
+        }
     }
 
     public String getCreateAt(String text) {

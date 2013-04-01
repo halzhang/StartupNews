@@ -91,7 +91,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mNewsTask != null){
+        if (mNewsTask != null) {
             mNewsTask.cancel(true);
             mNewsTask = null;
         }
@@ -123,7 +123,8 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
-        EasyTracker.getTracker().sendEvent("ui_action", "pull_down_list_view_refresh", "news_list_fragment_pull_down_list_view_refresh", 0L);
+        EasyTracker.getTracker().sendEvent("ui_action", "pull_down_list_view_refresh",
+                "news_list_fragment_pull_down_list_view_refresh", 0L);
         if (mNewsTask != null) {
             return;
         }
@@ -134,7 +135,8 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
-        EasyTracker.getTracker().sendEvent("ui_action", "pull_up_list_view_refresh", "news_list_fragment_pull_up_list_view_refresh", 0L);
+        EasyTracker.getTracker().sendEvent("ui_action", "pull_up_list_view_refresh",
+                "news_list_fragment_pull_up_list_view_refresh", 0L);
         if (mNewsTask != null) {
             return;
         }
@@ -149,15 +151,10 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        EasyTracker.getTracker().sendEvent("ui_action", "list_item_click", "news_list_fragment_list_item_click", 0L);
+        EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
+                "news_list_fragment_list_item_click", 0L);
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
         ActivityUtils.openArticle(getActivity(), entity);
-        // if (entity.isDiscuss()) {
-        // // 对于讨论贴，默认打开是查看评论
-        // openDiscuss(entity);
-        // } else {
-        // ActivityUtils.openArticle(getActivity(), entity);
-        // }
     }
 
     private void openDiscuss(SNNew snNew) {
@@ -195,7 +192,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                 mSnFeed.setMoreUrl(feed.getMoreUrl());
                 return true;
             } catch (Exception e) {
-                //Log.e(LOG_TAG, "", e);
+                // Log.e(LOG_TAG, "", e);
                 EasyTracker.getTracker().sendException("NewsTask", e, false);
                 return false;
             }
@@ -290,7 +287,8 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        EasyTracker.getTracker().sendEvent("ui_action", "list_item_long_click", "news_list_fragment_list_item_long_click", 0L);
+        EasyTracker.getTracker().sendEvent("ui_action", "list_item_long_click",
+                "news_list_fragment_list_item_long_click", 0L);
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
         openDiscuss(entity);
         return true;
