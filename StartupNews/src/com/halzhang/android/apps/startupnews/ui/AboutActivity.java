@@ -26,6 +26,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
  */
 public class AboutActivity extends SherlockPreferenceActivity implements OnPreferenceChangeListener {
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.Theme_Sherlock);
