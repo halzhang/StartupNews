@@ -11,6 +11,7 @@
         <item >COMMENTS</item>
     </string-array>
     
+    <string name="google_play_url">http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews</string>
     <string name="host">http://news.dbanotes.net<xliff:g id="PATH">%1$s</xliff:g></string>
     <string name="comment_artist_title">on:<xliff:g id="TITLE">%1$s</xliff:g></string>
     <string name="news_subtext"><xliff:g id="POINTS">%1$d</xliff:g> points · <xliff:g id="COMMENTS">%2$d</xliff:g> comments</string>

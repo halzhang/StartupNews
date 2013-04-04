@@ -91,7 +91,7 @@ public class BrowseActivity extends BaseFragmentActivity {
             view.loadUrl(url);
             return true;
         }
-        
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
@@ -164,10 +164,8 @@ public class BrowseActivity extends BaseFragmentActivity {
                 intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
                 StringBuilder builder = new StringBuilder();
                 builder.append(mTitle).append(" ").append(mOriginalUrl);
-                builder.append(" （")
-                        .append("分享自StartupNews: ")
-                        .append("http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews")
-                        .append("）");
+                builder.append(" （").append("分享自StartupNews: ")
+                        .append(getString(R.string.google_play_url)).append("）");
                 intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
                 startActivity(Intent.createChooser(intent, "分享文章的方式:"));
             }
