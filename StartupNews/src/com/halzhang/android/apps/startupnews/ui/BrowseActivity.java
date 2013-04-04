@@ -10,6 +10,7 @@ import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,6 +43,8 @@ public class BrowseActivity extends BaseFragmentActivity {
     private String mTitle;
 
     private String mOriginalUrl;
+
+    private String mCurrentUrl;
 
     private String mHtmlProvider;
 
@@ -88,6 +91,22 @@ public class BrowseActivity extends BaseFragmentActivity {
             view.loadUrl(url);
             return true;
         }
+        
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            setCurrentUrl(url);
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            setCurrentUrl(url);
+        }
+    }
+
+    private void setCurrentUrl(String url) {
+        mCurrentUrl = url;
     }
 
     private class MyWebChromeClient extends WebChromeClient {
@@ -158,9 +177,8 @@ public class BrowseActivity extends BaseFragmentActivity {
                 EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
                         "browseactivity_menu_website", 0L);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                final String currentUrl = mWebView.getUrl();
-                //防止currentUrl为null
-                intent.setData(Uri.parse(TextUtils.isEmpty(currentUrl) ? mOriginalUrl : currentUrl));
+                intent.setData(Uri.parse(TextUtils.isEmpty(mCurrentUrl) ? mOriginalUrl
+                        : mCurrentUrl));
                 startActivity(intent);
             }
                 return true;
