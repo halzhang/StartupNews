@@ -151,7 +151,7 @@ public class BrowseActivity extends BaseFragmentActivity {
             case R.id.menu_readability:
                 EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
                         "browseactivity_menu_readability", 0L);
-                mWebView.loadUrl("http://www.readability.com/m?url=" + mWebView.getUrl());
+                mWebView.loadUrl("http://www.readability.com/m?url=" + getCurrentUrl());
                 return true;
             case R.id.menu_refresh:
                 mWebView.reload();
@@ -175,8 +175,7 @@ public class BrowseActivity extends BaseFragmentActivity {
                 EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
                         "browseactivity_menu_website", 0L);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(TextUtils.isEmpty(mCurrentUrl) ? mOriginalUrl
-                        : mCurrentUrl));
+                intent.setData(Uri.parse(getCurrentUrl()));
                 startActivity(intent);
             }
                 return true;
@@ -185,6 +184,10 @@ public class BrowseActivity extends BaseFragmentActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private String getCurrentUrl() {
+        return TextUtils.isEmpty(mCurrentUrl) ? mOriginalUrl : mCurrentUrl;
     }
 
     // @Override
