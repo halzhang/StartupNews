@@ -23,4 +23,9 @@ public abstract class Constants {
      */
     public static final String CRASH_LOG_DIR = "/crash/";
     
+    /**
+     * 历史记录保存文件名
+     */
+    public static final String HISTORY_FILE_NAME = "history.db";
+    
 }

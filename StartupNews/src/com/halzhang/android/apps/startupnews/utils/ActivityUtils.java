@@ -46,6 +46,7 @@ public class ActivityUtils {
             intent.setData(Uri.parse(PreferenceUtils.getHtmlProvider(activity) + snNew.getUrl()));
         }
         activity.startActivity(intent);
+        AppUtils.getMyApplication(activity).addHistory(snNew.getUrl());
     }
 
     /**

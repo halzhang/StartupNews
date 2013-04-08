@@ -4,6 +4,8 @@
 
 package com.halzhang.android.apps.startupnews.utils;
 
+import com.halzhang.android.apps.startupnews.MyApplication;
+
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -38,5 +40,9 @@ public class AppUtils {
         } catch (NameNotFoundException e) {
             return 0;
         }
+    }
+
+    public static MyApplication getMyApplication(Context context) {
+        return (MyApplication) context.getApplicationContext();
     }
 }

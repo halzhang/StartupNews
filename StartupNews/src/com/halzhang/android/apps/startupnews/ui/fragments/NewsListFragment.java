@@ -11,6 +11,7 @@ import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
+import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -18,6 +19,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -268,6 +270,12 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                     entity.getCommentsCount()));
             holder.createat.setText(entity.getCreateat());
             holder.domain.setText(entity.getUrlDomain());
+            int textColor = AppUtils.getMyApplication(getActivity()).isHistoryContains(
+                    entity.getUrl()) ? Color.GRAY : Color.BLACK;
+            holder.title.setTextColor(textColor);
+            holder.subText.setTextColor(textColor);
+            holder.domain.setTextColor(textColor);
+            holder.createat.setTextColor(textColor);
             return convertView;
         }
 
