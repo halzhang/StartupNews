@@ -22,6 +22,10 @@ import java.io.PrintWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * StartupNews
@@ -37,6 +41,16 @@ public class MyApplication extends Application {
     private static final String LOG_TAG = MyApplication.class.getSimpleName();
 
     private static HashSet<String> mHistorySet = new HashSet<String>();
+    
+    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
+        private final AtomicInteger mCount = new AtomicInteger(1);
+
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "StartupNews thread #" + mCount.getAndIncrement());
+        }
+    };
+    
+    private ExecutorService mExecutorService;
 
     @Override
     public void onCreate() {
@@ -46,6 +60,7 @@ public class MyApplication extends Application {
         UncaughtExceptionHandler handler = new ExceptionReporter(EasyTracker.getTracker(),
                 GAServiceManager.getInstance(), Thread.getDefaultUncaughtExceptionHandler());
         Thread.setDefaultUncaughtExceptionHandler(handler);
+        mExecutorService = Executors.newSingleThreadExecutor(sThreadFactory);
         initHistory();
         // CrashHandler.getInstance().init(this);
     }
@@ -64,9 +79,7 @@ public class MyApplication extends Application {
                 mHistorySet.add(s);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             if (reader != null) {
                 try {
@@ -118,7 +131,13 @@ public class MyApplication extends Application {
     public void addHistory(String url) {
         if (!TextUtils.isEmpty(url)) {
             mHistorySet.add(url);
-            storeHistory();
+            mExecutorService.submit(new Runnable() {
+                
+                @Override
+                public void run() {
+                    storeHistory();
+                }
+            });
         }
     }
 

@@ -155,6 +155,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     protected void onListItemClick(ListView l, View v, int position, long id) {
         EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
                 "news_list_fragment_list_item_click", 0L);
+        mAdapter.notifyDataSetChanged();
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
         ActivityUtils.openArticle(getActivity(), entity);
     }
