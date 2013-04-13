@@ -10,7 +10,7 @@ Android 2.3以上
 ---
 邮箱：[ghanguo@gmail.com](mailto:ghanguo@gmail.com)
 
-欢迎直接在[issues](https://github.com/halzhang/StartupNews/issues)提bug；
+欢迎直接在[issues](https://github.com/halzhang/StartupNews/issues/new)提bug；
 
 作者
 ---
