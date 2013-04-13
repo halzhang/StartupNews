@@ -41,7 +41,7 @@ public class MyApplication extends Application {
     private static final String LOG_TAG = MyApplication.class.getSimpleName();
 
     private static HashSet<String> mHistorySet = new HashSet<String>();
-    
+
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
@@ -49,7 +49,7 @@ public class MyApplication extends Application {
             return new Thread(r, "StartupNews thread #" + mCount.getAndIncrement());
         }
     };
-    
+
     private ExecutorService mExecutorService;
 
     @Override
@@ -129,10 +129,10 @@ public class MyApplication extends Application {
      * @param url
      */
     public void addHistory(String url) {
-        if (!TextUtils.isEmpty(url)) {
+        if (!TextUtils.isEmpty(url) && !mHistorySet.contains(url)) {
             mHistorySet.add(url);
             mExecutorService.submit(new Runnable() {
-                
+
                 @Override
                 public void run() {
                     storeHistory();
@@ -147,8 +147,8 @@ public class MyApplication extends Application {
     public void clearHistory() {
         mHistorySet.clear();
     }
-    
-    public boolean isHistoryContains(String url){
+
+    public boolean isHistoryContains(String url) {
         return mHistorySet.contains(url);
     }
 
