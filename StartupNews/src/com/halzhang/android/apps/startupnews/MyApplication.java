@@ -43,7 +43,7 @@ public class MyApplication extends Application {
      */
     public static final boolean DEBUG = false;
 
-    private static HashSet<String> mHistorySet = new HashSet<String>();
+    private HashSet<String> mHistorySet = new HashSet<String>();
 
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
@@ -79,7 +79,9 @@ public class MyApplication extends Application {
                 mHistorySet.add(s);
             }
         } catch (FileNotFoundException e) {
+            EasyTracker.getTracker().sendException("History file not found!", e, false);
         } catch (IOException e) {
+            EasyTracker.getTracker().sendException("Read History file error!", e, false);
         } finally {
             if (reader != null) {
                 try {
