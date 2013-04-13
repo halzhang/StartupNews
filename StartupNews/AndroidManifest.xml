@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.halzhang.android.apps.startupnews"
-    android:versionCode="8"
-    android:versionName="0.5.1.0" >
+    android:versionCode="9"
+    android:versionName="0.5.2.0" >
 
     <uses-sdk
         android:minSdkVersion="10"

@@ -1,7 +1,9 @@
 
 package com.halzhang.android.apps.startupnews.utils;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants;
+import com.halzhang.android.apps.startupnews.MyApplication;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -29,7 +31,7 @@ import java.util.Map;
  */
 public class CrashHandler implements UncaughtExceptionHandler {
 
-    public static final String TAG = CrashHandler.class.getSimpleName();
+    private static final String LOG_TAG = CrashHandler.class.getSimpleName();
 
     private static CrashHandler me = null;
 
@@ -56,9 +58,12 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
-        handleException(ex);
-//        Process.killProcess(Process.myPid());
-//        System.exit(0);
+        if(MyApplication.DEBUG){
+            handleException(ex);
+        }
+        EasyTracker.getTracker().sendException(ex.getMessage(), ex, true);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(0);
     }
 
     private boolean handleException(Throwable ex) {
@@ -87,7 +92,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             try {
                 field.setAccessible(true);
                 infos.put(field.getName(), field.get(null).toString());
-//                CDLog.d(TAG, field.getName() + " : " + field.get(null));
+                // CDLog.d(TAG, field.getName() + " : " + field.get(null));
             } catch (Exception e) {
             }
         }
@@ -120,7 +125,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
             String time = formatter.format(new Date());
             String fileName = "crash-" + time + "-" + timestamp + ".txt";
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + Constants.CRASH_LOG_DIR;
+                String path = Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + Constants.CRASH_LOG_DIR;
                 File dir = new File(path);
                 if (!dir.exists()) {
                     dir.mkdirs();
@@ -131,7 +137,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             }
             return fileName;
         } catch (Exception e) {
-            Log.e(TAG, "an error occured while writing file...", e);
+            Log.e(LOG_TAG, "an error occured while writing file...", e);
         }
         return null;
     }

@@ -5,9 +5,8 @@
 package com.halzhang.android.apps.startupnews;
 
 import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.ExceptionReporter;
-import com.google.analytics.tracking.android.GAServiceManager;
 import com.halzhang.android.apps.startupnews.analytics.MyExceptionParser;
+import com.halzhang.android.apps.startupnews.utils.CrashHandler;
 
 import android.app.Application;
 import android.text.TextUtils;
@@ -19,7 +18,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
@@ -40,6 +38,11 @@ public class MyApplication extends Application {
 
     private static final String LOG_TAG = MyApplication.class.getSimpleName();
 
+    /**
+     * debug mode
+     */
+    public static final boolean DEBUG = false;
+
     private static HashSet<String> mHistorySet = new HashSet<String>();
 
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
@@ -57,12 +60,9 @@ public class MyApplication extends Application {
         super.onCreate();
         EasyTracker.getInstance().setContext(this);
         EasyTracker.getTracker().setExceptionParser(new MyExceptionParser(getApplicationContext()));
-        UncaughtExceptionHandler handler = new ExceptionReporter(EasyTracker.getTracker(),
-                GAServiceManager.getInstance(), Thread.getDefaultUncaughtExceptionHandler());
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+        CrashHandler.getInstance().init(this);
         mExecutorService = Executors.newSingleThreadExecutor(sThreadFactory);
         initHistory();
-        // CrashHandler.getInstance().init(this);
     }
 
     private void initHistory() {
