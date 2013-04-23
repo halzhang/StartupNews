@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    
-    <item android:id="@+id/menu_show_comment"
+
+    <item
+        android:id="@+id/menu_show_comment"
         android:title="@string/menu_show_comment"/>
-    <item android:id="@+id/menu_show_article"
+    <item
+        android:id="@+id/menu_show_article"
         android:title="@string/menu_show_article"/>
+    <item
+        android:id="@+id/menu_up_vote"
+        android:title="@string/menu_up_vote"/>
 
 </menu>

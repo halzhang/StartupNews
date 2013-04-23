@@ -11,9 +11,10 @@ import com.halzhang.android.apps.startupnews.entity.SNComments;
 import com.halzhang.android.apps.startupnews.parser.SNCommentsParser;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
+import com.halzhang.android.apps.startupnews.utils.JsoupFactory;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-import org.jsoup.Jsoup;
+import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
 import android.content.Intent;
@@ -54,10 +55,13 @@ public class CommentsListFragment extends AbsBaseListFragment {
 
     private static final String NEWCOMMENTS_URL_PATH = "/newcomments";
 
+    private JsoupFactory mJsoupFactory;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new CommentsAdapter();
+        mJsoupFactory = JsoupFactory.getInstance(getActivity().getApplicationContext());
     }
 
     @Override
@@ -138,8 +142,12 @@ public class CommentsListFragment extends AbsBaseListFragment {
         @Override
         protected Boolean doInBackground(String... params) {
             try {
-                Document doc = Jsoup.connect(params[0]).get();
-                long start = System.currentTimeMillis();
+                Connection conn = mJsoupFactory.newJsoupConnection(params[0]);
+                if (conn == null) {
+                    return false;
+                }
+                Document doc = conn.get();
+                // long start = System.currentTimeMillis();
                 SNCommentsParser parser = new SNCommentsParser();
                 SNComments comments = parser.parseDocument(doc);
                 if (mType == TYPE_REFRESH && mSnComments.size() > 0) {
@@ -147,10 +155,11 @@ public class CommentsListFragment extends AbsBaseListFragment {
                 }
                 mSnComments.addComments(comments.getSnComments());
                 mSnComments.setMoreURL(comments.getMoreURL());
-                Log.i(LOG_TAG, "Take Time: " + (System.currentTimeMillis() - start));
+                // Log.i(LOG_TAG, "Take Time: " + (System.currentTimeMillis() -
+                // start));
                 return true;
             } catch (Exception e) {
-                // Log.e(LOG_TAG, "", e);
+                Log.e(LOG_TAG, "", e);
                 EasyTracker.getTracker().sendException("CommentsTask", e, false);
                 return false;
             }

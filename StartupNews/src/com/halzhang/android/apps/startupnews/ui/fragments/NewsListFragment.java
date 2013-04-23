@@ -5,6 +5,7 @@
 package com.halzhang.android.apps.startupnews.ui.fragments;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
@@ -13,12 +14,16 @@ import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
+import com.halzhang.android.apps.startupnews.utils.JsoupFactory;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-import org.jsoup.Jsoup;
+import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -59,6 +64,26 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     private SNFeed mSnFeed = new SNFeed();
 
     private NewsAdapter mAdapter;
+    private JsoupFactory mJsoupFactory;
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (IntentAction.ACTION_LOGIN.equals(action)) {
+                String user = intent.getStringExtra(IntentAction.EXTRA_LOGIN_USER);
+                if (!TextUtils.isEmpty(user)) {
+                    if (mNewsTask != null) {
+                        mNewsTask.cancel(true);
+                        mNewsTask = null;
+                    }
+                    mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
+                    mNewsTask.execute(mNewsURL);
+                }
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,13 +95,17 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         } else {
             mNewsURL = getString(R.string.host, "/news");
         }
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(IntentAction.ACTION_LOGIN);
+        getActivity().registerReceiver(mReceiver, filter);
+        mJsoupFactory = JsoupFactory.getInstance(getActivity().getApplicationContext());
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getListView().setOnItemLongClickListener(this);
-        // registerForContextMenu(getListView());
+        // getListView().setOnItemLongClickListener(this);
+        registerForContextMenu(getListView());
         setListAdapter(mAdapter);
         if (mNewsTask == null && mAdapter.isEmpty()) {
             mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
@@ -97,11 +126,16 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
             mNewsTask.cancel(true);
             mNewsTask = null;
         }
+        getActivity().unregisterReceiver(mReceiver);
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        int position = ((AdapterContextMenuInfo) menuInfo).position;
+        final SNNew snNew = (SNNew) mAdapter.getItem(position - 1);
         getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
+        final MenuItem item = menu.findItem(R.id.menu_up_vote);
+        item.setEnabled(!TextUtils.isEmpty(snNew.getVoteURL()));
     }
 
     @Override
@@ -112,10 +146,13 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         switch (item.getItemId()) {
             case R.id.menu_show_comment:
                 openDiscuss(snNew);
-                break;
+                return true;
             case R.id.menu_show_article:
                 ActivityUtils.openArticle(getActivity(), snNew);
-                break;
+                return true;
+            case R.id.menu_up_vote:
+                // TODO up vote
+                return true;
             default:
                 break;
         }
@@ -185,7 +222,11 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         @Override
         protected Boolean doInBackground(String... params) {
             try {
-                Document doc = Jsoup.connect(params[0]).get();
+                Connection conn = mJsoupFactory.newJsoupConnection(params[0]);
+                if(conn == null){
+                    return false;
+                }
+                Document doc = conn.get();
                 SNFeedParser parser = new SNFeedParser();
                 SNFeed feed = parser.parseDocument(doc);
                 if (mType == TYPE_REFRESH && mSnFeed.size() > 0) {

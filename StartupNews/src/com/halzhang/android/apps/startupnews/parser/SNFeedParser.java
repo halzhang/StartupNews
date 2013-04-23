@@ -4,6 +4,7 @@
 
 package com.halzhang.android.apps.startupnews.parser;
 
+import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.entity.SNUser;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 /**
  * StartupNews
  * <p>
+ * news解析
  * </p>
  * 
  * @author <a href="http://weibo.com/halzhang">Hal</a>
@@ -35,6 +37,13 @@ public class SNFeedParser extends BaseHTMLParser<SNFeed> {
             return feed;
         }
         long start = System.currentTimeMillis();
+        Elements loginout = doc.select("a:matches(Login/Register|Logout)");
+        if (loginout.size() > 0) {
+            String loginoutUrl = resolveRelativeSNURL(loginout.attr("href"));
+            Log.i(LOG_TAG, "Login or out url: " + loginoutUrl);
+            MyApplication.instance().setLogInOutURL(loginoutUrl);
+        }
+
         Elements tableRows = doc.select("table tr table tr");
         tableRows.remove(0);// 顶部导航
         // 获取下一页链接
@@ -75,7 +84,8 @@ public class SNFeedParser extends BaseHTMLParser<SNFeed> {
                     Element voteAElement = rowElement.select("tr > td:eq(1) a").first();
                     if (voteAElement != null) {
                         voteURL = resolveRelativeSNURL(voteAElement.attr("href"));
-                        // TODO 如果链接包含当前用户名，voteURL应该为空，不能vote
+                    } else {
+                        voteURL = null;
                     }
                     break;
                 case 1:

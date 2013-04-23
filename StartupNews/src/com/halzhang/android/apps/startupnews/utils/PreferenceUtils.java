@@ -21,6 +21,7 @@ public class PreferenceUtils {
 
     /**
      * 获取网页阅读模式
+     * 
      * @param context
      * @return
      */
@@ -32,12 +33,21 @@ public class PreferenceUtils {
 
     /**
      * 使用内置浏览器
+     * 
      * @param context
      * @return
      */
     public static boolean isUseInnerBrowse(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
                 context.getString(R.string.pref_key_default_browse), true);
+    }
+
+    public static void set(Context ctx, final String key, final String value) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(key, value).commit();
+    }
+
+    public static String get(Context context, final String key) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(key, null);
     }
 
 }

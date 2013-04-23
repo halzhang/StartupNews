@@ -6,6 +6,7 @@ package com.halzhang.android.apps.startupnews;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.analytics.MyExceptionParser;
+import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.CrashHandler;
 
 import android.app.Application;
@@ -41,7 +42,7 @@ public class MyApplication extends Application {
     /**
      * debug mode
      */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private HashSet<String> mHistorySet = new HashSet<String>();
 
@@ -55,12 +56,29 @@ public class MyApplication extends Application {
 
     private ExecutorService mExecutorService;
 
+    /**
+     * 登陆，注销url
+     */
+    private String mLogInOutURL;
+
+    private static MyApplication me;
+
+    public static MyApplication instance() {
+        return me;
+    }
+
+    public MyApplication() {
+        super();
+        me = this;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         EasyTracker.getInstance().setContext(this);
         EasyTracker.getTracker().setExceptionParser(new MyExceptionParser(getApplicationContext()));
         CrashHandler.getInstance().init(this);
+        SessionManager.getInstance(this).initSession();
         mExecutorService = Executors.newSingleThreadExecutor(sThreadFactory);
         initHistory();
     }
@@ -152,6 +170,14 @@ public class MyApplication extends Application {
 
     public boolean isHistoryContains(String url) {
         return mHistorySet.contains(url);
+    }
+
+    public String getLogInOutURL() {
+        return mLogInOutURL;
+    }
+
+    public void setLogInOutURL(String logInOutURL) {
+        mLogInOutURL = logInOutURL;
     }
 
 }

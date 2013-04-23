@@ -1,7 +1,10 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
+import com.actionbarsherlock.view.Menu;
+import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.ui.fragments.CommentsListFragment;
 import com.halzhang.android.apps.startupnews.ui.fragments.NewsListFragment;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
@@ -18,6 +21,7 @@ import android.widget.Toast;
 
 /**
  * 主页
+ * 
  * @author Hal
  */
 public class MainActivity extends BaseFragmentActivity {
@@ -61,19 +65,41 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (SessionManager.getInstance(getApplicationContext()).isValid()) {
+            menu.removeItem(R.id.menu_logout);
+            menu.add(Menu.NONE, R.id.menu_logout, Menu.NONE, R.string.menu_logout);
+        } else {
+            menu.removeItem(R.id.menu_login);
+            menu.add(Menu.NONE, R.id.menu_login, Menu.NONE, R.string.menu_login);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_settings:
                 startActivity(new Intent(this, AboutActivity.class));
                 return true;
             case R.id.menu_feedback:
-                if(ActivityUtils.isIntentAvailable(getApplicationContext(), mFeedbackEmailIntent)){
+                if (ActivityUtils.isIntentAvailable(getApplicationContext(), mFeedbackEmailIntent)) {
                     startActivity(mFeedbackEmailIntent);
-                }else{
-                    Toast.makeText(getApplicationContext(), R.string.error_noemailapp, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.error_noemailapp,
+                            Toast.LENGTH_LONG).show();
                 }
                 return true;
-
+            case R.id.menu_login: {
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.putExtra(LoginActivity.EXTRA_LOGIN_PAGER_URL, MyApplication.instance()
+                        .getLogInOutURL());
+                startActivity(intent);
+            }
+                return true;
+            case R.id.menu_logout:
+                //TODO sn-logout
+                return true;
             default:
                 break;
         }

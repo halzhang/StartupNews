@@ -15,6 +15,8 @@
     <string name="host">http://news.dbanotes.net<xliff:g id="PATH">%1$s</xliff:g></string>
     <string name="comment_artist_title">on:<xliff:g id="TITLE">%1$s</xliff:g></string>
     <string name="news_subtext"><xliff:g id="POINTS">%1$d</xliff:g> points · <xliff:g id="COMMENTS">%2$d</xliff:g> comments</string>
+    <string name="username">用户名：</string>
+    <string name="password">密码：</string>
     
     <string name="error">哎呀，出错了!</string>
     <string name="error_noemailapp">不好意思，你未安装邮件客户端，无法通过邮件反馈。您可以通过PC发送反馈邮件到【ghanguo@gmail.com】。非常感谢!</string>
@@ -32,12 +34,16 @@
     <string name="menu_website">用浏览器打开</string>
     <string name="menu_show_comment">查看评论</string>
     <string name="menu_show_article">查看原文</string>
+    <string name="menu_up_vote">顶一下</string>
+    <string name="menu_login">登陆</string>
+    <string name="menu_logout">注销</string>
     
     <!-- title string -->
     <string name="title_about">关于</string>
     <string name="title_settings">设置</string>
     <string name="title_shareto_startupnews">分享到StartupNews</string>
     <string name="title_discuss">查看评论</string>
+    <string name="title_login">登陆</string>
     
     <!-- preferences string -->
     <string name="pref_title_html_provider">网页阅读模式</string>
@@ -49,13 +55,15 @@
     <string name="pref_title_startupnews">StartupNews</string>
     <string name="pref_summary_startupnews">访问StartupNews网站</string>
     
+    <string name="pref_key_cookie">pref_key_cookie</string>
+    
     <string name="pref_key_default_browse">pref_key_default_browse</string>
     <string name="pref_title_default_browse">使用内置浏览器</string>
     <string name="pref_summary_on_default_browse">用内置浏览器浏览文章</string>
     <string name="pref_summary_off_default_browse">用系统浏览器浏览文章</string>
     
     <string name="pref_title_opensrouce">开放源代码许可</string>
-    
+
     <string name="pref_key_version">pref_key_version</string>
     <string name="pref_title_version">版本</string>
     <string name="pref_summary_version">V<xliff:g id="VERSION_NAME">%1$s</xliff:g></string>

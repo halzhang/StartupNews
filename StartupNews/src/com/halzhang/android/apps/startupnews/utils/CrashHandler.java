@@ -58,7 +58,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
-        if(MyApplication.DEBUG){
+        if (MyApplication.DEBUG) {
+            ex.printStackTrace();
             handleException(ex);
         }
         EasyTracker.getTracker().sendException(ex.getMessage(), ex, true);
@@ -75,7 +76,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
         return false;
     }
 
-    public void collectDeviceInfo(Context ctx) {
+    private void collectDeviceInfo(Context ctx) {
         try {
             PackageManager pm = ctx.getPackageManager();
             PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_ACTIVITIES);
