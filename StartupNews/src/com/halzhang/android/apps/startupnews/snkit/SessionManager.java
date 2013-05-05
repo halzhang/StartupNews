@@ -34,15 +34,15 @@ public class SessionManager {
         mContext = context;
         mSession = new SNSession();
     }
-    
+
     public static SessionManager getInstance(Context context) {
         if (me == null) {
             me = new SessionManager(context);
         }
         return me;
     }
-    
-    public void initSession(){
+
+    public void initSession() {
         initSessionFromPref();
     }
 
@@ -54,7 +54,7 @@ public class SessionManager {
     public void storeSesson(String user, String id) {
         if (mSession == null) {
             mSession = new SNSession(user, id);
-        }else{
+        } else {
             mSession.setId(id);
             mSession.setUser(user);
         }
@@ -103,8 +103,12 @@ public class SessionManager {
         }
         return null;
     }
-    
-    public boolean isValid(){
+
+    public boolean isValid() {
         return mSession != null && !TextUtils.isEmpty(mSession.getUser());
+    }
+
+    public String getCookieString() {
+        return "user=" + mSession.getUser();
     }
 }

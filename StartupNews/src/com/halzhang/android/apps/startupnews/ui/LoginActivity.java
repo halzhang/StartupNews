@@ -97,7 +97,7 @@ public class LoginActivity extends BaseFragmentActivity {
 
         // Set up the login form.
         mUsernameView = (EditText) findViewById(R.id.username);
-        mUsernameView.setText(mUsername);
+        // mUsernameView.setText(mUsername);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -243,8 +243,10 @@ public class LoginActivity extends BaseFragmentActivity {
             final HttpPost httpPost = new HttpPost("http://news.dbanotes.net/y");
             httpPost.addHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded");
             httpPost.addHeader("Accept-Language", "zh-cn");
-            httpPost.addHeader(HTTP.USER_AGENT,
-                    WebSettings.getDefaultUserAgent(getApplicationContext()));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                httpPost.addHeader(HTTP.USER_AGENT,
+                        WebSettings.getDefaultUserAgent(getApplicationContext()));
+            }
             httpPost.addHeader("Accept", "*/*");
             httpPost.addHeader("Accept-Encoding", "gzip,deflate");
             httpPost.addHeader("Connection", "keep-alive");
@@ -275,7 +277,8 @@ public class LoginActivity extends BaseFragmentActivity {
                     if ("user".equals(cookie.getName())) {
                         String value = cookie.getValue();
                         Log.i(LOG_TAG, "Cookie name: user " + " Value: " + cookie.getValue());
-                        SessionManager.getInstance(getApplicationContext()).storeSesson(value, mUsername);
+                        SessionManager.getInstance(getApplicationContext()).storeSesson(value,
+                                mUsername);
                         user = value;
                     }
                 }

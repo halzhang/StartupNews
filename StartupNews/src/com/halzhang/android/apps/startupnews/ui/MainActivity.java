@@ -66,11 +66,11 @@ public class MainActivity extends BaseFragmentActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.removeItem(R.id.menu_login);
+        menu.removeItem(R.id.menu_logout);
         if (SessionManager.getInstance(getApplicationContext()).isValid()) {
-            menu.removeItem(R.id.menu_logout);
             menu.add(Menu.NONE, R.id.menu_logout, Menu.NONE, R.string.menu_logout);
         } else {
-            menu.removeItem(R.id.menu_login);
             menu.add(Menu.NONE, R.id.menu_login, Menu.NONE, R.string.menu_login);
         }
         return super.onPrepareOptionsMenu(menu);
@@ -98,7 +98,7 @@ public class MainActivity extends BaseFragmentActivity {
             }
                 return true;
             case R.id.menu_logout:
-                //TODO sn-logout
+                // TODO sn-logout
                 return true;
             default:
                 break;
