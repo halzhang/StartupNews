@@ -37,7 +37,7 @@ public class SNFeedParser extends BaseHTMLParser<SNFeed> {
             return feed;
         }
         long start = System.currentTimeMillis();
-        Elements loginout = doc.select("a:matches(Login/Register|Logout)");
+        Elements loginout = doc.select("a:matches(Login/Register|logout)");
         if (loginout.size() > 0) {
             String loginoutUrl = resolveRelativeSNURL(loginout.attr("href"));
             Log.i(LOG_TAG, "Login or out url: " + loginoutUrl);
