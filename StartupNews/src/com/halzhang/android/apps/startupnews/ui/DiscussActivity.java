@@ -126,22 +126,22 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
 
             @Override
             public void onClick(View v) {
+                if (!SessionManager.getInstance(getApplicationContext()).isValid()) {
+                    //未登陆
+                    Intent intent = new Intent(DiscussActivity.this, LoginActivity.class);
+                    intent.putExtra(LoginActivity.EXTRA_LOGIN_PAGER_URL, MyApplication.instance()
+                            .getLogInOutURL());
+                    startActivity(intent);
+                    return;
+                }
                 SNApi api = new SNApi(getApplicationContext());
                 api.comment(getApplicationContext(), mSnDiscuss.getFnid(), mCommentEdit.getText()
                         .toString(), new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, String content) {
-                        if (SessionManager.getInstance(getApplicationContext()).isValid()) {
-                            mCommentEdit.setText(null);
-                            Toast.makeText(getApplicationContext(), "评论成功!", Toast.LENGTH_SHORT)
-                                    .show();
-                            loadData();
-                        } else {
-                            Intent intent = new Intent(DiscussActivity.this, LoginActivity.class);
-                            intent.putExtra(LoginActivity.EXTRA_LOGIN_PAGER_URL, MyApplication
-                                    .instance().getLogInOutURL());
-                            startActivity(intent);
-                        }
+                        mCommentEdit.setText(null);
+                        Toast.makeText(getApplicationContext(), "评论成功!", Toast.LENGTH_SHORT).show();
+                        loadData();
                     }
 
                     @Override
