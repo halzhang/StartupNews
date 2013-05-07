@@ -6,12 +6,15 @@ package com.halzhang.android.apps.startupnews.ui.fragments;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
+import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
+import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
+import com.halzhang.android.apps.startupnews.ui.LoginActivity;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
@@ -135,11 +138,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        int position = ((AdapterContextMenuInfo) menuInfo).position;
-        final SNNew snNew = (SNNew) mAdapter.getItem(position - 1);
         getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
-        final MenuItem item = menu.findItem(R.id.menu_up_vote);
-        item.setEnabled(!TextUtils.isEmpty(snNew.getVoteURL()));
     }
 
     @Override
@@ -155,16 +154,36 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                 ActivityUtils.openArticle(getActivity(), snNew);
                 return true;
             case R.id.menu_up_vote:
-                SNApi api = new SNApi(getActivity());
-                api.upVote(snNew.getVoteURL(), new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, String content) {
-                        if (statusCode == HttpStatus.SC_OK) {
-                            snNew.setVoteURL(null);
-                            Toast.makeText(getActivity(), "顶成功了！", Toast.LENGTH_SHORT).show();
+                if (SessionManager.getInstance(getActivity()).isValid()) {
+                    SNApi api = new SNApi(getActivity());
+                    final String url = getString(R.string.vote_url, snNew.getPostID(),
+                            SessionManager.getInstance(getActivity()).getSessionId(),
+                            SessionManager.getInstance(getActivity()).getSessionUser());
+                    api.upVote(url, new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, String content) {
+                            if (statusCode == HttpStatus.SC_OK && TextUtils.isEmpty(content)) {
+                                Toast.makeText(getActivity(), "顶成功了！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getActivity(),
+                                        getString(R.string.error_message, content),
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+
+                        @Override
+                        public void onFailure(Throwable error, String content) {
+                            Toast.makeText(getActivity(),
+                                    getString(R.string.error_message, error.getMessage()),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.putExtra(LoginActivity.EXTRA_LOGIN_PAGER_URL, MyApplication.instance()
+                            .getLogInOutURL());
+                    startActivity(intent);
+                }
                 return true;
             default:
                 break;

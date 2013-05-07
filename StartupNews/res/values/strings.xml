@@ -4,25 +4,26 @@
     <string name="app_name">StartupNews</string>
     <string name="app_description">An Android Startup News Client!</string>
     <string name="hello_world">Hello World!</string>
-    
+
     <string-array name="section_titles">
-        <item >NEWS</item>
-        <item >NEWEST</item>
-        <item >COMMENTS</item>
+        <item>NEWS</item>
+        <item>NEWEST</item>
+        <item>COMMENTS</item>
     </string-array>
-    
+
     <string name="google_play_url">http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews</string>
     <string name="host">http://news.dbanotes.net<xliff:g id="PATH">%1$s</xliff:g></string>
+    <string name="vote_url">http://news.dbanotes.net/vote?for=<xliff:g id="ITEM_ID">%1$s</xliff:g>&amp;dir=up&amp;by=<xliff:g id="USERID">%2$s</xliff:g>&amp;auth=<xliff:g id="USER">%3$s</xliff:g>&amp;whence=news</string>
     <string name="comment_artist_title">on:<xliff:g id="TITLE">%1$s</xliff:g></string>
     <string name="news_subtext"><xliff:g id="POINTS">%1$d</xliff:g> points · <xliff:g id="COMMENTS">%2$d</xliff:g> comments</string>
     <string name="username">用户名：</string>
     <string name="password">密码：</string>
-    
     <string name="error">哎呀，出错了!</string>
     <string name="error_noemailapp">不好意思，你未安装邮件客户端，无法通过邮件反馈。您可以通过PC发送反馈邮件到【ghanguo@gmail.com】。非常感谢!</string>
+    <string name="error_message">操作失败:<xliff:g id="MSG">%1$s</xliff:g></string>
     <string name="working">开发中~~~</string>
     <string name="hint_add_comment">添加评论</string>
-    
+
     <!-- menu string -->
     <string name="menu_share">分享</string>
     <string name="menu_settings">设置</string>
@@ -38,57 +39,50 @@
     <string name="menu_up_vote">顶一下</string>
     <string name="menu_login">登陆</string>
     <string name="menu_logout">注销</string>
-    
+
     <!-- title string -->
     <string name="title_about">关于</string>
     <string name="title_settings">设置</string>
     <string name="title_shareto_startupnews">分享到StartupNews</string>
     <string name="title_discuss">查看评论</string>
     <string name="title_login">登陆</string>
-    
+
     <!-- preferences string -->
     <string name="pref_title_html_provider">网页阅读模式</string>
     <string name="pref_key_html_provider">pref_key_html_provider</string>
-    
     <string name="pref_title_athalzhang">\@HalZhang</string>
     <string name="pref_summary_athalzhang">访问作者微博</string>
-    
     <string name="pref_title_startupnews">StartupNews</string>
     <string name="pref_summary_startupnews">访问StartupNews网站</string>
-    
     <string name="pref_key_cookie">pref_key_cookie</string>
-    
     <string name="pref_key_default_browse">pref_key_default_browse</string>
     <string name="pref_title_default_browse">使用内置浏览器</string>
     <string name="pref_summary_on_default_browse">用内置浏览器浏览文章</string>
     <string name="pref_summary_off_default_browse">用系统浏览器浏览文章</string>
-    
     <string name="pref_title_opensrouce">开放源代码许可</string>
-
     <string name="pref_key_version">pref_key_version</string>
     <string name="pref_title_version">版本</string>
     <string name="pref_summary_version">V<xliff:g id="VERSION_NAME">%1$s</xliff:g></string>
-    
+
     <string-array name="html_provider_entries">
-        <item >Readabilily</item>
-        <item >新浪</item>
-        <item >百度</item>
-        <item >Google</item>
-        <item >Viewtext</item>
-        <item >原网页</item>
+        <item>Readabilily</item>
+        <item>新浪</item>
+        <item>百度</item>
+        <item>Google</item>
+        <item>Viewtext</item>
+        <item>原网页</item>
     </string-array>
     <string-array name="html_provider_entry_values">
-        <item >http://www.readability.com/m?url=</item>
-        <item >http://weibo.cn/sinaurl?to=m&amp;u=</item>
-        <item >http://gate.baidu.com/tc?from=opentc&amp;src=</item>
-        <item >http://www.google.com/gwt/x?u=</item>
-        <item >http://viewtext.org/article?url=</item>
-        <item ></item>
+        <item>http://www.readability.com/m?url=</item>
+        <item>http://weibo.cn/sinaurl?to=m&amp;u=</item>
+        <item>http://gate.baidu.com/tc?from=opentc&amp;src=</item>
+        <item>http://www.google.com/gwt/x?u=</item>
+        <item>http://viewtext.org/article?url=</item>
+        <item></item>
     </string-array>
+
     <string name="default_html_provider"></string>
-    
     <string name="tip_loading">加载中...</string>
     <string name="tip_last_page">亲，最后一页了...</string>
-    
-    
+
 </resources>
