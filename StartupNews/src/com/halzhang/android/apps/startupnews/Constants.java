@@ -49,7 +49,12 @@ public abstract class Constants {
          * @see #EXTRA_LOGIN_USER
          */
         public static final String ACTION_LOGIN = "startupnews.intent.action.LOGIN";
-
+        
+        /**
+         * 注销
+         */
+        public static final String ACTION_LOGOUT = "startupnews.intent.action.LOGOUT";
+        
     }
 
 }

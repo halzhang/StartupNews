@@ -93,7 +93,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             try {
                 field.setAccessible(true);
                 infos.put(field.getName(), field.get(null).toString());
-                // CDLog.d(TAG, field.getName() + " : " + field.get(null));
+                //Log.d(LOG_TAG, field.getName() + " : " + field.get(null));
             } catch (Exception e) {
             }
         }

@@ -7,12 +7,15 @@ package com.halzhang.android.apps.startupnews.ui;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.analytics.tracking.android.EasyTracker;
+import com.halzhang.android.apps.startupnews.Constants.IntentAction;
+import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNDiscussParser;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
+import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.JsoupFactory;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -20,10 +23,14 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,6 +87,20 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
 
     private JsoupFactory mJsoupFactory;
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(android.content.Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (IntentAction.ACTION_LOGIN.equals(action)) {
+                String user = intent.getStringExtra(IntentAction.EXTRA_LOGIN_USER);
+                if (!TextUtils.isEmpty(user)) {
+                    loadData();
+                }
+            }
+        };
+    };
+
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
@@ -110,9 +131,17 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
                         .toString(), new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, String content) {
-                        mCommentEdit.setText(null);
-                        Toast.makeText(getApplicationContext(), "评论成功!", Toast.LENGTH_SHORT).show();
-                        loadData();
+                        if (SessionManager.getInstance(getApplicationContext()).isValid()) {
+                            mCommentEdit.setText(null);
+                            Toast.makeText(getApplicationContext(), "评论成功!", Toast.LENGTH_SHORT)
+                                    .show();
+                            loadData();
+                        } else {
+                            Intent intent = new Intent(DiscussActivity.this, LoginActivity.class);
+                            intent.putExtra(LoginActivity.EXTRA_LOGIN_PAGER_URL, MyApplication
+                                    .instance().getLogInOutURL());
+                            startActivity(intent);
+                        }
                     }
 
                     @Override
@@ -144,6 +173,9 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
         mListView.addHeaderView(view);
         mListView.setAdapter(mAdapter);
         wrapHeaderView(snNew);
+
+        IntentFilter filter = new IntentFilter(IntentAction.ACTION_LOGIN);
+        registerReceiver(mReceiver, filter);
     }
 
     @Override
@@ -161,6 +193,7 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(mReceiver);
         if (mDiscussTask != null) {
             mDiscussTask.cancel(true);
             mDiscussTask = null;

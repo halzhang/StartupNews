@@ -84,4 +84,14 @@ public class SNApi {
         }
     }
 
+    /**
+     * logout
+     * 
+     * @param url
+     * @param responseHandler
+     */
+    public void logout(String url, AsyncHttpResponseHandler responseHandler) {
+        mAsyncHttpClient.get(url, responseHandler);
+    }
+
 }

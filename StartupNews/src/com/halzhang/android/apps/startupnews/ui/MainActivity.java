@@ -4,11 +4,13 @@ package com.halzhang.android.apps.startupnews.ui;
 import com.actionbarsherlock.view.Menu;
 import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.ui.fragments.CommentsListFragment;
 import com.halzhang.android.apps.startupnews.ui.fragments.NewsListFragment;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import android.content.Intent;
@@ -17,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -25,6 +28,9 @@ import android.widget.Toast;
  * @author Hal
  */
 public class MainActivity extends BaseFragmentActivity {
+
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
     private ViewPager mViewPager;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -98,7 +104,21 @@ public class MainActivity extends BaseFragmentActivity {
             }
                 return true;
             case R.id.menu_logout:
-                // TODO sn-logout
+                SNApi api = new SNApi(getApplicationContext());
+                api.logout(MyApplication.instance().getLogInOutURL(),
+                        new AsyncHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, String content) {
+                                super.onSuccess(statusCode, content);
+                                SessionManager.getInstance(getApplicationContext()).clear();
+                                Log.i(LOG_TAG, "注销成功！");
+                            }
+
+                            @Override
+                            public void onFailure(Throwable error, String content) {
+                                super.onFailure(error, content);
+                            }
+                        });
                 return true;
             default:
                 break;

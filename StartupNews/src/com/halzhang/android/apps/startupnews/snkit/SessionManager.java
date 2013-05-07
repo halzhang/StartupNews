@@ -104,6 +104,10 @@ public class SessionManager {
         return null;
     }
 
+    /**
+     * session是否有效
+     * @return true 有效
+     */
     public boolean isValid() {
         return mSession != null && !TextUtils.isEmpty(mSession.getUser());
     }
