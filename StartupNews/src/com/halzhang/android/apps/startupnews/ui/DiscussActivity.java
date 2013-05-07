@@ -8,7 +8,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
-import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
@@ -129,8 +128,6 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
                 if (!SessionManager.getInstance(getApplicationContext()).isValid()) {
                     //未登陆
                     Intent intent = new Intent(DiscussActivity.this, LoginActivity.class);
-                    intent.putExtra(LoginActivity.EXTRA_LOGIN_PAGER_URL, MyApplication.instance()
-                            .getLogInOutURL());
                     startActivity(intent);
                     return;
                 }

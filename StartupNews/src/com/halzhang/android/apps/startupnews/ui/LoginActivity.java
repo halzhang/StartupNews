@@ -10,6 +10,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 
 import org.apache.http.HttpResponse;
@@ -42,6 +43,7 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -60,10 +62,6 @@ import java.util.List;
 public class LoginActivity extends BaseFragmentActivity {
 
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
-
-    public static final String EXTRA_LOGIN_PAGER_URL = "login_pager_url";
-
-    private String mLoginPagerUrl;
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -88,7 +86,7 @@ public class LoginActivity extends BaseFragmentActivity {
 
     private String mFnid;
 
-    private ParseFnidTask mParseTask;
+    private LoginPreTask mPreTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,17 +121,10 @@ public class LoginActivity extends BaseFragmentActivity {
                 attemptLogin();
             }
         });
-
-        mLoginPagerUrl = getIntent().getStringExtra(EXTRA_LOGIN_PAGER_URL);
-        if (TextUtils.isEmpty(EXTRA_LOGIN_PAGER_URL)) {
-            Log.w(LOG_TAG, "Login pager url is empty!");
-            finish();
-            return;
-        }
         mLoginStatusMessageView.setText(R.string.login_progress_init);
         showProgress(true);
-        mParseTask = new ParseFnidTask();
-        mParseTask.execute(mLoginPagerUrl);
+        mPreTask = new LoginPreTask();
+        mPreTask.execute("");
     }
 
     @Override
@@ -284,7 +275,7 @@ public class LoginActivity extends BaseFragmentActivity {
                                 mUsername);
                         user = value;
                     }
-                    //sync cookie to webview
+                    // sync cookie to webview
                     CookieManager cookieManager = CookieManager.getInstance();
                     cookieManager.setCookie("http://news.dbanotes.net/", cookie.getName() + "="
                             + cookie.getValue());
@@ -309,6 +300,7 @@ public class LoginActivity extends BaseFragmentActivity {
                 sendBroadcast(intent);
                 finish();
             } else {
+                Toast.makeText(getApplicationContext(), "登陆失败！", Toast.LENGTH_SHORT).show();
                 // TODO login failure
                 // mPasswordView.setError(getString(R.string.error_incorrect_password));
                 // mPasswordView.requestFocus();
@@ -323,19 +315,33 @@ public class LoginActivity extends BaseFragmentActivity {
     }
 
     /**
-     * Parse fnid
+     * Parse login url and fnid
      * 
      * @author Hal
      */
-    private class ParseFnidTask extends AsyncTask<String, Void, String> {
+    private class LoginPreTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
+            String loginUrl = null;
+            Document doc = null;
+            try {
+                doc = Jsoup.connect(getString(R.string.host, "/news")).get();
+                if (doc != null) {
+                    Elements loginElements = doc.select("a:matches(Login/Register)");
+                    if (loginElements.size() == 1) {
+                        loginUrl = BaseHTMLParser.resolveRelativeSNURL(loginElements.first().attr(
+                                "href"));
+                    }
+                }
+            } catch (IOException e1) {
+                Log.w(LOG_TAG, e1);
+            }
+            Log.i(LOG_TAG, "Login Url: " + loginUrl);
             String fnid = null;
-            if (params.length > 0) {
-                String url = params[0];
+            if (!TextUtils.isEmpty(loginUrl)) {
                 try {
-                    Document doc = Jsoup.connect(url).get();
+                    doc = Jsoup.connect(loginUrl).get();
                     if (doc != null) {
                         Elements inputElements = doc.select("input[name=fnid]");
                         if (inputElements != null && inputElements.size() > 0) {
@@ -354,7 +360,7 @@ public class LoginActivity extends BaseFragmentActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             mFnid = result;
-            mParseTask = null;
+            mPreTask = null;
             showProgress(false);
             mUsernameView.requestFocus();
         }
@@ -362,7 +368,7 @@ public class LoginActivity extends BaseFragmentActivity {
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            mParseTask = null;
+            mPreTask = null;
             showProgress(false);
         }
 

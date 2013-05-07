@@ -98,8 +98,6 @@ public class MainActivity extends BaseFragmentActivity {
                 return true;
             case R.id.menu_login: {
                 Intent intent = new Intent(this, LoginActivity.class);
-                intent.putExtra(LoginActivity.EXTRA_LOGIN_PAGER_URL, MyApplication.instance()
-                        .getLogInOutURL());
                 startActivity(intent);
             }
                 return true;

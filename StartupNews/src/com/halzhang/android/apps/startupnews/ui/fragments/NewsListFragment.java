@@ -6,7 +6,6 @@ package com.halzhang.android.apps.startupnews.ui.fragments;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
-import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
@@ -180,8 +179,6 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                     });
                 } else {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    intent.putExtra(LoginActivity.EXTRA_LOGIN_PAGER_URL, MyApplication.instance()
-                            .getLogInOutURL());
                     startActivity(intent);
                 }
                 return true;
