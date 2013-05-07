@@ -12,21 +12,29 @@ import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNDiscussParser;
+import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
+import com.halzhang.android.apps.startupnews.utils.JsoupFactory;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
-import org.jsoup.Jsoup;
+import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,11 +74,17 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
 
     private Menu mOptionsMenu;
 
+    private EditText mCommentEdit;
+
+    private ImageButton mSendBtn;
+
+    private JsoupFactory mJsoupFactory;
+
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
+        mJsoupFactory = JsoupFactory.getInstance(getApplicationContext());
         setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
-        // requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_discuss);
         mListView = (ListView) findViewById(android.R.id.list);
         mListView.setOnItemClickListener(this);
@@ -84,6 +98,49 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
         mTitle = (TextView) view.findViewById(R.id.discuss_news_title);
         mSubTitle = (TextView) view.findViewById(R.id.discuss_news_subtitle);
         mText = (TextView) view.findViewById(R.id.discuss_text);
+
+        mSendBtn = (ImageButton) findViewById(R.id.discuss_comment_send_btn);
+        mSendBtn.setEnabled(false);
+        mSendBtn.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                SNApi api = new SNApi(getApplicationContext());
+                api.comment(getApplicationContext(), mSnDiscuss.getFnid(), mCommentEdit.getText()
+                        .toString(), new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, String content) {
+                        mCommentEdit.setText(null);
+                        Toast.makeText(getApplicationContext(), "评论成功!", Toast.LENGTH_SHORT).show();
+                        loadData();
+                    }
+
+                    @Override
+                    public void onFailure(Throwable error, String content) {
+                        Toast.makeText(getApplicationContext(), "评论失败:" + error.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        mCommentEdit = (EditText) findViewById(R.id.discuss_comment_edit);
+        mCommentEdit.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mSendBtn.setEnabled(s.length() > 0);
+            }
+        });
         mListView.addHeaderView(view);
         mListView.setAdapter(mAdapter);
         wrapHeaderView(snNew);
@@ -178,7 +235,11 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
         @Override
         protected Boolean doInBackground(String... params) {
             try {
-                Document doc = Jsoup.connect(params[0]).get();
+                Connection conn = mJsoupFactory.newJsoupConnection(params[0]);
+                if (conn == null) {
+                    return false;
+                }
+                Document doc = conn.get();
                 SNDiscussParser parser = new SNDiscussParser();
                 SNDiscuss discuss = parser.parseDocument(doc);
                 mSnDiscuss.clearComments();
