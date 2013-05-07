@@ -37,6 +37,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -273,6 +275,7 @@ public class LoginActivity extends BaseFragmentActivity {
                 if (cookies == null || cookies.size() < 1) {
                     return null;
                 }
+                CookieSyncManager.createInstance(getApplicationContext());
                 for (Cookie cookie : cookies) {
                     if ("user".equals(cookie.getName())) {
                         String value = cookie.getValue();
@@ -281,6 +284,11 @@ public class LoginActivity extends BaseFragmentActivity {
                                 mUsername);
                         user = value;
                     }
+                    //sync cookie to webview
+                    CookieManager cookieManager = CookieManager.getInstance();
+                    cookieManager.setCookie("http://news.dbanotes.net/", cookie.getName() + "="
+                            + cookie.getValue());
+                    CookieSyncManager.getInstance().sync();
                 }
             } catch (IOException e1) {
                 Log.w(LOG_TAG, e1);
