@@ -4,15 +4,15 @@
  * http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-package com.halzhang.android.apps.startupnews.utils;
+package com.halzhang.android.apps.startupnews.snkit;
 
-import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * StartupNews
@@ -23,6 +23,8 @@ import android.text.TextUtils;
  * @version Apr 23, 2013
  */
 public class JsoupFactory {
+    
+    private static final String LOG_TAG = JsoupFactory.class.getSimpleName();
 
     private Context mContext;
 
@@ -46,6 +48,7 @@ public class JsoupFactory {
         Connection conn = null;
         String user = SessionManager.getInstance(mContext).getSessionUser();
         if (TextUtils.isEmpty(user)) {
+            Log.i(LOG_TAG, "user is empty!");
             conn = Jsoup.connect(url);
         } else {
             conn = Jsoup.connect(url).cookie("user", user);

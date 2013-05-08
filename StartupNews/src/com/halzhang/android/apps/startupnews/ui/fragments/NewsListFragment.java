@@ -10,6 +10,7 @@ import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
+import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
@@ -17,7 +18,7 @@ import com.halzhang.android.apps.startupnews.ui.LoginActivity;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
-import com.halzhang.android.apps.startupnews.utils.JsoupFactory;
+import com.halzhang.android.common.CDToast;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
@@ -164,9 +165,8 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                             if (statusCode == HttpStatus.SC_OK && TextUtils.isEmpty(content)) {
                                 Toast.makeText(getActivity(), "顶成功了！", Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(getActivity(),
-                                        getString(R.string.error_message, content),
-                                        Toast.LENGTH_SHORT).show();
+                                CDToast.showToast(getActivity(), getString(R.string.error_message, content));
+                                startActivity(new Intent(getActivity(), LoginActivity.class));
                             }
                         }
 

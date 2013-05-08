@@ -84,5 +84,6 @@
     <string name="default_html_provider"></string>
     <string name="tip_loading">加载中...</string>
     <string name="tip_last_page">亲，最后一页了...</string>
+    <string name="tip_logout">注销...</string>
 
 </resources>

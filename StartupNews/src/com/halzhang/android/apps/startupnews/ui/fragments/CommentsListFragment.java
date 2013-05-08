@@ -9,9 +9,9 @@ import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNComments;
 import com.halzhang.android.apps.startupnews.parser.SNCommentsParser;
+import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
-import com.halzhang.android.apps.startupnews.utils.JsoupFactory;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.jsoup.Connection;

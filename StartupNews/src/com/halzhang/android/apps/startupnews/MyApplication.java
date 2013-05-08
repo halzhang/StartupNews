@@ -56,11 +56,6 @@ public class MyApplication extends Application {
 
     private ExecutorService mExecutorService;
 
-    /**
-     * 登陆，注销url
-     */
-    private String mLogInOutURL;
-
     private static MyApplication me;
 
     public static MyApplication instance() {
@@ -170,14 +165,6 @@ public class MyApplication extends Application {
 
     public boolean isHistoryContains(String url) {
         return mHistorySet.contains(url);
-    }
-
-    public String getLogInOutURL() {
-        return mLogInOutURL;
-    }
-
-    public void setLogInOutURL(String logInOutURL) {
-        mLogInOutURL = logInOutURL;
     }
 
 }

@@ -6,20 +6,30 @@
 
 package com.halzhang.android.apps.startupnews.snkit;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.jsoup.Connection;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 import android.webkit.WebSettings;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
@@ -92,6 +102,52 @@ public class SNApi {
      */
     public void logout(String url, AsyncHttpResponseHandler responseHandler) {
         mAsyncHttpClient.get(url, responseHandler);
+    }
+
+    public boolean logout(String url) {
+        DefaultHttpClient httpClient = (DefaultHttpClient) mAsyncHttpClient.getHttpClient();
+        HttpGet request = new HttpGet(url);
+        try {
+            HttpResponse response = httpClient.execute(request);
+            int statusCode = response.getStatusLine().getStatusCode();
+            Log.i(LOG_TAG, "Status Code: " + statusCode);
+            if (HttpStatus.SC_OK == statusCode || HttpStatus.SC_MOVED_TEMPORARILY == statusCode) {
+                return true;
+            }
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * 校验cookie的有效性
+     * <p>
+     * 手机和pc都登陆之后，pc退出，会导致手机中的cookie失效
+     * </p>
+     * 
+     * @param url
+     */
+    public void verificateCookie(Context context, String url) {
+        Connection conn = JsoupFactory.getInstance(context).newJsoupConnection(url);
+        if (conn != null) {
+            try {
+                Document doc = conn.get();
+                Elements elements = doc.select("a:matches(logout)");
+                if (elements.size() < 1) {
+                    // cookie无效
+                    SessionManager.getInstance(context).clear();
+                }
+            } catch (IOException e) {
+                EasyTracker.getTracker().sendException(e.getMessage(), e, false);
+            }
+
+        }
+
     }
 
 }

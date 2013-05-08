@@ -13,12 +13,16 @@ import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNDiscussParser;
+import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
-import com.halzhang.android.apps.startupnews.utils.JsoupFactory;
+import com.halzhang.android.common.CDLog;
+import com.halzhang.android.common.CDToast;
+import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.apache.http.Header;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
@@ -126,7 +130,7 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
             @Override
             public void onClick(View v) {
                 if (!SessionManager.getInstance(getApplicationContext()).isValid()) {
-                    //未登陆
+                    // 未登陆
                     Intent intent = new Intent(DiscussActivity.this, LoginActivity.class);
                     startActivity(intent);
                     return;
@@ -139,6 +143,27 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
                         mCommentEdit.setText(null);
                         Toast.makeText(getApplicationContext(), "评论成功!", Toast.LENGTH_SHORT).show();
                         loadData();
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, String content) {
+                        String refreerLocation = null;
+                        for (Header header : headers) {
+                            CDLog.w(LOG_TAG, header.getName() + " : " + header.getValue());
+                            if (AsyncHttpClient.REFREER_LOCATION.equals(header.getName())) {
+                                refreerLocation = header.getValue();
+                                break;
+                            }
+                        }
+                        if (TextUtils.isEmpty(refreerLocation) || refreerLocation.contains("fnid")) {
+                            /*
+                             * Location:fnid=xxxxx Cookie失效，重新登陆
+                             */
+                            CDToast.showToast(getApplicationContext(), "评论失败，请重新登陆!");
+                            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                        } else if (refreerLocation.contains("item")) {
+                            onSuccess(statusCode, content);
+                        }
                     }
 
                     @Override

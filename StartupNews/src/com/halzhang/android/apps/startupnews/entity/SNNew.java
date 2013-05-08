@@ -213,7 +213,7 @@ public class SNNew implements Serializable {
         builder.append("URL: ").append(url).append(" Title: ").append(title).append(" SubText: ")
                 .append(subText).append(" Comhead: ").append(urlDomain).append(" DiscussURL: ")
                 .append(discussURL).append(" isDiscuss: ").append(isDiscuss).append(" ID:")
-                .append(postID);
+                .append(postID).append(" UpVoteUrl:").append(voteURL);
         return builder.toString();
     }
 

@@ -2,25 +2,34 @@
 package com.halzhang.android.apps.startupnews.ui;
 
 import com.actionbarsherlock.view.Menu;
-import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
+import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.ui.fragments.CommentsListFragment;
 import com.halzhang.android.apps.startupnews.ui.fragments.NewsListFragment;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.halzhang.android.common.CDToast;
 import com.viewpagerindicator.TitlePageIndicator;
 
+import org.jsoup.Connection;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
+import android.text.TextUtils;
 import android.widget.Toast;
+
+import java.io.IOException;
 
 /**
  * 主页
@@ -36,6 +45,8 @@ public class MainActivity extends BaseFragmentActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     private Intent mFeedbackEmailIntent;
+
+    private LogoutTask mLogoutTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,21 +113,10 @@ public class MainActivity extends BaseFragmentActivity {
             }
                 return true;
             case R.id.menu_logout:
-                SNApi api = new SNApi(getApplicationContext());
-                api.logout(MyApplication.instance().getLogInOutURL(),
-                        new AsyncHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, String content) {
-                                super.onSuccess(statusCode, content);
-                                SessionManager.getInstance(getApplicationContext()).clear();
-                                Log.i(LOG_TAG, "注销成功！");
-                            }
-
-                            @Override
-                            public void onFailure(Throwable error, String content) {
-                                super.onFailure(error, content);
-                            }
-                        });
+                SessionManager.getInstance(this).clear();
+                CDToast.showToast(this, "注销成功!");
+                // mLogoutTask = new LogoutTask();
+                // mLogoutTask.execute((Void) null);
                 return true;
             default:
                 break;
@@ -164,6 +164,73 @@ public class MainActivity extends BaseFragmentActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             return titles[position];
+        }
+
+    }
+
+    private class LogoutTask extends AsyncTask<Void, Void, Boolean> {
+
+        private ProgressDialog mDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (mDialog != null && mDialog.isShowing()) {
+                mDialog.dismiss();
+                mDialog = null;
+            }
+            mDialog = ProgressDialog.show(MainActivity.this, null, getString(R.string.tip_logout));
+            mDialog.setCancelable(false);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String logoutUrl = null;
+            JsoupFactory jsoupFactory = JsoupFactory.getInstance(getApplicationContext());
+            Connection conn = jsoupFactory.newJsoupConnection(getString(R.string.host, "/news"));
+            if (conn != null) {
+                try {
+                    Document doc = conn.get();
+                    Elements elements = doc.select("a:matches(logout)");
+                    if (elements.size() > 0) {
+                        logoutUrl = BaseHTMLParser.resolveRelativeSNURL(elements.attr("href"));
+                    } else {
+                        // 用户可能在pc注销了
+                        SessionManager.getInstance(getApplicationContext()).clear();
+                        return true;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            if (TextUtils.isEmpty(logoutUrl)) {
+                return false;
+            }
+
+            SNApi api = new SNApi(getApplicationContext());
+            boolean result = api.logout(logoutUrl);
+            if (result) {
+                SessionManager.getInstance(getApplicationContext()).clear();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            mLogoutTask = null;
+            mDialog.dismiss();
+            mDialog = null;
+            Toast.makeText(getApplicationContext(), result ? "注销成功" : "注销失败", Toast.LENGTH_SHORT)
+                    .show();
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            mLogoutTask = null;
         }
 
     }

@@ -95,10 +95,7 @@ public class LoginActivity extends BaseFragmentActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_login);
 
-        // Set up the login form.
         mUsernameView = (EditText) findViewById(R.id.username);
-        // mUsernameView.setText(mUsername);
-
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -123,6 +120,7 @@ public class LoginActivity extends BaseFragmentActivity {
         });
         mLoginStatusMessageView.setText(R.string.login_progress_init);
         showProgress(true);
+        SessionManager.getInstance(this).clear();
         mPreTask = new LoginPreTask();
         mPreTask.execute("");
     }
