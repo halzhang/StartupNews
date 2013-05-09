@@ -12,6 +12,7 @@ import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
+import com.halzhang.android.common.CDToast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -43,7 +44,6 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -111,16 +111,9 @@ public class LoginActivity extends BaseFragmentActivity {
         mLoginFormView = findViewById(R.id.login_form);
         mLoginStatusView = findViewById(R.id.login_status);
         mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
-
-        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
         mLoginStatusMessageView.setText(R.string.login_progress_init);
-        showProgress(true);
         SessionManager.getInstance(this).clear();
+        showProgress(true);
         mPreTask = new LoginPreTask();
         mPreTask.execute("");
     }
@@ -137,7 +130,9 @@ public class LoginActivity extends BaseFragmentActivity {
             case android.R.id.home:
                 finish();
                 return true;
-
+            case R.id.menu_login:
+                attemptLogin();
+                return true;
             default:
                 break;
         }
@@ -200,7 +195,7 @@ public class LoginActivity extends BaseFragmentActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginStatusView.setVisibility(View.VISIBLE);
+            mLoginStatusView.setVisibility(View.INVISIBLE);
             mLoginStatusView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
@@ -209,7 +204,7 @@ public class LoginActivity extends BaseFragmentActivity {
                         }
                     });
 
-            mLoginFormView.setVisibility(View.VISIBLE);
+            mLoginFormView.setVisibility(View.INVISIBLE);
             mLoginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
@@ -293,15 +288,13 @@ public class LoginActivity extends BaseFragmentActivity {
             mAuthTask = null;
             showProgress(false);
             if (!TextUtils.isEmpty(user)) {
+                CDToast.showToast(getApplicationContext(), R.string.tip_login_success);
                 Intent intent = new Intent(IntentAction.ACTION_LOGIN);
                 intent.putExtra(IntentAction.EXTRA_LOGIN_USER, user);
                 sendBroadcast(intent);
                 finish();
             } else {
-                Toast.makeText(getApplicationContext(), "登陆失败！", Toast.LENGTH_SHORT).show();
-                // TODO login failure
-                // mPasswordView.setError(getString(R.string.error_incorrect_password));
-                // mPasswordView.requestFocus();
+                CDToast.showToast(getApplicationContext(), R.string.tip_login_failure);
             }
         }
 
