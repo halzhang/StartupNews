@@ -165,8 +165,12 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                             if (statusCode == HttpStatus.SC_OK && TextUtils.isEmpty(content)) {
                                 Toast.makeText(getActivity(), "顶成功了！", Toast.LENGTH_SHORT).show();
                             } else {
-                                CDToast.showToast(getActivity(), getString(R.string.error_message, content));
-                                startActivity(new Intent(getActivity(), LoginActivity.class));
+                                if(content.contains("mismatch")){
+                                    //用户cookie无效
+                                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                                }
+                                CDToast.showToast(getActivity(),
+                                        getString(R.string.error_message, content));
                             }
                         }
 
