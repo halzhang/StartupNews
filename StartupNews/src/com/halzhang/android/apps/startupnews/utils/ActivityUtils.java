@@ -33,7 +33,7 @@ import java.util.List;
 public class ActivityUtils {
 
     public static void openArticle(Activity activity, SNNew snNew) {
-        if (snNew == null && activity == null) {
+        if (snNew == null || activity == null) {
             return;
         }
         Intent intent = null;
@@ -56,7 +56,7 @@ public class ActivityUtils {
      * @param v
      */
     public static void openActicle(Activity activity, SNNew snNew, View v) {
-        if (snNew == null && activity == null) {
+        if (snNew == null || activity == null) {
             return;
         }
         Bundle b = null;
