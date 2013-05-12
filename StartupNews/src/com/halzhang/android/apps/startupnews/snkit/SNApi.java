@@ -8,13 +8,13 @@ package com.halzhang.android.apps.startupnews.snkit;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.common.CDLog;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -26,7 +26,6 @@ import org.jsoup.select.Elements;
 
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 import android.webkit.WebSettings;
 
 import java.io.IOException;
@@ -46,6 +45,9 @@ public class SNApi {
 
     private static final String LOG_TAG = SNApi.class.getSimpleName();
 
+    /**
+     * USER-AGENT
+     */
     public static final String USER_AGENT = "Mozilla/5.0 (Linux; Android " + Build.VERSION.RELEASE
             + "; " + Build.MODEL + " Build/" + Build.DISPLAY + ")";
 
@@ -90,7 +92,7 @@ public class SNApi {
             mAsyncHttpClient.post(context, context.getString(R.string.host, "/r"), entity,
                     "application/x-www-form-urlencoded", responseHandler);
         } catch (UnsupportedEncodingException e) {
-            Log.e(LOG_TAG, e.getMessage());
+            CDLog.e(LOG_TAG, e.getMessage());
         }
     }
 
@@ -110,15 +112,13 @@ public class SNApi {
         try {
             HttpResponse response = httpClient.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();
-            Log.i(LOG_TAG, "Status Code: " + statusCode);
+            CDLog.i(LOG_TAG, "Status Code: " + statusCode);
             if (HttpStatus.SC_OK == statusCode || HttpStatus.SC_MOVED_TEMPORARILY == statusCode) {
                 return true;
             }
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            CDLog.w(LOG_TAG, null, e);
+            EasyTracker.getTracker().sendException("User logout error!", e, false);
             return false;
         }
         return false;

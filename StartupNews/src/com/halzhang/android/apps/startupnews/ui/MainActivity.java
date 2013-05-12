@@ -2,6 +2,7 @@
 package com.halzhang.android.apps.startupnews.ui;
 
 import com.actionbarsherlock.view.Menu;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
@@ -11,6 +12,7 @@ import com.halzhang.android.apps.startupnews.ui.fragments.CommentsListFragment;
 import com.halzhang.android.apps.startupnews.ui.fragments.NewsListFragment;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
+import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -38,7 +40,6 @@ import java.io.IOException;
  */
 public class MainActivity extends BaseFragmentActivity {
 
-    @SuppressWarnings("unused")
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private ViewPager mViewPager;
@@ -202,7 +203,8 @@ public class MainActivity extends BaseFragmentActivity {
                         return true;
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    CDLog.w(LOG_TAG, null, e);
+                    EasyTracker.getTracker().sendException("User Logout error!", e, false);
                 }
 
             }
