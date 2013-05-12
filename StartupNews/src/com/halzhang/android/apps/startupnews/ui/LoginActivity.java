@@ -8,10 +8,12 @@ package com.halzhang.android.apps.startupnews.ui;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
+import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
 
 import org.apache.http.HttpResponse;
@@ -153,20 +155,17 @@ public class LoginActivity extends BaseFragmentActivity {
         mUsernameView.setError(null);
         mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
         mUsername = mUsernameView.getText().toString();
         mPassword = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password.
         if (TextUtils.isEmpty(mPassword)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
         }
-        // Check for a valid email address.
         if (TextUtils.isEmpty(mUsername)) {
             mUsernameView.setError(getString(R.string.error_field_required));
             focusView = mUsernameView;
@@ -174,12 +173,8 @@ public class LoginActivity extends BaseFragmentActivity {
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
             mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
             showProgress(true);
             mAuthTask = new UserLoginTask();
@@ -226,7 +221,7 @@ public class LoginActivity extends BaseFragmentActivity {
         @Override
         protected String doInBackground(Void... params) {
             String user = null;
-            final HttpPost httpPost = new HttpPost("http://news.dbanotes.net/y");
+            final HttpPost httpPost = new HttpPost(getString(R.string.host, "/y"));
             httpPost.addHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded");
             httpPost.addHeader("Accept-Language", "zh-cn");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -252,7 +247,7 @@ public class LoginActivity extends BaseFragmentActivity {
                 HttpResponse response = httpClient.execute(httpPost);
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode != HttpStatus.SC_OK && statusCode != HttpStatus.SC_MOVED_TEMPORARILY) {
-                    Log.w(LOG_TAG, "http response error,code: " + statusCode);
+                    CDLog.w(LOG_TAG, "http response error,code: " + statusCode);
                     return null;
                 }
                 List<Cookie> cookies = httpClient.getCookieStore().getCookies();
@@ -263,19 +258,20 @@ public class LoginActivity extends BaseFragmentActivity {
                 for (Cookie cookie : cookies) {
                     if ("user".equals(cookie.getName())) {
                         String value = cookie.getValue();
-                        Log.i(LOG_TAG, "Cookie name: user " + " Value: " + cookie.getValue());
+                        CDLog.i(LOG_TAG, "Cookie name: user " + " Value: " + cookie.getValue());
                         SessionManager.getInstance(getApplicationContext()).storeSesson(value,
                                 mUsername);
                         user = value;
                     }
                     // sync cookie to webview
                     CookieManager cookieManager = CookieManager.getInstance();
-                    cookieManager.setCookie("http://news.dbanotes.net/", cookie.getName() + "="
+                    cookieManager.setCookie(getString(R.string.host), cookie.getName() + "="
                             + cookie.getValue());
                     CookieSyncManager.getInstance().sync();
                 }
             } catch (IOException e1) {
-                Log.w(LOG_TAG, e1);
+                EasyTracker.getTracker().sendException("User login error!", e1, false);
+                CDLog.e(LOG_TAG, null, e1);
                 return user;
             } finally {
                 httpClient.getConnectionManager().shutdown();
@@ -364,4 +360,5 @@ public class LoginActivity extends BaseFragmentActivity {
         }
 
     }
+
 }

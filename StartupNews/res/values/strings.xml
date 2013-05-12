@@ -87,5 +87,7 @@
     <string name="tip_logout">注销...</string>
     <string name="tip_login_success">登陆成功</string>
     <string name="tip_login_failure">登陆失败</string>
+    <string name="tip_logout_success">注销成功</string>
+    <string name="tip_logout_failure">注销失败</string>
 
 </resources>

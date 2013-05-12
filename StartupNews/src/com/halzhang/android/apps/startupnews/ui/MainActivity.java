@@ -38,6 +38,7 @@ import java.io.IOException;
  */
 public class MainActivity extends BaseFragmentActivity {
 
+    @SuppressWarnings("unused")
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private ViewPager mViewPager;
@@ -46,6 +47,7 @@ public class MainActivity extends BaseFragmentActivity {
 
     private Intent mFeedbackEmailIntent;
 
+    @SuppressWarnings("unused")
     private LogoutTask mLogoutTask;
 
     @Override
@@ -114,7 +116,7 @@ public class MainActivity extends BaseFragmentActivity {
                 return true;
             case R.id.menu_logout:
                 SessionManager.getInstance(this).clear();
-                CDToast.showToast(this, "注销成功!");
+                CDToast.showToast(this, R.string.tip_logout_success);
                 // mLogoutTask = new LogoutTask();
                 // mLogoutTask.execute((Void) null);
                 return true;
@@ -223,8 +225,8 @@ public class MainActivity extends BaseFragmentActivity {
             mLogoutTask = null;
             mDialog.dismiss();
             mDialog = null;
-            Toast.makeText(getApplicationContext(), result ? "注销成功" : "注销失败", Toast.LENGTH_SHORT)
-                    .show();
+            CDToast.showToast(getApplicationContext(), result ? R.string.tip_logout_success
+                    : R.string.tip_logout_failure);
         }
 
         @Override
