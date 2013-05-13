@@ -4,10 +4,14 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
+import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
+import com.actionbarsherlock.widget.ShareActionProvider;
+import com.actionbarsherlock.widget.ShareActionProvider.OnShareTargetSelectedListener;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
+import com.halzhang.android.common.CDLog;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,6 +20,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -30,7 +36,7 @@ import android.webkit.WebViewClient;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class BrowseActivity extends BaseFragmentActivity {
+public class BrowseActivity extends BaseFragmentActivity implements OnClickListener {
 
     private static final String LOG_TAG = BrowseActivity.class.getSimpleName();
 
@@ -78,6 +84,12 @@ public class BrowseActivity extends BaseFragmentActivity {
         settings.setJavaScriptEnabled(true);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
+
+        findViewById(R.id.browse_back).setOnClickListener(this);
+        findViewById(R.id.browse_forward).setOnClickListener(this);
+        findViewById(R.id.browse_readability).setOnClickListener(this);
+        findViewById(R.id.browse_refresh).setOnClickListener(this);
+        findViewById(R.id.browse_website).setOnClickListener(this);
 
         mHtmlProvider = PreferenceUtils.getHtmlProvider(getApplicationContext());
         final String url = mHtmlProvider + mOriginalUrl;
@@ -129,7 +141,38 @@ public class BrowseActivity extends BaseFragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
         getSupportMenuInflater().inflate(R.menu.activity_browse, menu);
+        MenuItem actionItem = menu.findItem(R.id.menu_share);
+        ShareActionProvider actionProvider = (ShareActionProvider) actionItem.getActionProvider();
+        actionProvider.setShareHistoryFileName(ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
+        actionProvider.setShareIntent(createShareIntent());
+        actionProvider.setOnShareTargetSelectedListener(new OnShareTargetSelectedListener() {
+
+            @Override
+            public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
+                CDLog.i(LOG_TAG, intent.getComponent().getPackageName());
+                EasyTracker.getTracker().sendEvent("ui_action", "share",
+                        intent.getComponent().getPackageName(), 0L);
+                return false;
+            }
+        });
         return true;
+    }
+
+    /**
+     * Creates a sharing {@link Intent}.
+     * 
+     * @return The sharing intent.
+     */
+    private Intent createShareIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
+        StringBuilder builder = new StringBuilder();
+        builder.append(mTitle).append(" ").append(mOriginalUrl);
+        builder.append(" （").append("分享自StartupNews: ").append(getString(R.string.google_play_url))
+                .append("）");
+        intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
+        return intent;
     }
 
     @Override
@@ -138,48 +181,11 @@ public class BrowseActivity extends BaseFragmentActivity {
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.menu_back:
+            case R.id.menu_original_url:
                 EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
-                        "browseactivity_menu_back", 0L);
-                mWebView.goBack();
+                        "browseactivity_menu_original_url", 0L);
+                mWebView.loadUrl(mOriginalUrl);
                 return true;
-            case R.id.menu_forward:
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
-                        "browseactivity_menu_forward", 0L);
-                mWebView.goForward();
-                return true;
-            case R.id.menu_readability:
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
-                        "browseactivity_menu_readability", 0L);
-                mWebView.loadUrl("http://www.readability.com/m?url=" + getCurrentUrl());
-                return true;
-            case R.id.menu_refresh:
-                mWebView.reload();
-                return true;
-            case R.id.menu_share: {
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
-                        "browseactivity_menu_share", 0L);
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
-                StringBuilder builder = new StringBuilder();
-                builder.append(mTitle).append(" ").append(mOriginalUrl);
-                builder.append(" （").append("分享自StartupNews: ")
-                        .append(getString(R.string.google_play_url)).append("）");
-                intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
-                startActivity(Intent.createChooser(intent, "分享文章的方式:"));
-            }
-                return true;
-            case R.id.menu_website: {
-                // 打开原链接，还是转码的链接呢？
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
-                        "browseactivity_menu_website", 0L);
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(getCurrentUrl()));
-                startActivity(intent);
-            }
-                return true;
-
             default:
                 break;
         }
@@ -190,23 +196,65 @@ public class BrowseActivity extends BaseFragmentActivity {
         return TextUtils.isEmpty(mCurrentUrl) ? mOriginalUrl : mCurrentUrl;
     }
 
-    // @Override
-    // public boolean onKeyDown(int keyCode, KeyEvent event) {
-    // switch (keyCode) {
-    // case KeyEvent.KEYCODE_BACK: {
-    // if (mWebView != null && mWebView.canGoBack()) {
-    // EasyTracker.getTracker().sendEvent("ui_action", "key_down",
-    // "browseactivity_webview_goback", 0L);
-    // mWebView.goBack();
-    // return true;
-    // }
-    // }
-    // break;
-    //
-    // default:
-    // break;
-    // }
-    // return super.onKeyDown(keyCode, event);
-    // }
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.browse_back:
+                back();
+                break;
+            case R.id.browse_forward:
+                forward();
+                break;
+            case R.id.browse_readability:
+                readability();
+                break;
+            case R.id.browse_refresh:
+                refresh();
+                break;
+            case R.id.browse_website:
+                webSite();
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void back() {
+        EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                "browseactivity_menu_back", 0L);
+        if (mWebView.canGoBack()) {
+            mWebView.goBack();
+        }
+    }
+
+    private void forward() {
+        EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                "browseactivity_menu_forward", 0L);
+        if (mWebView.canGoForward()) {
+            mWebView.goForward();
+        }
+    }
+
+    private void readability() {
+        EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                "browseactivity_menu_readability", 0L);
+        mWebView.loadUrl("http://www.readability.com/m?url=" + getCurrentUrl());
+    }
+
+    private void refresh() {
+        EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                "browseactivity_menu_refresh", 0L);
+        mWebView.reload();
+    }
+
+    private void webSite() {
+        // 打开原链接，还是转码的链接呢？
+        EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                "browseactivity_menu_website", 0L);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(getCurrentUrl()));
+        startActivity(intent);
+    }
 
 }

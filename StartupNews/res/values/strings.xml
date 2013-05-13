@@ -39,6 +39,7 @@
     <string name="menu_up_vote">顶一下</string>
     <string name="menu_login">登陆</string>
     <string name="menu_logout">注销</string>
+    <string name="menu_original_url">原网页</string>
 
     <!-- title string -->
     <string name="title_about">关于</string>

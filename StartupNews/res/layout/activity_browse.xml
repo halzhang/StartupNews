@@ -8,4 +8,46 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1" />
+    <LinearLayout 
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:background="@drawable/background_holo_dark">
+         <ImageButton
+             	android:id="@+id/browse_back"
+                style="@style/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_back"/>
+         <ImageButton
+             	android:id="@+id/browse_forward"
+                style="@style/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_forward"
+                />
+         <ImageButton
+             	android:id="@+id/browse_readability"
+                style="@style/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_readability"/>
+         <ImageButton
+             	android:id="@+id/browse_refresh"
+                style="@style/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_refresh"/>
+         <ImageButton
+             	android:id="@+id/browse_website"
+                style="@style/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_website"/>
+    </LinearLayout>
 </LinearLayout>

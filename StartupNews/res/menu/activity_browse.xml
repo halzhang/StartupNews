@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <!-- <item
+    <item
         android:id="@+id/menu_share"
         android:actionProviderClass="com.actionbarsherlock.widget.ShareActionProvider"
         android:showAsAction="always"
-        android:title="@string/menu_share"/> -->
+        android:title="@string/menu_share"/>
     <item
+        android:id="@+id/menu_original_url"
+        android:showAsAction="always"
+        android:title="@string/menu_original_url"/>
+    <!--
+         <item
         android:id="@+id/menu_back"
         android:showAsAction="always"
         android:icon="@drawable/ic_action_back"
@@ -27,14 +32,15 @@
         android:icon="@drawable/ic_action_refresh"
         android:title="@string/menu_refresh"/>
     <item
-        android:id="@+id/menu_share"
-        android:showAsAction="never"
-        android:icon="@drawable/ic_action_share"
-        android:title="@string/menu_share"/>
-    <item
         android:id="@+id/menu_website"
         android:showAsAction="never"
         android:icon="@drawable/ic_action_website"
         android:title="@string/menu_website"/>
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@drawable/ic_action_share"
+        android:showAsAction="always"
+        android:title="@string/menu_share"/>
+    -->
 
 </menu>
