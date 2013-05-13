@@ -129,6 +129,8 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
 
             @Override
             public void onClick(View v) {
+                EasyTracker.getTracker().sendEvent("ui_action", "view_clicked",
+                        "discussactivity_button_comment", 0L);
                 if (!SessionManager.getInstance(getApplicationContext()).isValid()) {
                     // 未登陆
                     Intent intent = new Intent(DiscussActivity.this, LoginActivity.class);
@@ -141,7 +143,9 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
                     @Override
                     public void onSuccess(int statusCode, String content) {
                         mCommentEdit.setText(null);
-                        Toast.makeText(getApplicationContext(), "评论成功!", Toast.LENGTH_SHORT).show();
+                        CDToast.showToast(getApplicationContext(), R.string.tip_comment_success);
+                        EasyTracker.getTracker().sendEvent("ui_action_feedback",
+                                "comment_feedback", "success", 0L);
                         loadData();
                     }
 
@@ -159,17 +163,24 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
                             /*
                              * Location:fnid=xxxxx Cookie失效，重新登陆
                              */
-                            CDToast.showToast(getApplicationContext(), "评论失败，请重新登陆!");
+                            CDToast.showToast(getApplicationContext(), R.string.tip_cookie_invalid);
                             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                            EasyTracker.getTracker().sendEvent("ui_action_feedback",
+                                    "comment_feedback", getString(R.string.tip_cookie_invalid), 0L);
                         } else if (refreerLocation.contains("item")) {
                             onSuccess(statusCode, content);
+                        } else {
+                            EasyTracker.getTracker().sendEvent("ui_action_feedback",
+                                    "comment_feedback", content, 0L);
+                            CDToast.showToast(getApplicationContext(), R.string.tip_comment_failure);
                         }
                     }
 
                     @Override
                     public void onFailure(Throwable error, String content) {
-                        Toast.makeText(getApplicationContext(), "评论失败:" + error.getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                        CDToast.showToast(getApplicationContext(), R.string.tip_comment_failure);
+                        EasyTracker.getTracker().sendException("comment error:" + content, error,
+                                false);
                     }
                 });
             }

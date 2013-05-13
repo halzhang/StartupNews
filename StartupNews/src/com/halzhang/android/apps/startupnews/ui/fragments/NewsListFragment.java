@@ -148,12 +148,18 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         Log.i(LOG_TAG, snNew.toString());
         switch (item.getItemId()) {
             case R.id.menu_show_comment:
+                EasyTracker.getTracker().sendEvent("ui_action", "context_item_selected",
+                        "newslistfragment_menu_show_comment", 0L);
                 openDiscuss(snNew);
                 return true;
             case R.id.menu_show_article:
+                EasyTracker.getTracker().sendEvent("ui_action", "context_item_selected",
+                        "newslistfragment_menu_show_acticle", 0L);
                 ActivityUtils.openArticle(getActivity(), snNew);
                 return true;
             case R.id.menu_up_vote:
+                EasyTracker.getTracker().sendEvent("ui_action", "context_item_selected",
+                        "newslistfragment_menu_upvote", 0L);
                 if (SessionManager.getInstance(getActivity()).isValid()) {
                     SNApi api = new SNApi(getActivity());
                     final String url = getString(R.string.vote_url, snNew.getPostID(),
@@ -163,22 +169,26 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                         @Override
                         public void onSuccess(int statusCode, String content) {
                             if (statusCode == HttpStatus.SC_OK && TextUtils.isEmpty(content)) {
-                                Toast.makeText(getActivity(), "顶成功了！", Toast.LENGTH_SHORT).show();
+                                CDToast.showToast(getActivity(), R.string.tip_vote_success);
                             } else {
-                                if(content.contains("mismatch")){
-                                    //用户cookie无效
+                                EasyTracker.getTracker().sendEvent("ui_action_feedback",
+                                        "upvote_feedback", content, 0L);
+                                if (content.contains("mismatch")) {
+                                    // 用户cookie无效
                                     startActivity(new Intent(getActivity(), LoginActivity.class));
+                                    CDToast.showToast(getActivity(), R.string.tip_cookie_invalid);
+                                } else {
+                                    CDToast.showToast(getActivity(),
+                                            getString(R.string.tip_vote_duplicate));
                                 }
-                                CDToast.showToast(getActivity(),
-                                        getString(R.string.error_message, content));
                             }
                         }
 
                         @Override
                         public void onFailure(Throwable error, String content) {
-                            Toast.makeText(getActivity(),
-                                    getString(R.string.error_message, error.getMessage()),
-                                    Toast.LENGTH_SHORT).show();
+                            EasyTracker.getTracker().sendException("up vote error:" + content,
+                                    error, false);
+                            CDToast.showToast(getActivity(), getString(R.string.tip_vote_failure));
                         }
                     });
                 } else {

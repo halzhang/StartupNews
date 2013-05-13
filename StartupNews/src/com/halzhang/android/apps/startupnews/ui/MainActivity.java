@@ -100,9 +100,13 @@ public class MainActivity extends BaseFragmentActivity {
     public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_settings:
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "mainactivity_menu_settings", 0L);
                 startActivity(new Intent(this, AboutActivity.class));
                 return true;
             case R.id.menu_feedback:
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "mainactivity_menu_feedback", 0L);
                 if (ActivityUtils.isIntentAvailable(getApplicationContext(), mFeedbackEmailIntent)) {
                     startActivity(mFeedbackEmailIntent);
                 } else {
@@ -111,11 +115,15 @@ public class MainActivity extends BaseFragmentActivity {
                 }
                 return true;
             case R.id.menu_login: {
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "mainactivity_menu_login", 0L);
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
             }
                 return true;
             case R.id.menu_logout:
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "mainactivity_menu_logout", 0L);
                 SessionManager.getInstance(this).clear();
                 CDToast.showToast(this, R.string.tip_logout_success);
                 // mLogoutTask = new LogoutTask();

@@ -133,6 +133,8 @@ public class LoginActivity extends BaseFragmentActivity {
                 finish();
                 return true;
             case R.id.menu_login:
+                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                        "loginactivity_menu_login", 0L);
                 attemptLogin();
                 return true;
             default:
