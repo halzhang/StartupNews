@@ -1,9 +1,3 @@
-[submodule "library/commonlog"]
-	path = library/commonlog
-	url = git://github.com/halzhang/CommonLog.git
-[submodule "library/commontoast"]
-	path = library/commontoast
-	url = git://github.com/halzhang/CommonToast.git
 [submodule "library/android-async-http"]
 	path = library/android-async-http
 	url = git://github.com/halzhang/android-async-http.git
