@@ -23,3 +23,7 @@ ant.properties
 *.keystore
 res_bak.zip
 StartupNews/res/values/analytics.xml
+
+# IntelliJ files
+.idea
+*.iml
