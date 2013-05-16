@@ -28,3 +28,4 @@ StartupNews/res/values/analytics.xml
 .idea
 *.iml
 out
+module_*.xml
