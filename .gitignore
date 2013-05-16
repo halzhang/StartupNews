@@ -27,3 +27,4 @@ StartupNews/res/values/analytics.xml
 # IntelliJ files
 .idea
 *.iml
+out

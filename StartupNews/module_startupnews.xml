@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_startupnews" default="compile.module.startupnews">
+  <dirname property="module.startupnews.basedir" file="${ant.file.module_startupnews}"/>
+  
+  <property name="module.jdk.home.startupnews" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.startupnews" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.startupnews" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.startupnews" value="${compiler.args}"/>
+  
+  <property name="startupnews.output.dir" value="${module.startupnews.basedir}/../out/production/StartupNews"/>
+  <property name="startupnews.testoutput.dir" value="${module.startupnews.basedir}/../out/test/StartupNews"/>
+  
+  <path id="startupnews.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="startupnews.module.production.classpath">
+    <path refid="${module.jdk.classpath.startupnews}"/>
+    <path refid="library.libs.classpath"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <pathelement location="${viewpagerindicator.output.dir}"/>
+    <pathelement location="${abslibrary.output.dir}"/>
+    <pathelement location="${commontoast.output.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+    <pathelement location="${commonlog.output.dir}"/>
+    <pathelement location="${android-async-http-fork.output.dir}"/>
+  </path>
+  
+  <path id="startupnews.runtime.production.module.classpath">
+    <pathelement location="${startupnews.output.dir}"/>
+    <path refid="library.libs.classpath"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <path refid="viewpagerindicator.runtime.production.module.classpath"/>
+    <path refid="abslibrary.runtime.production.module.classpath"/>
+    <path refid="commontoast.runtime.production.module.classpath"/>
+    <path refid="pulltorefresh.runtime.production.module.classpath"/>
+    <path refid="commonlog.runtime.production.module.classpath"/>
+    <path refid="android-async-http-fork.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="startupnews.module.classpath">
+    <path refid="${module.jdk.classpath.startupnews}"/>
+    <pathelement location="${startupnews.output.dir}"/>
+    <path refid="library.libs.classpath"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <pathelement location="${viewpagerindicator.testoutput.dir}"/>
+    <pathelement location="${viewpagerindicator.output.dir}"/>
+    <pathelement location="${abslibrary.testoutput.dir}"/>
+    <pathelement location="${abslibrary.output.dir}"/>
+    <pathelement location="${commontoast.testoutput.dir}"/>
+    <pathelement location="${commontoast.output.dir}"/>
+    <pathelement location="${pulltorefresh.testoutput.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+    <pathelement location="${commonlog.testoutput.dir}"/>
+    <pathelement location="${commonlog.output.dir}"/>
+    <pathelement location="${android-async-http-fork.testoutput.dir}"/>
+    <pathelement location="${android-async-http-fork.output.dir}"/>
+  </path>
+  
+  <path id="startupnews.runtime.module.classpath">
+    <pathelement location="${startupnews.testoutput.dir}"/>
+    <pathelement location="${startupnews.output.dir}"/>
+    <path refid="library.libs.classpath"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <path refid="viewpagerindicator.runtime.module.classpath"/>
+    <path refid="abslibrary.runtime.module.classpath"/>
+    <path refid="commontoast.runtime.module.classpath"/>
+    <path refid="pulltorefresh.runtime.module.classpath"/>
+    <path refid="commonlog.runtime.module.classpath"/>
+    <path refid="android-async-http-fork.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.startupnews">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.startupnews">
+    <patternset refid="excluded.from.module.startupnews"/>
+  </patternset>
+  
+  <path id="startupnews.module.sourcepath">
+    <dirset dir="${module.startupnews.basedir}">
+      <include name="gen"/>
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.startupnews" depends="compile.module.startupnews.production,compile.module.startupnews.tests" description="Compile module StartupNews"/>
+  
+  <target name="compile.module.startupnews.production" depends="register.custom.compilers,compile.module.viewpagerindicator,compile.module.abslibrary,compile.module.commontoast,compile.module.pulltorefresh,compile.module.commonlog,compile.module.android-async-http-fork" description="Compile module StartupNews; production classes">
+    <mkdir dir="${startupnews.output.dir}"/>
+    <javac2 destdir="${startupnews.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.startupnews}/javac">
+      <compilerarg line="${compiler.args.startupnews}"/>
+      <bootclasspath refid="startupnews.module.bootclasspath"/>
+      <classpath refid="startupnews.module.production.classpath"/>
+      <src refid="startupnews.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.startupnews"/>
+    </javac2>
+    
+    <copy todir="${startupnews.output.dir}">
+      <fileset dir="${module.startupnews.basedir}/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.startupnews.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.startupnews.tests" depends="register.custom.compilers,compile.module.startupnews.production" description="compile module StartupNews; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.startupnews" description="cleanup module">
+    <delete dir="${startupnews.output.dir}"/>
+    <delete dir="${startupnews.testoutput.dir}"/>
+  </target>
+</project>
