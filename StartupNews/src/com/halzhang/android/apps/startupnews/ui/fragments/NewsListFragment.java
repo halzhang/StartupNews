@@ -18,6 +18,7 @@ import com.halzhang.android.apps.startupnews.ui.LoginActivity;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
+import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -279,7 +280,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                 mSnFeed.setMoreUrl(feed.getMoreUrl());
                 return true;
             } catch (Exception e) {
-                // Log.e(LOG_TAG, "", e);
+                CDLog.w(LOG_TAG,"",e);
                 EasyTracker.getTracker().sendException("NewsTask", e, false);
                 return false;
             }

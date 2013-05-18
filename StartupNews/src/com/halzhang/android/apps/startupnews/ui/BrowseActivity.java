@@ -4,6 +4,18 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.actionbarsherlock.widget.ShareActionProvider;
@@ -13,26 +25,12 @@ import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
 import com.halzhang.android.common.CDLog;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-
 /**
  * StartupNews
  * <p>
  * 浏览页面
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
@@ -93,7 +91,7 @@ public class BrowseActivity extends BaseFragmentActivity implements OnClickListe
 
         mHtmlProvider = PreferenceUtils.getHtmlProvider(getApplicationContext());
         final String url = mHtmlProvider + mOriginalUrl;
-        Log.i(LOG_TAG, "Open Url: " + url);
+        CDLog.i(LOG_TAG, "Open Url: " + url);
         mWebView.loadUrl(url);
     }
 
@@ -149,7 +147,12 @@ public class BrowseActivity extends BaseFragmentActivity implements OnClickListe
 
             @Override
             public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
-                CDLog.i(LOG_TAG, intent.getComponent().getPackageName());
+                String packageName = intent.getComponent().getPackageName();
+                CDLog.i(LOG_TAG, intent.getComponent().getPackageName()));
+                if ("com.sina.weibo".equals(packageName)) {
+                    String extraText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                    intent.putExtra(Intent.EXTRA_TEXT,extraText+" "+getString(R.string.weibo_share_suffix));
+                }
                 EasyTracker.getTracker().sendEvent("ui_action", "share",
                         intent.getComponent().getPackageName(), 0L);
                 return false;
@@ -160,7 +163,7 @@ public class BrowseActivity extends BaseFragmentActivity implements OnClickListe
 
     /**
      * Creates a sharing {@link Intent}.
-     * 
+     *
      * @return The sharing intent.
      */
     private Intent createShareIntent() {
@@ -169,8 +172,8 @@ public class BrowseActivity extends BaseFragmentActivity implements OnClickListe
         intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
         StringBuilder builder = new StringBuilder();
         builder.append(mTitle).append(" ").append(mOriginalUrl);
-        builder.append(" （").append("分享自StartupNews: ").append(getString(R.string.google_play_url))
-                .append("）");
+//        builder.append(" （").append("分享自StartupNews: ").append(getString(R.string.google_play_url))
+//                .append("）");
         intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
         return intent;
     }
