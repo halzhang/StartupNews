@@ -55,6 +55,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
         mPullToRefreshListView.setOnRefreshListener(this);
         mPullToRefreshListView.setOnLastItemVisibleListener(this);
         mPullToRefreshListView.setMode(Mode.BOTH);
+        mPullToRefreshListView.getLoadingLayoutProxy(false,true).setPullLabel(getString(R.string.pull_to_refresh_from_bottom_pull_label));
         mListView = mPullToRefreshListView.getRefreshableView();
         mListView.setOnItemClickListener(this);
         mListView.setOnScrollListener(this);

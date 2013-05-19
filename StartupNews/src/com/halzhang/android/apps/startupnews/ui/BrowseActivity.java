@@ -147,14 +147,19 @@ public class BrowseActivity extends BaseFragmentActivity implements OnClickListe
 
             @Override
             public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
+                /*
+                这里改变intent是没用的，intent只是一份拷贝，只能自己启动修改后的Intent
+                然而自己启动Intent并不会改变历史记录
+                 */
                 String packageName = intent.getComponent().getPackageName();
-                CDLog.i(LOG_TAG, intent.getComponent().getPackageName()));
-                if ("com.sina.weibo".equals(packageName)) {
+                CDLog.i(LOG_TAG, packageName);
+                EasyTracker.getTracker().sendEvent("ui_action", "share",packageName, 0L);
+                if (getString(R.string.weibo_package_name).equals(packageName)) {
                     String extraText = intent.getStringExtra(Intent.EXTRA_TEXT);
-                    intent.putExtra(Intent.EXTRA_TEXT,extraText+" "+getString(R.string.weibo_share_suffix));
+                    intent.putExtra(Intent.EXTRA_TEXT, extraText + " " + getString(R.string.weibo_share_suffix));
+                    startActivity(intent);
+                    return true;
                 }
-                EasyTracker.getTracker().sendEvent("ui_action", "share",
-                        intent.getComponent().getPackageName(), 0L);
                 return false;
             }
         });
