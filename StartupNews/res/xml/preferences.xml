@@ -52,5 +52,12 @@
         android:key="@string/pref_key_version"
         android:summary="@string/pref_summary_version"
         android:title="@string/pref_title_version" />
+    <PreferenceScreen
+            android:title="@string/pref_title_donation"
+            android:summary="@string/pref_summary_donation">
+        <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://me.alipay.com/halzhang"/>
+    </PreferenceScreen>
 
 </PreferenceScreen>
