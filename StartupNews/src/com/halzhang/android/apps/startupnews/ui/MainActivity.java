@@ -72,7 +72,7 @@ public class MainActivity extends BaseFragmentActivity {
         });
         StringBuilder builder = new StringBuilder();
         builder.append(getString(R.string.app_name)).append(" v")
-                .append(AppUtils.getVersionName(getApplicationContext())).append("反馈");
+                .append(AppUtils.getVersionName(getApplicationContext())).append(getString(R.string.feedback));
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, builder.toString());
         emailIntent.setType("message/rfc822");
         return emailIntent;

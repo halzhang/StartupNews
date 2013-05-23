@@ -26,6 +26,7 @@
     <string name="weibo_share_suffix">( 分享自StartupNews:http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews )</string>
     <string name="weibo_package_name">com.sina.weibo</string>
     <string name="pull_to_refresh_from_bottom_pull_label">上拉刷新</string>
+    <string name="feedback">反馈</string>
     <!-- menu string -->
     <string name="menu_share">分享</string>
     <string name="menu_settings">设置</string>
