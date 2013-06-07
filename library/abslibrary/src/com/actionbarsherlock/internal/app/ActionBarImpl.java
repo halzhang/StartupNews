@@ -32,8 +32,10 @@ import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.ImageView;
 import android.widget.SpinnerAdapter;
 import com.actionbarsherlock.R;
 import com.actionbarsherlock.app.ActionBar;
@@ -170,7 +172,12 @@ public class ActionBarImpl extends ActionBar {
 
         // Older apps get the home button interaction enabled by default.
         // Newer apps need to enable it explicitly.
-        setHomeButtonEnabled(mContext.getApplicationInfo().targetSdkVersion < 14);
+        boolean homeButtonEnabled = mContext.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+
+        // If the homeAsUp display option is set, always enable the home button.
+        homeButtonEnabled |= (mActionView.getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) != 0;
+
+        setHomeButtonEnabled(homeButtonEnabled);
 
         setHasEmbeddedTabs(getResources_getBoolean(mContext,
                 R.bool.abs__action_bar_embed_tabs));
@@ -369,6 +376,36 @@ public class ActionBarImpl extends ActionBar {
         if (mSplitView != null) {
             mSplitView.setSplitBackground(d);
         }
+    }
+    
+    @Override
+	public void setHomeAsUpIndicator(Drawable drawable) {
+    	final View home = mActivity.findViewById(R.id.abs__home);
+        if (home == null) {
+            // Action bar doesn't have a known configuration, implementation was changed unexpectedly
+            return;
+        }
+
+        final ViewGroup parent = (ViewGroup) home.getParent();
+        final int childCount = parent.getChildCount();
+        if (childCount != 2) {
+            // No idea which one will be the right one, implementation was changed unexpectedly
+            return;
+        }
+
+        final View first = parent.getChildAt(0);
+        final View second = parent.getChildAt(1);
+        final View up = first.getId() == R.id.abs__home ? second : first;
+
+        if (up instanceof ImageView) {
+            ImageView upIndicatorView = (ImageView) up;
+            upIndicatorView.setImageDrawable(drawable);
+        }
+    }
+    
+    @Override
+    public void setHomeActionContentDescription(int contentResId) {
+    	mActionView.setHomeButtonContentDescription(contentResId);
     }
 
     public View getCustomView() {
