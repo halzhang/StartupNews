@@ -1,13 +1,16 @@
 
-package com.halzhang.android.apps.startupnews.ui.fragments;
+package com.halzhang.android.apps.startupnews.ui;
 
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.utils.UIUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
+import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,10 +24,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 /**
- * WoPlus
+ * StartupNews
  * <p>
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Feb 26, 2013
  */
@@ -44,6 +47,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
         super.onCreate(savedInstanceState);
     }
 
+    @SuppressLint("NewApi")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getContentViewId(), null);
@@ -55,11 +59,15 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
         mPullToRefreshListView.setOnRefreshListener(this);
         mPullToRefreshListView.setOnLastItemVisibleListener(this);
         mPullToRefreshListView.setMode(Mode.BOTH);
-        mPullToRefreshListView.getLoadingLayoutProxy(false,true).setPullLabel(getString(R.string.pull_to_refresh_from_bottom_pull_label));
+        mPullToRefreshListView.getLoadingLayoutProxy(false, true).setPullLabel(getString(R.string.pull_to_refresh_from_bottom_pull_label));
         mListView = mPullToRefreshListView.getRefreshableView();
         mListView.setOnItemClickListener(this);
         mListView.setOnScrollListener(this);
         mEmptyView = view.findViewById(android.R.id.empty);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
+                && UIUtils.hasHoneycomb()) {
+            mListView.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
+        }
         // if(mEmptyView != null && mAdapter == null/*第一次初始化*/){
         // mPullToRefreshListView.setVisibility(View.INVISIBLE);
         // mEmptyView.setVisibility(View.VISIBLE);
@@ -124,7 +132,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-            int totalItemCount) {
+                         int totalItemCount) {
         // do nothing
     }
 
@@ -137,7 +145,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
 
     /**
      * Get the fragment's pull refresh list view widget
-     * 
+     *
      * @return
      */
     public PullToRefreshListView getPullToRefreshListView() {
@@ -157,7 +165,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
 
     /**
      * 向上拖动刷新
-     * 
+     *
      * @param refreshListView
      */
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
@@ -166,11 +174,24 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
 
     /**
      * 向下拖动刷新
-     * 
+     *
      * @param refreshListView
      */
     protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
 
+    }
+
+    @SuppressLint("NewApi")
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (UIUtils.hasHoneycomb()){
+            if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+                mListView.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_RIGHT);
+            }else{
+                mListView.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
+            }
+        }
     }
 
     /**
@@ -178,11 +199,11 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
      * Subclasses should override. Subclasses can call
      * getListView().getItemAtPosition(position) if they need to access the data
      * associated with the selected item.
-     * 
-     * @param l The ListView where the click happened
-     * @param v The view that was clicked within the ListView
+     *
+     * @param l        The ListView where the click happened
+     * @param v        The view that was clicked within the ListView
      * @param position The position of the view in the list
-     * @param id The row id of the item that was clicked
+     * @param id       The row id of the item that was clicked
      */
     protected void onListItemClick(ListView l, View v, int position, long id) {
 
@@ -190,10 +211,11 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
 
     /**
      * Get layout res for Fragment
-     * 
+     *
      * @return Fragment Content View Id
      * @see #onCreateView(LayoutInflater, ViewGroup, Bundle)
      */
     public abstract int getContentViewId();
+
 
 }

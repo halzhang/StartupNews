@@ -1,15 +1,24 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
+import android.content.res.Configuration;
+import android.support.v4.widget.DrawerLayout;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBarDrawerToggle;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.Window;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
-import com.halzhang.android.apps.startupnews.ui.fragments.CommentsListFragment;
-import com.halzhang.android.apps.startupnews.ui.fragments.NewsListFragment;
+import com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
@@ -38,7 +47,7 @@ import java.io.IOException;
  * 
  * @author Hal
  */
-public class MainActivity extends BaseFragmentActivity {
+public class MainActivity extends BaseFragmentActivity implements AdapterView.OnItemClickListener,NewsListFragment.OnNewsSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -48,21 +57,71 @@ public class MainActivity extends BaseFragmentActivity {
 
     private Intent mFeedbackEmailIntent;
 
+    private ListView mDrawerListView;
+
+    private DrawerLayout mDrawerLayout;
+
+    private ActionBarDrawerToggle mDrawerToggle;
+
     @SuppressWarnings("unused")
     private LogoutTask mLogoutTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        CDLog.i(LOG_TAG,"MainAction create!");
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_PROGRESS);
         setContentView(R.layout.activity_main);
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        TitlePageIndicator indicator = (TitlePageIndicator) findViewById(R.id.titles);
-        indicator.setViewPager(mViewPager);
-
+        setupViews();
         mFeedbackEmailIntent = createEmailIntent();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if(mDrawerToggle != null){
+           mDrawerToggle.syncState();
+        }
+    }
+
+    private void setupViews() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (mDrawerLayout != null) {
+            //横屏，平板布局
+            final ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+            mDrawerToggle = new ActionBarDrawerToggle(this, actionBar, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_opened, R.string.drawer_closed) {
+
+                @Override
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
+                }
+
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    super.onDrawerClosed(drawerView);
+                }
+            };
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+            mDrawerListView = (ListView) findViewById(R.id.left_drawer_list);
+            mDrawerListView.setOnItemClickListener(this);
+            mDrawerListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, android.R.id.text1, getResources().getStringArray(R.array.section_titles)));
+
+            NewsListFragment newsListFragment = new NewsListFragment();
+            Bundle args = new Bundle();
+            args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
+            newsListFragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame_left,newsListFragment).commitAllowingStateLoss();
+
+        }
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        if (mViewPager != null) {
+            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+            mViewPager.setAdapter(mSectionsPagerAdapter);
+            TitlePageIndicator indicator = (TitlePageIndicator) findViewById(R.id.titles);
+            indicator.setViewPager(mViewPager);
+        }
     }
 
     private Intent createEmailIntent() {
@@ -98,6 +157,9 @@ public class MainActivity extends BaseFragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+        if(mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)){
+            return true;
+        }
         switch (item.getItemId()) {
             case R.id.menu_settings:
                 EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
@@ -133,6 +195,39 @@ public class MainActivity extends BaseFragmentActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        final Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.article_fragment);
+        if (fragment != null){
+            if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+                getSupportFragmentManager().beginTransaction().hide(fragment).commit();
+            }else {
+                getSupportFragmentManager().beginTransaction().show(fragment).commit();
+            }
+        }
+        if(mDrawerToggle != null){
+            mDrawerToggle.onConfigurationChanged(newConfig);
+        }
+    }
+
+
+    @Override
+    public void onNewsSelected(int position, SNNew snNew) {
+        //处理文章被选中，竖屏启动Activity，平板更新右栏
+        BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager().findFragmentById(R.id.article_fragment);
+        if (browseFragment != null) {
+            browseFragment.load(snNew.getUrl());
+        } else {
+            ActivityUtils.openArticle(this, snNew);
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //TODO handle drawer left listview
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {

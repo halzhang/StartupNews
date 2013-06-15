@@ -23,6 +23,7 @@ import com.actionbarsherlock.widget.ShareActionProvider.OnShareTargetSelectedLis
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
+import com.halzhang.android.apps.startupnews.utils.UIUtils;
 import com.halzhang.android.common.CDLog;
 
 /**
@@ -76,7 +77,7 @@ public class BrowseActivity extends BaseFragmentActivity implements OnClickListe
         WebSettings settings = mWebView.getSettings();
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+        if (UIUtils.hasHoneycomb()) {
             settings.setDisplayZoomControls(false);
         }
         settings.setJavaScriptEnabled(true);

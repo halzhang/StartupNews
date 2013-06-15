@@ -6,9 +6,9 @@
     <string name="hello_world">Hello World!</string>
 
     <string-array name="section_titles">
-        <item>NEWS</item>
-        <item>NEWEST</item>
-        <item>COMMENTS</item>
+        <item>热门文章</item>
+        <item>最新文章</item>
+        <item>最新评论</item>
     </string-array>
 
     <string name="google_play_url">http://play.google.com/store/apps/details?id=com.halzhang.android.apps.startupnews</string>
@@ -27,6 +27,8 @@
     <string name="weibo_package_name">com.sina.weibo</string>
     <string name="pull_to_refresh_from_bottom_pull_label">上拉刷新</string>
     <string name="feedback">反馈</string>
+    <string name="drawer_opened">打开</string>
+    <string name="drawer_closed">关闭</string>
     <!-- menu string -->
     <string name="menu_share">分享</string>
     <string name="menu_settings">设置</string>

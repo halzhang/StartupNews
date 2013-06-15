@@ -2,8 +2,9 @@
  * Copyright (C) 2013 HalZhang
  */
 
-package com.halzhang.android.apps.startupnews.ui.fragments;
+package com.halzhang.android.apps.startupnews.ui;
 
+import android.app.Activity;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
@@ -13,11 +14,10 @@ import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
-import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
-import com.halzhang.android.apps.startupnews.ui.LoginActivity;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
+import com.halzhang.android.apps.startupnews.utils.UIUtils;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -62,6 +62,20 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
 
     private static final String LOG_TAG = NewsListFragment.class.getSimpleName();
 
+    /**
+     * {@link NewsListFragment}选中监听器
+     */
+    public interface OnNewsSelectedListener{
+        /**
+         * 处理news被选中事件
+         * @param position list position
+         * @param snNew {@link SNNew}
+         */
+        public void onNewsSelected(int position,SNNew snNew);
+    }
+
+    private OnNewsSelectedListener mNewsSelectedListener;
+
     private NewsTask mNewsTask;
 
     private String mNewsURL;
@@ -92,6 +106,17 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
             }
         }
     };
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try{
+            mNewsSelectedListener = (OnNewsSelectedListener)activity;
+        }catch (ClassCastException e){
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnNewsSelectedListener");
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -238,7 +263,10 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                 "news_list_fragment_list_item_click", 0L);
         mAdapter.notifyDataSetChanged();
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
-        ActivityUtils.openArticle(getActivity(), entity);
+        if (mNewsSelectedListener != null){
+            mNewsSelectedListener.onNewsSelected(position-1,entity);
+        }
+        //ActivityUtils.openArticle(getActivity(), entity);//call on phone
     }
 
     private void openDiscuss(SNNew snNew) {

@@ -5,8 +5,9 @@
     android:versionName="0.6.0.0" >
 
     <uses-sdk
+        android:maxSdkVersion="17"
         android:minSdkVersion="10"
-        android:targetSdkVersion="16" />
+        android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -23,9 +24,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".ui.MainActivity"
-            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,13 +34,11 @@
         </activity>
         <activity
             android:name=".ui.BrowseActivity"
-            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
-            android:screenOrientation="portrait"/>
+            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize" />
         <activity
             android:name=".ui.DiscussActivity"
-            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
-            android:label="@string/title_discuss"
-            android:screenOrientation="portrait" />
+            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize"
+            android:label="@string/title_discuss"/>
         <!--
              <activity
             android:name=".ui.SubmitActivity"
@@ -57,15 +55,12 @@
         -->
         <activity
             android:name=".ui.AboutActivity"
-            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
-            android:label="@string/title_settings"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo" />
+            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize"
+            android:label="@string/title_settings" />
         <activity
             android:name=".ui.LoginActivity"
-            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
+            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize"
             android:label="@string/title_login"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
     </application>
 
