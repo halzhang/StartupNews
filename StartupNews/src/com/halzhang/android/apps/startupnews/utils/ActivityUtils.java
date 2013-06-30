@@ -5,7 +5,7 @@
 package com.halzhang.android.apps.startupnews.utils;
 
 import com.halzhang.android.apps.startupnews.entity.SNNew;
-import com.halzhang.android.apps.startupnews.ui.BrowseActivity;
+import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
 
 import android.app.Activity;
 import android.app.ActivityOptions;

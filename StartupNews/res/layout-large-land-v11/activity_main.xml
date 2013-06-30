@@ -4,14 +4,14 @@
     android:id="@+id/content_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal" >
 
     <LinearLayout
         android:id="@+id/content_frame_left"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical" >
 
         <com.viewpagerindicator.TitlePageIndicator
             android:id="@+id/titles"
@@ -27,95 +27,96 @@
     </LinearLayout>
 
     <View
-        android:layout_height="match_parent"
         android:layout_width="1dp"
+        android:layout_height="match_parent"
         android:background="@color/holo_blue_dark" />
 
     <fragment
-        android:name="com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment"
         android:id="@+id/article_fragment"
+        android:name="com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
         tools:layout="@layout/fragment_article" />
+
 </LinearLayout>
+<!-- 
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <!--<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--xmlns:tools="http://schemas.android.com/tools"-->
-    <!--android:id="@+id/drawer_layout"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent">-->
+    <LinearLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
 
-    <!--&lt;!&ndash; The main content view &ndash;&gt;-->
+        <LinearLayout
+            android:id="@+id/content_frame_left"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical" >
 
-    <!--<LinearLayout-->
-        <!--android:id="@+id/content_frame"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="horizontal">-->
+            <com.viewpagerindicator.TitlePageIndicator
+                android:id="@+id/titles"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ab_solid_sn" />
 
-        <!--<LinearLayout-->
-            <!--android:id="@+id/content_frame_left"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_weight="1"-->
-            <!--android:orientation="vertical">-->
+            <android.support.v4.view.ViewPager
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".StatusActivity" />
+        </LinearLayout>
 
-            <!--<com.viewpagerindicator.TitlePageIndicator-->
-                <!--android:id="@+id/titles"-->
-                <!--android:layout_width="fill_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:background="@drawable/ab_solid_sn" />-->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/holo_blue_dark" />
 
-            <!--<android.support.v4.view.ViewPager-->
-                <!--android:id="@+id/pager"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--tools:context=".StatusActivity" />-->
-        <!--</LinearLayout>-->
+        <fragment
+            android:id="@+id/article_fragment"
+            android:name="com.halzhang.android.apps.startupnews.ui.tablet.ArticleFragment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            tools:layout="@layout/fragment_article" />
+    </LinearLayout>
+    &lt;!
+ The navigation drawer 
+&gt;
 
+    <LinearLayout
+        android:id="@+id/left_drawer"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#FFF"
+        android:orientation="vertical" >
 
-        <!--<View-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_width="1dp"-->
-            <!--android:background="@color/holo_blue_dark"/>-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_description" />
 
-        <!--<fragment-->
-            <!--android:name="com.halzhang.android.apps.startupnews.ui.tablet.ArticleFragment"-->
-            <!--android:id="@+id/article_fragment"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_weight="2"-->
-            <!--tools:layout="@layout/fragment_article" />-->
-    <!--</LinearLayout>-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/holo_blue_dark" />
 
-    <!--&lt;!&ndash; The navigation drawer &ndash;&gt;-->
-    <!--<LinearLayout-->
-        <!--android:id="@+id/left_drawer"-->
-        <!--android:layout_width="200dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="vertical"-->
-        <!--android:layout_gravity="start"-->
-        <!--android:background="#FFF">-->
+        <ListView
+            android:id="@+id/left_drawer_list"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp" />
+    </LinearLayout>
 
-        <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/app_description" />-->
-
-        <!--<View-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="1dp"-->
-            <!--android:background="@color/holo_blue_dark" />-->
-
-        <!--<ListView-->
-            <!--android:id="@+id/left_drawer_list"-->
-            <!--android:layout_width="200dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_weight="1"-->
-            <!--android:choiceMode="singleChoice"-->
-            <!--android:divider="@android:color/transparent"-->
-            <!--android:dividerHeight="0dp" />-->
-    <!--</LinearLayout>-->
-
-<!--</android.support.v4.widget.DrawerLayout>-->
+</android.support.v4.widget.DrawerLayout>
+-->

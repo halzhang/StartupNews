@@ -6,5 +6,11 @@
 
     <item name="drawer_layout" type="id"/>
     <item name="left_drawer_list" type="id"/>
-
+    
+    <item name="browse_back" type="id"/>
+    <item name="browse_forward" type="id"/>
+    <item name="browse_readability" type="id"/>
+    <item name="browse_refresh" type="id"/>
+    <item name="browse_website" type="id"/>
+    <item name="browse_webview" type="id"/>
 </resources>

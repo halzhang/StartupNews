@@ -4,7 +4,6 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import android.app.Activity;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
@@ -27,6 +26,7 @@ import org.apache.http.HttpStatus;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -262,6 +262,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
                 "news_list_fragment_list_item_click", 0L);
         mAdapter.notifyDataSetChanged();
+        UIUtils.setActivatedCompat(v, true);
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
         if (mNewsSelectedListener != null){
             mNewsSelectedListener.onNewsSelected(position-1,entity);

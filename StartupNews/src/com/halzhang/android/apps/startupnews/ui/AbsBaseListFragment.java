@@ -76,6 +76,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
         // mEmptyView.setVisibility(View.INVISIBLE);
         // }
         mListView.setEmptyView(mEmptyView);
+        mListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         return view;
     }
 
