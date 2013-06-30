@@ -188,7 +188,7 @@ public class WebViewController implements OnClickListener {
     }
     
     public void loadUrl(String url){
-        if(TextUtils.isEmpty(url)){
+        if(TextUtils.isEmpty(url) || url.equals(mCurrentUrl)){
             return;
         }
         mWebView.loadUrl(url);

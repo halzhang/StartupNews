@@ -45,6 +45,7 @@
     <string name="menu_login">登陆</string>
     <string name="menu_logout">注销</string>
     <string name="menu_original_url">原网页</string>
+    <string name="menu_screenorientation">横竖屏切换</string>
 
     <!-- title string -->
     <string name="title_about">关于</string>

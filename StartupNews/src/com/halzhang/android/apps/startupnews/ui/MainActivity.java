@@ -25,6 +25,7 @@ import org.jsoup.select.Elements;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -191,6 +192,16 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
                 // mLogoutTask = new LogoutTask();
                 // mLogoutTask.execute((Void) null);
                 return true;
+            case R.id.menu_screenorientation:
+                int ori = getRequestedOrientation();
+                if(ori == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                }else if(ori == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                }else{
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                }
+                return true;
             default:
                 break;
         }
@@ -200,14 +211,14 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        final Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.article_fragment);
-        if (fragment != null){
-            if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-                getSupportFragmentManager().beginTransaction().hide(fragment).commit();
-            }else {
-                getSupportFragmentManager().beginTransaction().show(fragment).commit();
-            }
-        }
+//        final Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.article_fragment);
+//        if (fragment != null){
+//            if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+//                getSupportFragmentManager().beginTransaction().hide(fragment).commit();
+//            }else {
+//                getSupportFragmentManager().beginTransaction().show(fragment).commit();
+//            }
+//        }
         if(mDrawerToggle != null){
             mDrawerToggle.onConfigurationChanged(newConfig);
         }
