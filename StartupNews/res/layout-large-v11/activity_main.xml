@@ -30,7 +30,7 @@
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:background="@color/holo_blue_dark" />
-
+    
     <fragment
         android:id="@+id/article_fragment"
         android:name="com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment"
