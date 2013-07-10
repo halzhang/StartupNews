@@ -24,6 +24,10 @@ import android.widget.ImageButton;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * WebView and Browse Bar Controller
+ * @author Hal
+ */
 public class WebViewController implements OnClickListener {
     
     private WeakReference<Activity> mActivityRef;
@@ -165,6 +169,9 @@ public class WebViewController implements OnClickListener {
     private void readability() {
         EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
                 "browseactivity_menu_readability", 0L);
+        if(TextUtils.isEmpty(mCurrentUrl)){
+            return;
+        }
         mWebView.loadUrl("http://www.readability.com/m?url=" + getCurrentUrl());
     }
 
@@ -178,6 +185,9 @@ public class WebViewController implements OnClickListener {
         // 打开原链接，还是转码的链接呢？
         EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
                 "browseactivity_menu_website", 0L);
+        if(TextUtils.isEmpty(mCurrentUrl)){
+            return;
+        }
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(getCurrentUrl()));
         mActivityRef.get().startActivity(intent);
@@ -191,6 +201,7 @@ public class WebViewController implements OnClickListener {
         if(TextUtils.isEmpty(url) || url.equals(mCurrentUrl)){
             return;
         }
+        mWebView.clearHistory();
         mWebView.loadUrl(url);
     }
 
