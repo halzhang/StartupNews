@@ -12,6 +12,7 @@ import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
+import com.halzhang.android.apps.startupnews.ui.NewsListFragment.OnNewsSelectedListener;
 import com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
@@ -23,11 +24,13 @@ import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -48,9 +51,16 @@ import java.io.IOException;
  * 
  * @author Hal
  */
-public class MainActivity extends BaseFragmentActivity implements AdapterView.OnItemClickListener,NewsListFragment.OnNewsSelectedListener {
+public class MainActivity extends BaseFragmentActivity implements AdapterView.OnItemClickListener,
+        OnNewsSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    private static final String TAG_NEWS = "tag_news";
+
+    private static final String TAG_NEWEST = "tag_newest";
+
+    private static final String TAG_COMMENT = "tag_comment";
 
     private ViewPager mViewPager;
 
@@ -64,35 +74,51 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
 
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private SNApiHelper mSnApiHelper;
+
+    private SNNew mSnNew;
+
+    private NewsListFragment mNewsListFragment;
+
+    private NewsListFragment mNewestListFragment;
+
+    private CommentsListFragment mCommentsListFragment;
+
     @SuppressWarnings("unused")
     private LogoutTask mLogoutTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CDLog.i(LOG_TAG,"MainAction create!");
+        CDLog.i(LOG_TAG, "MainAction create!");
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_PROGRESS);
+        if (isFinishing()) {
+            return;
+        }
         setContentView(R.layout.activity_main);
         setupViews();
         mFeedbackEmailIntent = createEmailIntent();
+        mSnApiHelper = new SNApiHelper(this);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if(mDrawerToggle != null){
-           mDrawerToggle.syncState();
+        if (mDrawerToggle != null) {
+            mDrawerToggle.syncState();
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void setupViews() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
-            //横屏，平板布局
+            // 横屏，平板布局
             final ActionBar actionBar = getSupportActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
-            mDrawerToggle = new ActionBarDrawerToggle(this, actionBar, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_opened, R.string.drawer_closed) {
+            mDrawerToggle = new ActionBarDrawerToggle(this, actionBar, mDrawerLayout,
+                    R.drawable.ic_drawer, R.string.drawer_opened, R.string.drawer_closed) {
 
                 @Override
                 public void onDrawerOpened(View drawerView) {
@@ -107,13 +133,17 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
             mDrawerLayout.setDrawerListener(mDrawerToggle);
             mDrawerListView = (ListView) findViewById(R.id.left_drawer_list);
             mDrawerListView.setOnItemClickListener(this);
-            mDrawerListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, android.R.id.text1, getResources().getStringArray(R.array.section_titles)));
+            mDrawerListView.setAdapter(new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_activated_1, android.R.id.text1,
+                    getResources().getStringArray(R.array.section_titles)));
 
-            NewsListFragment newsListFragment = new NewsListFragment();
+            mNewsListFragment = new NewsListFragment();
             Bundle args = new Bundle();
             args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
-            newsListFragment.setArguments(args);
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame_left,newsListFragment).commitAllowingStateLoss();
+            mNewsListFragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_frame_left, mNewsListFragment, TAG_NEWS)
+                    .commitAllowingStateLoss();
 
         }
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -132,7 +162,8 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
         });
         StringBuilder builder = new StringBuilder();
         builder.append(getString(R.string.app_name)).append(" v")
-                .append(AppUtils.getVersionName(getApplicationContext())).append(getString(R.string.feedback));
+                .append(AppUtils.getVersionName(getApplicationContext()))
+                .append(getString(R.string.feedback));
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, builder.toString());
         emailIntent.setType("message/rfc822");
         return emailIntent;
@@ -158,7 +189,7 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
 
     @Override
     public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
-        if(mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)){
+        if (mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         switch (item.getItemId()) {
@@ -194,13 +225,19 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
                 return true;
             case R.id.menu_screenorientation:
                 int ori = getRequestedOrientation();
-                if(ori == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
+                if (ori == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                }else if(ori == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
+                } else if (ori == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                }else{
+                } else {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 }
+                return true;
+            case R.id.menu_up_vote:
+                mSnApiHelper.upVote(mSnNew);
+                return true;
+            case R.id.menu_show_comment:
+                // TODO implements
                 return true;
             default:
                 break;
@@ -211,34 +248,63 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-//        final Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.article_fragment);
-//        if (fragment != null){
-//            if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-//                getSupportFragmentManager().beginTransaction().hide(fragment).commit();
-//            }else {
-//                getSupportFragmentManager().beginTransaction().show(fragment).commit();
-//            }
-//        }
-        if(mDrawerToggle != null){
+        if (mDrawerToggle != null) {
             mDrawerToggle.onConfigurationChanged(newConfig);
-        }
-    }
-
-
-    @Override
-    public void onNewsSelected(int position, SNNew snNew) {
-        //处理文章被选中，竖屏启动Activity，平板更新右栏
-        BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager().findFragmentById(R.id.article_fragment);
-        if (browseFragment != null) {
-            browseFragment.load(snNew.getUrl());
-        } else {
-            ActivityUtils.openArticle(this, snNew);
         }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //TODO handle drawer left listview
+        switch (position) {
+            case 0: {
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_NEWS);
+                if (fragment == null) {
+                    if (mNewsListFragment == null) {
+                        mNewsListFragment = new NewsListFragment();
+                        Bundle args = new Bundle();
+                        args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
+                        mNewsListFragment.setArguments(args);
+                    }
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.content_frame_left, mNewsListFragment, TAG_NEWS)
+                            .commitAllowingStateLoss();
+                } else {
+                    getSupportFragmentManager().beginTransaction().attach(fragment);
+                }
+            }
+                break;
+            case 1: {
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_NEWEST);
+                if (fragment == null) {
+                    if (mNewestListFragment == null) {
+                        mNewestListFragment = new NewsListFragment();
+                        Bundle args = new Bundle();
+                        args.putString(NewsListFragment.ARG_URL,
+                                getString(R.string.host, "/newest"));
+                        mNewestListFragment.setArguments(args);
+                    }
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.content_frame_left, mNewestListFragment, TAG_NEWEST)
+                            .commitAllowingStateLoss();
+                }
+            }
+                break;
+            case 2: {
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_COMMENT);
+                if (fragment == null) {
+                    if (mCommentsListFragment == null) {
+                        mCommentsListFragment = new CommentsListFragment();
+                    }
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.content_frame_left, mCommentsListFragment, TAG_COMMENT)
+                            .commitAllowingStateLoss();
+                }
+            }
+                break;
+            default:
+                throw new IllegalArgumentException("");
+        }
+        mDrawerLayout.closeDrawers();
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -281,6 +347,11 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
         @Override
         public CharSequence getPageTitle(int position) {
             return titles[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return super.getItemId(position);
         }
 
     }
@@ -351,6 +422,19 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
             mLogoutTask = null;
         }
 
+    }
+
+    @Override
+    public void onNewsSelected(int position, SNNew snNew) {
+        // 处理文章被选中，竖屏启动Activity，平板更新右栏
+        mSnNew = snNew;
+        BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.article_fragment);
+        if (browseFragment != null) {
+            browseFragment.load(snNew.getUrl());
+        } else {
+            ActivityUtils.openArticle(this, snNew);
+        }
     }
 
 }
