@@ -11,18 +11,12 @@ import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
-import com.halzhang.android.apps.startupnews.snkit.SNApi;
-import com.halzhang.android.apps.startupnews.snkit.SessionManager;
-import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
 import com.halzhang.android.apps.startupnews.utils.UIUtils;
 import com.halzhang.android.common.CDLog;
-import com.halzhang.android.common.CDToast;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 
-import org.apache.http.HttpStatus;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
@@ -65,13 +59,14 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     /**
      * {@link NewsListFragment}选中监听器
      */
-    public interface OnNewsSelectedListener{
+    public interface OnNewsSelectedListener {
         /**
          * 处理news被选中事件
+         * 
          * @param position list position
          * @param snNew {@link SNNew}
          */
-        public void onNewsSelected(int position,SNNew snNew);
+        public void onNewsSelected(int position, SNNew snNew);
     }
 
     private OnNewsSelectedListener mNewsSelectedListener;
@@ -87,7 +82,9 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     private NewsAdapter mAdapter;
 
     private JsoupFactory mJsoupFactory;
-
+    
+    private SNApiHelper mSnApiHelper;
+    
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
         @Override
@@ -110,9 +107,10 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try{
-            mNewsSelectedListener = (OnNewsSelectedListener)activity;
-        }catch (ClassCastException e){
+        mSnApiHelper = new SNApiHelper(activity);
+        try {
+            mNewsSelectedListener = (OnNewsSelectedListener) activity;
+        } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnNewsSelectedListener");
         }
@@ -161,10 +159,13 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         }
         getActivity().unregisterReceiver(mReceiver);
     }
+    
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
+        if(!UIUtils.isTablet(getActivity())){
+            getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
+        }
     }
 
     @Override
@@ -181,53 +182,19 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
             case R.id.menu_show_article:
                 EasyTracker.getTracker().sendEvent("ui_action", "context_item_selected",
                         "newslistfragment_menu_show_acticle", 0L);
-                ActivityUtils.openArticle(getActivity(), snNew);
+                openArticle(position - 1, snNew);
                 return true;
             case R.id.menu_up_vote:
                 EasyTracker.getTracker().sendEvent("ui_action", "context_item_selected",
                         "newslistfragment_menu_upvote", 0L);
-                if (SessionManager.getInstance(getActivity()).isValid()) {
-                    SNApi api = new SNApi(getActivity());
-                    final String url = getString(R.string.vote_url, snNew.getPostID(),
-                            SessionManager.getInstance(getActivity()).getSessionId(),
-                            SessionManager.getInstance(getActivity()).getSessionUser());
-                    api.upVote(url, new AsyncHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, String content) {
-                            if (statusCode == HttpStatus.SC_OK && TextUtils.isEmpty(content)) {
-                                CDToast.showToast(getActivity(), R.string.tip_vote_success);
-                            } else {
-                                EasyTracker.getTracker().sendEvent("ui_action_feedback",
-                                        "upvote_feedback", content, 0L);
-                                if (content.contains("mismatch")) {
-                                    // 用户cookie无效
-                                    startActivity(new Intent(getActivity(), LoginActivity.class));
-                                    CDToast.showToast(getActivity(), R.string.tip_cookie_invalid);
-                                } else {
-                                    CDToast.showToast(getActivity(),
-                                            getString(R.string.tip_vote_duplicate));
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable error, String content) {
-                            EasyTracker.getTracker().sendException("up vote error:" + content,
-                                    error, false);
-                            CDToast.showToast(getActivity(), getString(R.string.tip_vote_failure));
-                        }
-                    });
-                } else {
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    startActivity(intent);
-                }
+                mSnApiHelper.upVote(snNew);
                 return true;
             default:
                 break;
         }
         return true;
     }
-
+    
     @Override
     protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
@@ -262,12 +229,14 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
                 "news_list_fragment_list_item_click", 0L);
         mAdapter.notifyDataSetChanged();
-        UIUtils.setActivatedCompat(v, true);
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
-        if (mNewsSelectedListener != null){
-            mNewsSelectedListener.onNewsSelected(position-1,entity);
+        openArticle(position - 1, entity);
+    }
+
+    private void openArticle(int position, SNNew snNew) {
+        if(mNewsSelectedListener != null){
+            mNewsSelectedListener.onNewsSelected(position, snNew);
         }
-        //ActivityUtils.openArticle(getActivity(), entity);//call on phone
     }
 
     private void openDiscuss(SNNew snNew) {
@@ -309,7 +278,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                 mSnFeed.setMoreUrl(feed.getMoreUrl());
                 return true;
             } catch (Exception e) {
-                CDLog.w(LOG_TAG,"",e);
+                CDLog.w(LOG_TAG, "", e);
                 EasyTracker.getTracker().sendException("NewsTask", e, false);
                 return false;
             }
