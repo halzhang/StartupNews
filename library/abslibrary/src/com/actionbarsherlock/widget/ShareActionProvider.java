@@ -129,6 +129,8 @@ public class ShareActionProvider extends ActionProvider {
 
     private OnChooseActivityListener mOnChooseActivityListener;
 
+    private boolean mIsAllowPolicyChangeIntent = false;
+    
     /**
      * Creates a new instance.
      *
@@ -284,6 +286,10 @@ public class ShareActionProvider extends ActionProvider {
             return true;
         }
     }
+    
+    public void setAllowPolicyChangeIntent(boolean allow){
+        mIsAllowPolicyChangeIntent = allow;
+    }
 
     /**
      * Set the activity chooser policy of the model backed by the current
@@ -298,6 +304,7 @@ public class ShareActionProvider extends ActionProvider {
         }
         ActivityChooserModel dataModel = ActivityChooserModel.get(mContext, mShareHistoryFileName);
         dataModel.setOnChooseActivityListener(mOnChooseActivityListener);
+        dataModel.setPolicyChangeIntentEnable(mIsAllowPolicyChangeIntent);
     }
 
     /**

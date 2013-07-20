@@ -296,6 +296,12 @@ class ActivityChooserModel extends DataSetObservable {
      * that choice history will be persisted only if it has changed.
      */
     private boolean mHistoricalRecordsChanged = true;
+    
+    /**
+     * Flag whether allow policy change intent 
+     * @see {@link #chooseActivity(int)}
+     */
+    private boolean mPolicyChangeIntentEnable = false;
 
     /**
      * Hander for scheduling work on client tread.
@@ -464,9 +470,16 @@ class ActivityChooserModel extends DataSetObservable {
 
         if (mActivityChoserModelPolicy != null) {
             // Do not allow the policy to change the intent.
-            Intent choiceIntentCopy = new Intent(choiceIntent);
+            //TODO halzhang add allow change flag
+            Intent choiceIntentCopyIfNeed = null;
+            if(mPolicyChangeIntentEnable){
+                choiceIntentCopyIfNeed = choiceIntent;
+            }else{
+                choiceIntentCopyIfNeed = new Intent(choiceIntent);
+            }
+            //Intent choiceIntentCopy = new Intent(choiceIntent);
             final boolean handled = mActivityChoserModelPolicy.onChooseActivity(this,
-                    choiceIntentCopy);
+                    choiceIntentCopyIfNeed);
             if (handled) {
                 return null;
             }
@@ -477,6 +490,14 @@ class ActivityChooserModel extends DataSetObservable {
         addHisoricalRecord(historicalRecord);
 
         return choiceIntent;
+    }
+    
+    /**
+     * Set the flag for allow policy change intent
+     * @param enable
+     */
+    public void setPolicyChangeIntentEnable(boolean enable){
+        mPolicyChangeIntentEnable = enable;
     }
 
     /**
