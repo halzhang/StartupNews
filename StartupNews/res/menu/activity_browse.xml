@@ -10,37 +10,4 @@
         android:id="@+id/menu_original_url"
         android:showAsAction="always"
         android:title="@string/menu_original_url"/>
-    <!--
-         <item
-        android:id="@+id/menu_back"
-        android:showAsAction="always"
-        android:icon="@drawable/ic_action_back"
-        android:title="@string/menu_back"/>
-    <item
-        android:id="@+id/menu_forward"
-        android:showAsAction="always"
-        android:icon="@drawable/ic_action_forward"
-        android:title="@string/menu_forward"/>
-    <item
-        android:id="@+id/menu_readability"
-        android:showAsAction="always"
-        android:icon="@drawable/ic_action_readability"
-        android:title="@string/menu_readabilily"/>
-    <item
-        android:id="@+id/menu_refresh"
-        android:showAsAction="always"
-        android:icon="@drawable/ic_action_refresh"
-        android:title="@string/menu_refresh"/>
-    <item
-        android:id="@+id/menu_website"
-        android:showAsAction="never"
-        android:icon="@drawable/ic_action_website"
-        android:title="@string/menu_website"/>
-    <item
-        android:id="@+id/menu_share"
-        android:icon="@drawable/ic_action_share"
-        android:showAsAction="always"
-        android:title="@string/menu_share"/>
-    -->
-
 </menu>

@@ -17,8 +17,9 @@
 
 package com.halzhang.android.apps.startupnews.ui.tablet;
 
+import com.actionbarsherlock.app.SherlockFragment;
+
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,7 @@ import android.view.ViewGroup;
 /**
  * Created by Hal on 13-5-26.
  */
-public class DiscussFragment extends Fragment {
+public class DiscussFragment extends SherlockFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

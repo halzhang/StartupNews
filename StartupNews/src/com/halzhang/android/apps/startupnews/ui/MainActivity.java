@@ -13,6 +13,7 @@ import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.ui.NewsListFragment.OnNewsSelectedListener;
+import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
 import com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
@@ -61,6 +62,8 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
     private static final String TAG_NEWEST = "tag_newest";
 
     private static final String TAG_COMMENT = "tag_comment";
+
+    private static final String TAG_BROWSE = "tag_browse";
 
     private ViewPager mViewPager;
 
@@ -240,9 +243,8 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
                 // TODO implements
                 return true;
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -428,13 +430,28 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
     public void onNewsSelected(int position, SNNew snNew) {
         // 处理文章被选中，竖屏启动Activity，平板更新右栏
         mSnNew = snNew;
-        BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.article_fragment);
-        if (browseFragment != null) {
-            browseFragment.load(snNew.getUrl());
+        if (isFragmentContentExist()) {
+            BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager()
+                    .findFragmentByTag(TAG_BROWSE);
+            if (browseFragment != null) {
+                browseFragment.setTitle(mSnNew.getTitle());
+                browseFragment.load(snNew.getUrl());
+            }else{
+                BrowseFragment fragment = new BrowseFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString(BrowseActivity.EXTRA_URL, mSnNew.getUrl());
+                bundle.putString(BrowseActivity.EXTRA_TITLE, mSnNew.getTitle());
+                fragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment,TAG_BROWSE)
+                        .commitAllowingStateLoss();
+            }
         } else {
             ActivityUtils.openArticle(this, snNew);
         }
+    }
+
+    private boolean isFragmentContentExist() {
+        return findViewById(R.id.fragment_container) != null;
     }
 
 }

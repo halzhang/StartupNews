@@ -70,7 +70,7 @@ import java.util.List;
 public class LoginActivity extends BaseFragmentActivity {
 
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
-    
+
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -79,7 +79,7 @@ public class LoginActivity extends BaseFragmentActivity {
     private String mFnid;
 
     private LoginPreTask mPreTask;
-    
+
     private LoginFragment mLoginFragment;
 
     @Override
@@ -90,7 +90,8 @@ public class LoginActivity extends BaseFragmentActivity {
         setContentView(R.layout.activity_login);
         SessionManager.getInstance(this).clear();
         mLoginFragment = new LoginFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mLoginFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mLoginFragment)
+                .commit();
         mPreTask = new LoginPreTask();
         mPreTask.execute("");
     }
@@ -117,8 +118,6 @@ public class LoginActivity extends BaseFragmentActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-  
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -268,10 +267,10 @@ public class LoginActivity extends BaseFragmentActivity {
         }
 
     }
-    
+
     @SuppressLint("ValidFragment")
-    private static class LoginFragment extends SherlockFragment{
-        
+    private static class LoginFragment extends SherlockFragment {
+
         // Values for email and password at the time of the login attempt.
         private String mUsername;
 
@@ -287,20 +286,20 @@ public class LoginActivity extends BaseFragmentActivity {
         private View mLoginStatusView;
 
         private TextView mLoginStatusMessageView;
-        
+
         private WeakReference<LoginActivity> mLoginActivityRef;
-        
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
         }
-        
+
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            mLoginActivityRef = new WeakReference<LoginActivity>((LoginActivity)activity);
+            mLoginActivityRef = new WeakReference<LoginActivity>((LoginActivity) activity);
         }
-        
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
@@ -325,11 +324,11 @@ public class LoginActivity extends BaseFragmentActivity {
             showProgress(true);
             return view;
         }
-        
+
         /**
-         * Attempts to sign in or register the account specified by the login form.
-         * If there are form errors (invalid email, missing fields, etc.), the
-         * errors are presented and no actual login attempt is made.
+         * Attempts to sign in or register the account specified by the login
+         * form. If there are form errors (invalid email, missing fields, etc.),
+         * the errors are presented and no actual login attempt is made.
          */
         public void attemptLogin() {
             if (mLoginActivityRef.get().mAuthTask != null) {
@@ -366,7 +365,6 @@ public class LoginActivity extends BaseFragmentActivity {
                 mLoginActivityRef.get().mAuthTask.execute((Void) null);
             }
         }
-        
 
         /**
          * Shows the progress UI and hides the login form.
@@ -374,7 +372,8 @@ public class LoginActivity extends BaseFragmentActivity {
         @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
         public void showProgress(final boolean show) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+                int shortAnimTime = getResources().getInteger(
+                        android.R.integer.config_shortAnimTime);
 
                 mLoginStatusView.setVisibility(View.INVISIBLE);
                 mLoginStatusView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0)

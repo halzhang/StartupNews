@@ -66,14 +66,21 @@
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:background="@color/holo_blue_dark" />
+        
 
-        <fragment
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            tools:layout="@layout/fragment_browse" />
+       <!--  <fragment
             android:id="@+id/article_fragment"
             android:name="com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            tools:layout="@layout/fragment_article" />
+            tools:layout="@layout/fragment_browse" /> -->
     </LinearLayout>
 
     <LinearLayout

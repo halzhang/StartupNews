@@ -56,5 +56,7 @@ public abstract class Constants {
         public static final String ACTION_LOGOUT = "startupnews.intent.action.LOGOUT";
         
     }
+    
+    public static final String TAG_BROWSE_FRAGMENT = "tag_browse_fragment";
 
 }

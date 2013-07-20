@@ -24,6 +24,7 @@ import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.webkit.WebSettings;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version May 4, 2013
  */
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class SNApi {
 
     private static final String LOG_TAG = SNApi.class.getSimpleName();
@@ -58,6 +60,7 @@ public class SNApi {
         mAsyncHttpClient.addHeader("Accept-Language", "zh-cn");
         mAsyncHttpClient.addHeader("Accept", "*/*");
         mAsyncHttpClient.addHeader("Cookie", SessionManager.getInstance(context).getCookieString());
+        mAsyncHttpClient.setUserAgent(USER_AGENT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mAsyncHttpClient.setUserAgent(WebSettings.getDefaultUserAgent(context));
         } else {

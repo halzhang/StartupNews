@@ -7,8 +7,16 @@
         android:showAsAction="always"
         android:title="@string/menu_share"/>
     <item
+        android:id="@+id/menu_show_comment"
+        android:showAsAction="always"
+        android:title="@string/menu_show_comment"/>
+    <item
+        android:id="@+id/menu_up_vote"
+        android:showAsAction="always"
+        android:title="@string/menu_up_vote"/>
+    <item
         android:id="@+id/menu_original_url"
         android:showAsAction="always"
         android:title="@string/menu_original_url"/>
-   
+
 </menu>
