@@ -6,48 +6,17 @@ package com.halzhang.android.apps.startupnews.ui;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.entity.SNComment;
-import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
-import com.halzhang.android.apps.startupnews.parser.SNDiscussParser;
-import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
-import com.halzhang.android.apps.startupnews.snkit.SNApi;
-import com.halzhang.android.apps.startupnews.snkit.SessionManager;
-import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
-import com.halzhang.android.common.CDLog;
-import com.halzhang.android.common.CDToast;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.halzhang.android.apps.startupnews.ui.tablet.DiscussFragment;
 
-import org.apache.http.Header;
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
-
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.Html;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * StartupNews
@@ -58,37 +27,16 @@ import android.widget.Toast;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 17, 2013
  */
-public class DiscussActivity extends BaseFragmentActivity implements OnItemClickListener {
+@SuppressLint("NewApi")
+public class DiscussActivity extends BaseFragmentActivity {
 
-    private static final String LOG_TAG = DiscussActivity.class.getSimpleName();
+    //private static final String LOG_TAG = DiscussActivity.class.getSimpleName();
 
     public static final String ARG_DISCUSS_URL = "discuss_url";
 
     public static final String ARG_SNNEW = "snnew";
 
-    private SNDiscuss mSnDiscuss;
-
-    private ListView mListView;
-
-    private String mDiscussURL;
-
-    private DiscussCommentAdapter mAdapter;
-
-    private DiscussTask mDiscussTask;
-
-    private TextView mTitle;
-
-    private TextView mSubTitle;
-
-    private TextView mText;
-
-    private Menu mOptionsMenu;
-
-    private EditText mCommentEdit;
-
-    private ImageButton mSendBtn;
-
-    private JsoupFactory mJsoupFactory;
+    private DiscussFragment mDiscussFragment;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
@@ -98,7 +46,7 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
             if (IntentAction.ACTION_LOGIN.equals(action)) {
                 String user = intent.getStringExtra(IntentAction.EXTRA_LOGIN_USER);
                 if (!TextUtils.isEmpty(user)) {
-                    loadData();
+                    mDiscussFragment.loadData();
                 }
             }
         };
@@ -107,106 +55,19 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        mJsoupFactory = JsoupFactory.getInstance(getApplicationContext());
         setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
         setContentView(R.layout.activity_discuss);
-        mListView = (ListView) findViewById(android.R.id.list);
-        mListView.setOnItemClickListener(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mSnDiscuss = new SNDiscuss();
         SNNew snNew = (SNNew) getIntent().getSerializableExtra(ARG_SNNEW);
-        mDiscussURL = getIntent().getStringExtra(ARG_DISCUSS_URL);
-        mSnDiscuss.setSnNew(snNew);
-        mAdapter = new DiscussCommentAdapter();
-        View view = getLayoutInflater().inflate(R.layout.discuss_header_view, null);
-        mTitle = (TextView) view.findViewById(R.id.discuss_news_title);
-        mSubTitle = (TextView) view.findViewById(R.id.discuss_news_subtitle);
-        mText = (TextView) view.findViewById(R.id.discuss_text);
-
-        mSendBtn = (ImageButton) findViewById(R.id.discuss_comment_send_btn);
-        mSendBtn.setEnabled(false);
-        mSendBtn.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                EasyTracker.getTracker().sendEvent("ui_action", "view_clicked",
-                        "discussactivity_button_comment", 0L);
-                if (!SessionManager.getInstance(getApplicationContext()).isValid()) {
-                    // 未登陆
-                    Intent intent = new Intent(DiscussActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    return;
-                }
-                SNApi api = new SNApi(getApplicationContext());
-                api.comment(getApplicationContext(), mSnDiscuss.getFnid(), mCommentEdit.getText()
-                        .toString(), new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, String content) {
-                        mCommentEdit.setText(null);
-                        CDToast.showToast(getApplicationContext(), R.string.tip_comment_success);
-                        EasyTracker.getTracker().sendEvent("ui_action_feedback",
-                                "comment_feedback", "success", 0L);
-                        loadData();
-                    }
-
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, String content) {
-                        String refreerLocation = null;
-                        for (Header header : headers) {
-                            CDLog.w(LOG_TAG, header.getName() + " : " + header.getValue());
-                            if (AsyncHttpClient.REFREER_LOCATION.equals(header.getName())) {
-                                refreerLocation = header.getValue();
-                                break;
-                            }
-                        }
-                        if (TextUtils.isEmpty(refreerLocation) || refreerLocation.contains("fnid")) {
-                            /*
-                             * Location:fnid=xxxxx Cookie失效，重新登陆
-                             */
-                            CDToast.showToast(getApplicationContext(), R.string.tip_cookie_invalid);
-                            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                            EasyTracker.getTracker().sendEvent("ui_action_feedback",
-                                    "comment_feedback", getString(R.string.tip_cookie_invalid), 0L);
-                        } else if (refreerLocation.contains("item")) {
-                            onSuccess(statusCode, content);
-                        } else {
-                            EasyTracker.getTracker().sendEvent("ui_action_feedback",
-                                    "comment_feedback", content, 0L);
-                            CDToast.showToast(getApplicationContext(), R.string.tip_comment_failure);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable error, String content) {
-                        CDToast.showToast(getApplicationContext(), R.string.tip_comment_failure);
-                        EasyTracker.getTracker().sendException("comment error:" + content, error,
-                                false);
-                    }
-                });
-            }
-        });
-        mCommentEdit = (EditText) findViewById(R.id.discuss_comment_edit);
-        mCommentEdit.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                mSendBtn.setEnabled(s.length() > 0);
-            }
-        });
-        mListView.addHeaderView(view);
-        mListView.setAdapter(mAdapter);
-        wrapHeaderView(snNew);
-
+        String mDiscussURL = getIntent().getStringExtra(ARG_DISCUSS_URL);
+        if (snNew == null || TextUtils.isEmpty(mDiscussURL)) {
+            finish();
+        }
+        Bundle args = new Bundle(getIntent().getExtras());
+        mDiscussFragment = new DiscussFragment();
+        mDiscussFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, mDiscussFragment).commitAllowingStateLoss();
         IntentFilter filter = new IntentFilter(IntentAction.ACTION_LOGIN);
         registerReceiver(mReceiver, filter);
     }
@@ -219,7 +80,7 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
     @Override
     protected void onResume() {
         super.onResume();
-        loadData();
+        mDiscussFragment.loadData();
         invalidateOptionsMenu();
     }
 
@@ -227,56 +88,12 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mReceiver);
-        if (mDiscussTask != null) {
-            mDiscussTask.cancel(true);
-            mDiscussTask = null;
-        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        mOptionsMenu = menu;
-        getSupportMenuInflater().inflate(R.menu.activity_discuss, menu);
         return true;
-    }
-
-    private void wrapHeaderView(SNNew snNew) {
-        if (snNew != null) {
-            mTitle.setText(snNew.getTitle());
-            mSubTitle.setText(Html.fromHtml(snNew.getSubText()));
-            if (snNew.isDiscuss()) {
-                mText.setVisibility(View.VISIBLE);
-                mText.setText(snNew.getText());
-            } else {
-                mText.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    public void setRefreshActionButtonState(boolean refreshing) {
-        if (mOptionsMenu == null) {
-            Log.i(LOG_TAG, "Option menu is null!");
-            return;
-        }
-
-        final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
-        if (refreshItem != null) {
-            if (refreshing) {
-                refreshItem.setActionView(R.layout.actionbar_indeterminate_progress);
-            } else {
-                refreshItem.setActionView(null);
-            }
-        }
-    }
-
-    private void loadData() {
-        if (mDiscussTask != null) {
-            return;
-        }
-        setRefreshActionButtonState(true);
-        mDiscussTask = new DiscussTask();
-        mDiscussTask.execute(mDiscussURL);
     }
 
     @Override
@@ -285,125 +102,10 @@ public class DiscussActivity extends BaseFragmentActivity implements OnItemClick
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.menu_refresh:
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
-                        "discussactivity_menu_refresh", 0L);
-                loadData();
-                return true;
             default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private class DiscussTask extends AsyncTask<String, Void, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(String... params) {
-            try {
-                Connection conn = mJsoupFactory.newJsoupConnection(params[0]);
-                if (conn == null) {
-                    return false;
-                }
-                Document doc = conn.get();
-                SNDiscussParser parser = new SNDiscussParser();
-                SNDiscuss discuss = parser.parseDocument(doc);
-                mSnDiscuss.clearComments();
-                mSnDiscuss.copy(discuss);
-            } catch (Exception e) {
-                // Log.e(LOG_TAG, "", e);
-                EasyTracker.getTracker().sendException("DiscussTask", e, false);
-                return false;
-            }
-            return true;
+                return super.onOptionsItemSelected(item);
         }
 
-        @Override
-        protected void onPostExecute(Boolean result) {
-            setRefreshActionButtonState(false);
-            if (result) {
-                wrapHeaderView(mSnDiscuss.getSnNew());
-                mAdapter.notifyDataSetChanged();
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
-            }
-            // mListView.getEmptyView().setVisibility(View.GONE);
-            mDiscussTask = null;
-            super.onPostExecute(result);
-        }
-
-        @Override
-        protected void onCancelled() {
-            mDiscussTask = null;
-            super.onCancelled();
-        }
-
-    }
-
-    private class DiscussCommentAdapter extends BaseAdapter {
-
-        @Override
-        public int getCount() {
-            return mSnDiscuss.commentSize();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return mSnDiscuss.getComments().get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                convertView = LayoutInflater.from(DiscussActivity.this).inflate(
-                        R.layout.discuss_comment_item, null);
-                holder.mUserId = (TextView) convertView
-                        .findViewById(R.id.discuss_comment_item_user_id);
-                holder.mCreated = (TextView) convertView
-                        .findViewById(R.id.discuss_comment_item_created);
-                holder.mCommentText = (TextView) convertView
-                        .findViewById(R.id.discuss_comment_item_text);
-                holder.mArtistTitle = (TextView) convertView
-                        .findViewById(R.id.discuss_comment_item_artist_titile);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            SNComment comment = mSnDiscuss.getComments().get(position);
-            holder.mUserId.setText(comment.getUser().getId());
-            holder.mCreated.setText(comment.getCreated());
-            holder.mCommentText.setText(comment.getText());
-            holder.mArtistTitle.setVisibility(View.GONE);
-            return convertView;
-        }
-
-        class ViewHolder {
-            TextView mUserId;
-
-            TextView mCreated;
-
-            TextView mCommentText;
-
-            TextView mArtistTitle;
-        }
-
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (position == 0) {
-            EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
-                    "discuss_activity_list_header_click", 0L);
-            // 查看文章
-            ActivityUtils.openArticle(this, mSnDiscuss.getSnNew());
-        }
     }
 
 }

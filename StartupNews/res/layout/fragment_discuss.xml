@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1px"
+        android:headerDividersEnabled="true" />
+
+    <LinearLayout
+        android:id="@+id/bottom_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <!-- Divider -->
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/holo_blue_dark" />
+
+        <LinearLayout
+            android:id="@+id/edit_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:gravity="bottom"
+            android:orientation="horizontal" >
+
+            <EditText
+                android:id="@+id/discuss_comment_edit"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:autoText="true"
+                android:capitalize="sentences"
+                android:hint="@string/hint_add_comment"
+                android:imeOptions="actionSend|flagNoEnterAction"
+                android:maxLines="3"
+                android:textSize="16sp" />
+
+            <ImageButton
+                android:id="@+id/discuss_comment_send_btn"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/send_button_selector"/>
+            
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
