@@ -8,7 +8,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.ui.tablet.DiscussFragment;
 
 import android.annotation.SuppressLint;
@@ -32,9 +31,9 @@ public class DiscussActivity extends BaseFragmentActivity {
 
     //private static final String LOG_TAG = DiscussActivity.class.getSimpleName();
 
-    public static final String ARG_DISCUSS_URL = "discuss_url";
+    public static final String ARG_DISCUSS_URL = "discuss_url";//required!
 
-    public static final String ARG_SNNEW = "snnew";
+    public static final String ARG_SNNEW = "snnew";//Optional
 
     private DiscussFragment mDiscussFragment;
 
@@ -58,9 +57,9 @@ public class DiscussActivity extends BaseFragmentActivity {
         setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
         setContentView(R.layout.activity_discuss);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        SNNew snNew = (SNNew) getIntent().getSerializableExtra(ARG_SNNEW);
+        //SNNew snNew = (SNNew) getIntent().getSerializableExtra(ARG_SNNEW);
         String mDiscussURL = getIntent().getStringExtra(ARG_DISCUSS_URL);
-        if (snNew == null || TextUtils.isEmpty(mDiscussURL)) {
+        if (TextUtils.isEmpty(mDiscussURL)) {
             finish();
         }
         Bundle args = new Bundle(getIntent().getExtras());
@@ -80,7 +79,6 @@ public class DiscussActivity extends BaseFragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mDiscussFragment.loadData();
         invalidateOptionsMenu();
     }
 

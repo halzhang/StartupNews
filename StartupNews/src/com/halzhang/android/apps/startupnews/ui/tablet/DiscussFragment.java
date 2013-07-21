@@ -110,13 +110,15 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
         mSnDiscuss = new SNDiscuss();
         Bundle args = getArguments();
         SNNew snNew = null;
-        if (args != null && args.containsKey(DiscussActivity.ARG_SNNEW)
+        if (args != null 
                 && args.containsKey(DiscussActivity.ARG_DISCUSS_URL)) {
-            snNew = (SNNew) args.getSerializable(DiscussActivity.ARG_SNNEW);
             mDiscussURL = args.getString(DiscussActivity.ARG_DISCUSS_URL);
-            mSnDiscuss.setSnNew(snNew);
         } else {
-            // TODO activity finish!
+            throw new IllegalArgumentException("Discuss URL is required!");
+        }
+        if(args.containsKey(DiscussActivity.ARG_SNNEW)){
+            snNew = (SNNew) args.getSerializable(DiscussActivity.ARG_SNNEW);
+            mSnDiscuss.setSnNew(snNew);
         }
         mAdapter = new DiscussCommentAdapter();
         View headerView = inflater.inflate(R.layout.discuss_header_view, null);
@@ -148,6 +150,7 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
         mListView.addHeaderView(headerView);
         mListView.setAdapter(mAdapter);
         wrapHeaderView(snNew);
+        loadData();
         return view;
     }
 

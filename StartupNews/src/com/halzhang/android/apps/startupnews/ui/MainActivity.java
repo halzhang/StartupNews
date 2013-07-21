@@ -15,6 +15,7 @@ import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.ui.NewsListFragment.OnNewsSelectedListener;
 import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
 import com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment;
+import com.halzhang.android.apps.startupnews.ui.tablet.DiscussFragment;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
@@ -36,6 +37,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
@@ -64,6 +66,8 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
     private static final String TAG_COMMENT = "tag_comment";
 
     private static final String TAG_BROWSE = "tag_browse";
+
+    private static final String TAG_DISCUSS = "tag_discuss";
 
     private ViewPager mViewPager;
 
@@ -240,7 +244,20 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
                 mSnApiHelper.upVote(mSnNew);
                 return true;
             case R.id.menu_show_comment:
-                // TODO implements
+                Bundle args = new Bundle();
+                args.putSerializable(DiscussActivity.ARG_SNNEW, mSnNew);
+                args.putString(DiscussActivity.ARG_DISCUSS_URL, mSnNew.getDiscussURL());
+                DiscussFragment fragment = (DiscussFragment) getSupportFragmentManager()
+                        .findFragmentByTag(TAG_DISCUSS);
+                if (fragment == null) {
+                    fragment = new DiscussFragment();
+                    fragment.setArguments(args);
+                    getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                            .replace(R.id.fragment_container, fragment, TAG_DISCUSS).commit();
+                }else{
+                    // TODO implements load data!
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -430,27 +447,29 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
     public void onNewsSelected(int position, SNNew snNew) {
         // 处理文章被选中，竖屏启动Activity，平板更新右栏
         mSnNew = snNew;
-        if (isFragmentContentExist()) {
+        if (isFragmentContainerExist()) {
             BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager()
                     .findFragmentByTag(TAG_BROWSE);
             if (browseFragment != null) {
                 browseFragment.setTitle(mSnNew.getTitle());
                 browseFragment.load(snNew.getUrl());
-            }else{
+            } else {
                 BrowseFragment fragment = new BrowseFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString(BrowseActivity.EXTRA_URL, mSnNew.getUrl());
                 bundle.putString(BrowseActivity.EXTRA_TITLE, mSnNew.getTitle());
                 fragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment,TAG_BROWSE)
-                        .commitAllowingStateLoss();
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
+                        .replace(R.id.fragment_container, fragment, TAG_BROWSE)
+                        .commit();
             }
         } else {
             ActivityUtils.openArticle(this, snNew);
         }
     }
 
-    private boolean isFragmentContentExist() {
+    private boolean isFragmentContainerExist() {
         return findViewById(R.id.fragment_container) != null;
     }
 
