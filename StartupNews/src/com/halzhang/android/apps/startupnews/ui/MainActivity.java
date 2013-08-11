@@ -20,6 +20,7 @@ import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
+import com.slidinglayer.SlidingLayer;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import org.jsoup.Connection;
@@ -37,14 +38,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -55,7 +57,7 @@ import java.io.IOException;
  * @author Hal
  */
 public class MainActivity extends BaseFragmentActivity implements AdapterView.OnItemClickListener,
-        OnNewsSelectedListener {
+        OnNewsSelectedListener, SlidingLayer.OnInteractListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -91,6 +93,8 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
 
     private CommentsListFragment mCommentsListFragment;
 
+    private SlidingLayer mSlidingLayer;
+
     @SuppressWarnings("unused")
     private LogoutTask mLogoutTask;
 
@@ -124,6 +128,11 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
             final ActionBar actionBar = getSupportActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
+
+            mSlidingLayer = (SlidingLayer) findViewById(R.id.slidingLayer1);
+            mSlidingLayer.setOnInteractListener(this);
+            setSlidinglayerWidth();
+
             mDrawerToggle = new ActionBarDrawerToggle(this, actionBar, mDrawerLayout,
                     R.drawable.ic_drawer, R.string.drawer_opened, R.string.drawer_closed) {
 
@@ -231,6 +240,7 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
                 // mLogoutTask.execute((Void) null);
                 return true;
             case R.id.menu_screenorientation:
+                // TODO for debug
                 int ori = getRequestedOrientation();
                 if (ori == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -247,17 +257,12 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
                 Bundle args = new Bundle();
                 args.putSerializable(DiscussActivity.ARG_SNNEW, mSnNew);
                 args.putString(DiscussActivity.ARG_DISCUSS_URL, mSnNew.getDiscussURL());
-                DiscussFragment fragment = (DiscussFragment) getSupportFragmentManager()
-                        .findFragmentByTag(TAG_DISCUSS);
-                if (fragment == null) {
-                    fragment = new DiscussFragment();
-                    fragment.setArguments(args);
-                    getSupportFragmentManager().beginTransaction()
-                            .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
-                            .replace(R.id.fragment_container, fragment, TAG_DISCUSS).commit();
-                }else{
-                    // TODO implements load data!
-                }
+                DiscussFragment fragment = new DiscussFragment();
+                fragment.setArguments(args);
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                        .replace(R.id.discuss_fragment_container, fragment, TAG_DISCUSS).commit();
+                mSlidingLayer.openLayer(true);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -270,6 +275,18 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
         if (mDrawerToggle != null) {
             mDrawerToggle.onConfigurationChanged(newConfig);
         }
+        //横竖屏切换后需要更新SlidingLayer的宽度
+        if (mSlidingLayer != null) {
+            setSlidinglayerWidth();
+        }
+        
+    }
+
+    private void setSlidinglayerWidth() {
+        LayoutParams lp = (LayoutParams) mSlidingLayer.getLayoutParams();
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        lp.width = (int) (screenWidth * 0.5);
+        mSlidingLayer.setLayoutParams(lp);
     }
 
     @Override
@@ -448,6 +465,7 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
         // 处理文章被选中，竖屏启动Activity，平板更新右栏
         mSnNew = snNew;
         if (isFragmentContainerExist()) {
+            mSlidingLayer.closeLayer(true);
             BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager()
                     .findFragmentByTag(TAG_BROWSE);
             if (browseFragment != null) {
@@ -461,8 +479,7 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
                 fragment.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction()
                         .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
-                        .replace(R.id.fragment_container, fragment, TAG_BROWSE)
-                        .commit();
+                        .replace(R.id.fragment_container, fragment, TAG_BROWSE).commit();
             }
         } else {
             ActivityUtils.openArticle(this, snNew);
@@ -471,6 +488,50 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
 
     private boolean isFragmentContainerExist() {
         return findViewById(R.id.fragment_container) != null;
+    }
+
+    @Override
+    public void onOpen() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public void onClose() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_DISCUSS);
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+        }
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onOpened() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onClosed() {
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK: {
+                if (mSlidingLayer != null && mSlidingLayer.isOpened()) {
+                    mSlidingLayer.closeLayer(true);
+                    return true;
+                }
+
+            }
+                break;
+
+            default:
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }

@@ -98,7 +98,7 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mJsoupFactory = JsoupFactory.getInstance(activity);
+        mJsoupFactory = JsoupFactory.getInstance(activity.getApplicationContext());
     }
 
     @Override

@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <dimen name="action_button_min_width">56dp</dimen>
-    
-       <!-- UI elements -->
+
+    <!-- sliding layer -->
+    <dimen name="shadow_width">8dp</dimen>
+    <dimen name="layer_width">500dp</dimen>
+    <dimen name="offset_width">0dp</dimen>
+
+    <!-- UI elements -->
     <dimen name="whats_on_height">64dp</dimen>
     <dimen name="whats_on_item_padding">10dp</dimen>
     <dimen name="whats_on_button_right_padding">20dp</dimen>
@@ -37,7 +43,8 @@
     <dimen name="stream_content_text_size">14sp</dimen>
     <dimen name="stream_feedback_text_size">12sp</dimen>
     <dimen name="stream_fav_icon_size">14dip</dimen>
-    
-     <!-- Widget -->
+
+    <!-- Widget -->
     <dimen name="widget_margin">8dp</dimen>
+
 </resources>

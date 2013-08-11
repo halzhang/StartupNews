@@ -1,52 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <LinearLayout
-        android:id="@+id/content_frame"
+    <android.support.v4.widget.DrawerLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal" >
+        android:layout_height="match_parent" >
 
-        <FrameLayout
-            android:id="@+id/content_frame_left"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" />
+            android:orientation="horizontal" >
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/holo_blue_dark" />
-        
-        <FrameLayout
-            android:id="@+id/fragment_container"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            tools:layout="@layout/fragment_browse" />
-    </LinearLayout>
+            <FrameLayout
+                android:id="@+id/content_frame_left"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical" />
 
-    <LinearLayout
-        android:id="@+id/left_drawer"
-        android:layout_width="200dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="#FFF"
-        android:orientation="vertical" >
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/holo_blue_dark" />
 
-        <ListView
-            android:id="@+id/left_drawer_list"
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                tools:layout="@layout/fragment_browse" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/left_drawer"
             android:layout_width="200dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:choiceMode="singleChoice"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="0dp" />
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="#FFF"
+            android:orientation="vertical" >
 
-</android.support.v4.widget.DrawerLayout>
+            <ListView
+                android:id="@+id/left_drawer_list"
+                android:layout_width="200dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:choiceMode="singleChoice"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="0dp" />
+        </LinearLayout>
+    </android.support.v4.widget.DrawerLayout>
+    
+    <com.slidinglayer.SlidingLayer
+        xmlns:slidingLayer="http://schemas.android.com/apk/res/com.halzhang.android.apps.startupnews"
+        android:id="@+id/slidingLayer1"
+        android:layout_width="@dimen/layer_width"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        slidingLayer:closeOnTapEnabled="true"
+        slidingLayer:offsetWidth="@dimen/offset_width"
+        slidingLayer:shadowDrawable="@drawable/sidebar_shadow"
+        slidingLayer:shadowWidth="@dimen/shadow_width"
+        slidingLayer:stickTo="right" >
+
+        <FrameLayout
+            android:id="@+id/discuss_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"/>
+    </com.slidinglayer.SlidingLayer>
+
+</RelativeLayout>
