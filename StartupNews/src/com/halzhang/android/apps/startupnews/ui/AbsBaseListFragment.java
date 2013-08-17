@@ -3,6 +3,7 @@ package com.halzhang.android.apps.startupnews.ui;
 
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.utils.UIUtils;
+import com.halzhang.android.common.CDLog;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
@@ -34,6 +35,8 @@ import android.widget.ListView;
 public abstract class AbsBaseListFragment extends Fragment implements OnItemClickListener,
         OnScrollListener, OnLastItemVisibleListener, OnRefreshListener2<ListView> {
 
+    private static final String LOG_TAG = "BaseListFragment";
+    
     private ListView mListView;
 
     private PullToRefreshListView mPullToRefreshListView;
@@ -50,6 +53,7 @@ public abstract class AbsBaseListFragment extends Fragment implements OnItemClic
     @SuppressLint("NewApi")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        CDLog.d(LOG_TAG, this.toString()+" create view!");
         View view = inflater.inflate(getContentViewId(), null);
         mPullToRefreshListView = (PullToRefreshListView) view.findViewById(R.id.pull_refresh_list);
         if (mPullToRefreshListView == null) {

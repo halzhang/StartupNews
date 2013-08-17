@@ -33,7 +33,7 @@
         android:layout_below="@id/discuss_comment_item_user_id"
         android:layout_margin="5dip"
         android:text="的方式的放松放松东方时空恨死哈"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/discuss_comment_item_artist_titile"

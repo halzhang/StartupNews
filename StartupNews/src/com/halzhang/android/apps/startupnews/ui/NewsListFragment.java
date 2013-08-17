@@ -148,6 +148,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        CDLog.d(LOG_TAG, this.toString()+" destroy view!");
     }
 
     @Override

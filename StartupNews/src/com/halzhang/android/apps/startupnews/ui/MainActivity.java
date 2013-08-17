@@ -2,7 +2,8 @@
 package com.halzhang.android.apps.startupnews.ui;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBarDrawerToggle;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
+import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.Window;
 import com.google.analytics.tracking.android.EasyTracker;
@@ -29,6 +30,7 @@ import org.jsoup.select.Elements;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -38,14 +40,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Toast;
 
@@ -56,8 +55,8 @@ import java.io.IOException;
  * 
  * @author Hal
  */
-public class MainActivity extends BaseFragmentActivity implements AdapterView.OnItemClickListener,
-        OnNewsSelectedListener, SlidingLayer.OnInteractListener {
+public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener,
+        SlidingLayer.OnInteractListener, ActionBar.TabListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -77,21 +76,9 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
 
     private Intent mFeedbackEmailIntent;
 
-    private ListView mDrawerListView;
-
-    private DrawerLayout mDrawerLayout;
-
-    private ActionBarDrawerToggle mDrawerToggle;
-
     private SNApiHelper mSnApiHelper;
 
     private SNNew mSnNew;
-
-    private NewsListFragment mNewsListFragment;
-
-    private NewsListFragment mNewestListFragment;
-
-    private CommentsListFragment mCommentsListFragment;
 
     private SlidingLayer mSlidingLayer;
 
@@ -115,51 +102,49 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (mDrawerToggle != null) {
-            mDrawerToggle.syncState();
-        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void setupViews() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (mDrawerLayout != null) {
+        if (isMultiplePanel()) {
             // 横屏，平板布局
             final ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+            Context context = getSupportActionBar().getThemedContext();
+            ArrayAdapter<CharSequence> list = ArrayAdapter.createFromResource(context,
+                    R.array.section_titles, R.layout.sherlock_spinner_item);
+            list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
+            actionBar.setListNavigationCallbacks(list, new OnNavigationListener() {
+
+                @Override
+                public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+                    switchNavigation(itemPosition);
+                    return false;
+                }
+            });
+
+            // actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+            // String[] strArray =
+            // getResources().getStringArray(R.array.section_titles);
+            // for (int i = 0; i < strArray.length; i++) {
+            // ActionBar.Tab tab = getSupportActionBar().newTab();
+            // tab.setText(strArray[i]);
+            // tab.setTag(i);
+            // tab.setTabListener(this);
+            // getSupportActionBar().addTab(tab);
+            // }
 
             mSlidingLayer = (SlidingLayer) findViewById(R.id.slidingLayer1);
             mSlidingLayer.setOnInteractListener(this);
             setSlidinglayerWidth();
 
-            mDrawerToggle = new ActionBarDrawerToggle(this, actionBar, mDrawerLayout,
-                    R.drawable.ic_drawer, R.string.drawer_opened, R.string.drawer_closed) {
-
-                @Override
-                public void onDrawerOpened(View drawerView) {
-                    super.onDrawerOpened(drawerView);
-                }
-
-                @Override
-                public void onDrawerClosed(View drawerView) {
-                    super.onDrawerClosed(drawerView);
-                }
-            };
-            mDrawerLayout.setDrawerListener(mDrawerToggle);
-            mDrawerListView = (ListView) findViewById(R.id.left_drawer_list);
-            mDrawerListView.setOnItemClickListener(this);
-            mDrawerListView.setAdapter(new ArrayAdapter<String>(this,
-                    android.R.layout.simple_list_item_activated_1, android.R.id.text1,
-                    getResources().getStringArray(R.array.section_titles)));
-
-            mNewsListFragment = new NewsListFragment();
+            Fragment fragment = new NewsListFragment();
             Bundle args = new Bundle();
             args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
-            mNewsListFragment.setArguments(args);
+            fragment.setArguments(args);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_frame_left, mNewsListFragment, TAG_NEWS)
-                    .commitAllowingStateLoss();
+                    .add(R.id.content_frame_left, fragment, TAG_NEWS).commitAllowingStateLoss();
 
         }
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -205,9 +190,6 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
 
     @Override
     public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
-        if (mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
         switch (item.getItemId()) {
             case R.id.menu_settings:
                 EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
@@ -272,14 +254,11 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (mDrawerToggle != null) {
-            mDrawerToggle.onConfigurationChanged(newConfig);
-        }
-        //横竖屏切换后需要更新SlidingLayer的宽度
+        // 横竖屏切换后需要更新SlidingLayer的宽度
         if (mSlidingLayer != null) {
             setSlidinglayerWidth();
         }
-        
+
     }
 
     private void setSlidinglayerWidth() {
@@ -289,58 +268,65 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
         mSlidingLayer.setLayoutParams(lp);
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    private String mLastTag = TAG_NEWS;
+
+    private void switchNavigation(int position) {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        String tag = null;
         switch (position) {
             case 0: {
-                Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_NEWS);
+                Fragment fragment = fm.findFragmentByTag(TAG_NEWS);
                 if (fragment == null) {
-                    if (mNewsListFragment == null) {
-                        mNewsListFragment = new NewsListFragment();
-                        Bundle args = new Bundle();
-                        args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
-                        mNewsListFragment.setArguments(args);
-                    }
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.content_frame_left, mNewsListFragment, TAG_NEWS)
-                            .commitAllowingStateLoss();
+                    fragment = new NewsListFragment();
+                    Bundle args = new Bundle();
+                    args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
+                    fragment.setArguments(args);
+                    ft.add(R.id.content_frame_left, fragment, TAG_NEWS);
                 } else {
-                    getSupportFragmentManager().beginTransaction().attach(fragment);
+                    ft.attach(fragment);
                 }
+                tag = TAG_NEWS;
             }
                 break;
             case 1: {
-                Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_NEWEST);
+                Fragment fragment = fm.findFragmentByTag(TAG_NEWEST);
                 if (fragment == null) {
-                    if (mNewestListFragment == null) {
-                        mNewestListFragment = new NewsListFragment();
-                        Bundle args = new Bundle();
-                        args.putString(NewsListFragment.ARG_URL,
-                                getString(R.string.host, "/newest"));
-                        mNewestListFragment.setArguments(args);
-                    }
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.content_frame_left, mNewestListFragment, TAG_NEWEST)
-                            .commitAllowingStateLoss();
+                    fragment = new NewsListFragment();
+                    Bundle args = new Bundle();
+                    args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/newest"));
+                    fragment.setArguments(args);
+                    ft.add(R.id.content_frame_left, fragment, TAG_NEWEST);
+                } else {
+                    ft.attach(fragment);
                 }
+
+                tag = TAG_NEWEST;
             }
                 break;
             case 2: {
-                Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_COMMENT);
+                Fragment fragment = fm.findFragmentByTag(TAG_COMMENT);
                 if (fragment == null) {
-                    if (mCommentsListFragment == null) {
-                        mCommentsListFragment = new CommentsListFragment();
-                    }
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.content_frame_left, mCommentsListFragment, TAG_COMMENT)
-                            .commitAllowingStateLoss();
+                    fragment = new CommentsListFragment();
+                    ft.add(R.id.content_frame_left, fragment, TAG_COMMENT);
+                } else {
+                    ft.attach(fragment);
                 }
+                tag = TAG_COMMENT;
             }
                 break;
             default:
                 throw new IllegalArgumentException("");
         }
-        mDrawerLayout.closeDrawers();
+        if (!mLastTag.equals(tag)) {
+            Fragment fragment = fm.findFragmentByTag(mLastTag);
+            if (fragment != null) {
+                ft.detach(fragment);
+            }
+            mLastTag = tag;
+        }
+        ft.commitAllowingStateLoss();
+
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -464,7 +450,7 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
     public void onNewsSelected(int position, SNNew snNew) {
         // 处理文章被选中，竖屏启动Activity，平板更新右栏
         mSnNew = snNew;
-        if (isFragmentContainerExist()) {
+        if (isMultiplePanel()) {
             mSlidingLayer.closeLayer(true);
             BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager()
                     .findFragmentByTag(TAG_BROWSE);
@@ -486,13 +472,17 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
         }
     }
 
-    private boolean isFragmentContainerExist() {
+    /**
+     * 平板布局
+     * 
+     * @return
+     */
+    public boolean isMultiplePanel() {
         return findViewById(R.id.fragment_container) != null;
     }
 
     @Override
     public void onOpen() {
-        // TODO Auto-generated method stub
 
     }
 
@@ -508,7 +498,6 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
 
     @Override
     public void onOpened() {
-        // TODO Auto-generated method stub
 
     }
 
@@ -532,6 +521,22 @@ public class MainActivity extends BaseFragmentActivity implements AdapterView.On
                 break;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onTabSelected(Tab tab, FragmentTransaction ft) {
+        int pos = (Integer) tab.getTag();
+        switchNavigation(pos);
+    }
+
+    @Override
+    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+
+    }
+
+    @Override
+    public void onTabReselected(Tab tab, FragmentTransaction ft) {
+
     }
 
 }
