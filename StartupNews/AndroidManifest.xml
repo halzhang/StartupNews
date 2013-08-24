@@ -9,7 +9,6 @@
         android:xlargeScreens="true"/>
     
     <uses-sdk
-        android:maxSdkVersion="17"
         android:minSdkVersion="10"
         android:targetSdkVersion="17" />
 
