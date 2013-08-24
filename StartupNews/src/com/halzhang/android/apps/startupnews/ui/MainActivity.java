@@ -18,6 +18,7 @@ import com.halzhang.android.apps.startupnews.ui.NewsListFragment.OnNewsSelectedL
 import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
 import com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment;
 import com.halzhang.android.apps.startupnews.ui.tablet.DiscussFragment;
+import com.halzhang.android.apps.startupnews.ui.tablet.DiscussFragment.OnMenuSelectedListener;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
@@ -32,7 +33,6 @@ import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -54,7 +54,7 @@ import java.io.IOException;
  * @author Hal
  */
 public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener,
-        ActionBar.TabListener,OnCommentSelectedListener {
+        ActionBar.TabListener, OnCommentSelectedListener, OnMenuSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -213,17 +213,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 // mLogoutTask = new LogoutTask();
                 // mLogoutTask.execute((Void) null);
                 return true;
-            case R.id.menu_screenorientation:
-                // TODO for debug
-                int ori = getRequestedOrientation();
-                if (ori == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                } else if (ori == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                } else {
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                }
-                return true;
             case R.id.menu_up_vote:
                 mSnApiHelper.upVote(mSnNew);
                 return true;
@@ -238,13 +227,13 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     private void showDiscussFragment() {
         showDiscussFragment(mSnNew, null);
     }
-    
-    private void showDiscussFragment(SNNew snNew,String discussUrl){
+
+    private void showDiscussFragment(SNNew snNew, String discussUrl) {
         Bundle args = new Bundle();
-        if(snNew != null){
+        if (snNew != null) {
             args.putSerializable(DiscussActivity.ARG_SNNEW, snNew);
             args.putString(DiscussActivity.ARG_DISCUSS_URL, mSnNew.getDiscussURL());
-        }else{
+        } else {
             args.putString(DiscussActivity.ARG_DISCUSS_URL, discussUrl);
         }
         DiscussFragment fragment = new DiscussFragment();
@@ -442,23 +431,27 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
         // 处理文章被选中，竖屏启动Activity，平板更新右栏
         mSnNew = snNew;
         if (isMultiplePanel()) {
-            BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager()
-                    .findFragmentByTag(TAG_BROWSE);
-            if (browseFragment != null) {
-                browseFragment.setTitle(mSnNew.getTitle());
-                browseFragment.load(snNew.getUrl());
-            } else {
-                BrowseFragment fragment = new BrowseFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString(BrowseActivity.EXTRA_URL, mSnNew.getUrl());
-                bundle.putString(BrowseActivity.EXTRA_TITLE, mSnNew.getTitle());
-                fragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
-                        .replace(R.id.fragment_container, fragment, TAG_BROWSE).commit();
-            }
+            showBrowseFragment(snNew);
         } else {
             ActivityUtils.openArticle(this, snNew);
+        }
+    }
+
+    private void showBrowseFragment(SNNew snNew) {
+        BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager()
+                .findFragmentByTag(TAG_BROWSE);
+        if (browseFragment != null) {
+            browseFragment.setTitle(snNew.getTitle());
+            browseFragment.load(snNew.getUrl());
+        } else {
+            BrowseFragment fragment = new BrowseFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString(BrowseActivity.EXTRA_URL, snNew.getUrl());
+            bundle.putString(BrowseActivity.EXTRA_TITLE, snNew.getTitle());
+            fragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
+                    .replace(R.id.fragment_container, fragment, TAG_BROWSE).commit();
         }
     }
 
@@ -489,14 +482,20 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
     @Override
     public void onCommentSelected(int position, String discussUrl) {
-        if(isMultiplePanel()){
+        if (isMultiplePanel()) {
             showDiscussFragment(null, discussUrl);
-        }else{
-            //phone
+        } else {
+            // phone
             Intent intent = new Intent(this, DiscussActivity.class);
             intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, discussUrl);
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void onShowArticleSelected(SNNew snNew) {
+        mSnNew = snNew;
+        showBrowseFragment(snNew);
     }
 
 }

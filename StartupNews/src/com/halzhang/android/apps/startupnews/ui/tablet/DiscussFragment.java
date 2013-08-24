@@ -70,6 +70,10 @@ import android.widget.Toast;
 public class DiscussFragment extends SherlockFragment implements OnItemClickListener {
 
     private static final String LOG_TAG = DiscussFragment.class.getSimpleName();
+    
+    public interface OnMenuSelectedListener{
+        public void onShowArticleSelected(SNNew snNew);
+    }
 
     private SNDiscuss mSnDiscuss;
 
@@ -95,10 +99,15 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
 
     private JsoupFactory mJsoupFactory;
 
+    private OnMenuSelectedListener mListener;
+    
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mJsoupFactory = JsoupFactory.getInstance(activity.getApplicationContext());
+        if(activity instanceof OnMenuSelectedListener){
+            mListener = (OnMenuSelectedListener)activity;
+        }
     }
 
     @Override
@@ -231,7 +240,7 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         mOptionsMenu = menu;
-        inflater.inflate(R.menu.activity_discuss, menu);
+        inflater.inflate(R.menu.fragment_discuss, menu);
     }
 
     private void wrapHeaderView(SNNew snNew) {
@@ -279,6 +288,11 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
                 EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
                         "discussactivity_menu_refresh", 0L);
                 loadData();
+                return true;
+            case R.id.menu_show_article:
+                if(mListener != null){
+                    mListener.onShowArticleSelected(mSnDiscuss.getSnNew());
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -388,7 +402,7 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (position == 0) {
+        if (position == 0 && mListener == null) {
             EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
                     "discuss_activity_list_header_click", 0L);
             // 查看文章

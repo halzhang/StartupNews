@@ -12,10 +12,5 @@
         android:showAsAction="never"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/menu_settings"/>
-    <item
-        android:id="@+id/menu_screenorientation"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/menu_screenorientation"/>
 
 </menu>
