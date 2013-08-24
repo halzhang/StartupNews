@@ -21,7 +21,6 @@ import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
-import com.slidinglayer.SlidingLayer;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import org.jsoup.Connection;
@@ -43,9 +42,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.widget.ArrayAdapter;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -56,7 +53,7 @@ import java.io.IOException;
  * @author Hal
  */
 public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener,
-        SlidingLayer.OnInteractListener, ActionBar.TabListener {
+        ActionBar.TabListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -80,7 +77,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
     private SNNew mSnNew;
 
-    private SlidingLayer mSlidingLayer;
+//    private SlidingLayer mSlidingLayer;
 
     @SuppressWarnings("unused")
     private LogoutTask mLogoutTask;
@@ -134,10 +131,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
             // tab.setTabListener(this);
             // getSupportActionBar().addTab(tab);
             // }
-
-            mSlidingLayer = (SlidingLayer) findViewById(R.id.slidingLayer1);
-            mSlidingLayer.setOnInteractListener(this);
-            setSlidinglayerWidth();
 
             Fragment fragment = new NewsListFragment();
             Bundle args = new Bundle();
@@ -243,8 +236,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 fragment.setArguments(args);
                 getSupportFragmentManager().beginTransaction()
                         .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
-                        .replace(R.id.discuss_fragment_container, fragment, TAG_DISCUSS).commit();
-                mSlidingLayer.openLayer(true);
+                        .replace(R.id.fragment_container, fragment, TAG_DISCUSS).commit();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -254,18 +246,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // 横竖屏切换后需要更新SlidingLayer的宽度
-        if (mSlidingLayer != null) {
-            setSlidinglayerWidth();
-        }
-
-    }
-
-    private void setSlidinglayerWidth() {
-        LayoutParams lp = (LayoutParams) mSlidingLayer.getLayoutParams();
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        lp.width = (int) (screenWidth * 0.5);
-        mSlidingLayer.setLayoutParams(lp);
     }
 
     private String mLastTag = TAG_NEWS;
@@ -451,7 +431,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
         // 处理文章被选中，竖屏启动Activity，平板更新右栏
         mSnNew = snNew;
         if (isMultiplePanel()) {
-            mSlidingLayer.closeLayer(true);
             BrowseFragment browseFragment = (BrowseFragment) getSupportFragmentManager()
                     .findFragmentByTag(TAG_BROWSE);
             if (browseFragment != null) {
@@ -479,48 +458,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
      */
     public boolean isMultiplePanel() {
         return findViewById(R.id.fragment_container) != null;
-    }
-
-    @Override
-    public void onOpen() {
-
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    @Override
-    public void onClose() {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_DISCUSS);
-        if (fragment != null) {
-            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-        }
-        invalidateOptionsMenu();
-    }
-
-    @Override
-    public void onOpened() {
-
-    }
-
-    @Override
-    public void onClosed() {
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK: {
-                if (mSlidingLayer != null && mSlidingLayer.isOpened()) {
-                    mSlidingLayer.closeLayer(true);
-                    return true;
-                }
-
-            }
-                break;
-
-            default:
-                break;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override

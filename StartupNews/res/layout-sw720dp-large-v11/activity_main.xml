@@ -1,35 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_frame"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
 
-    <LinearLayout
-        android:id="@+id/content_frame"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/content_frame_left"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="horizontal" >
+        android:layout_weight="1"
+        android:orientation="vertical" />
 
-        <FrameLayout
-            android:id="@+id/content_frame_left"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" />
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/holo_blue_dark" />
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/holo_blue_dark" />
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        tools:layout="@layout/fragment_browse" />
 
-        <FrameLayout
-            android:id="@+id/fragment_container"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            tools:layout="@layout/fragment_browse" />
-    </LinearLayout>
-
+</LinearLayout>
+<!--
     <com.slidinglayer.SlidingLayer
         xmlns:slidingLayer="http://schemas.android.com/apk/res/com.halzhang.android.apps.startupnews"
         android:id="@+id/slidingLayer1"
@@ -48,5 +45,5 @@
             android:layout_height="match_parent"
             android:background="@android:color/white" />
     </com.slidinglayer.SlidingLayer>
+-->
 
-</RelativeLayout>
