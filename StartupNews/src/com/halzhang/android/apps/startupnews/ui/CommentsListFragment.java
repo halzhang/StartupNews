@@ -11,11 +11,13 @@ import com.halzhang.android.apps.startupnews.entity.SNComments;
 import com.halzhang.android.apps.startupnews.parser.SNCommentsParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
+import com.halzhang.android.common.CDLog;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,6 +44,14 @@ public class CommentsListFragment extends AbsBaseListFragment {
 
     private static final String LOG_TAG = CommentsListFragment.class.getSimpleName();
 
+    public interface OnCommentSelectedListener {
+        /**
+         * @param position
+         * @param discussUrl url
+         */
+        public void onCommentSelected(int position, String discussUrl);
+    }
+
     // private ArrayList<SNComment> mComments = new ArrayList<SNComment>(24);
 
     private CommentsAdapter mAdapter;
@@ -55,12 +65,24 @@ public class CommentsListFragment extends AbsBaseListFragment {
     private static final String NEWCOMMENTS_URL_PATH = "/newcomments";
 
     private JsoupFactory mJsoupFactory;
+    
+    private OnCommentSelectedListener mCommentSelectedListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new CommentsAdapter();
         mJsoupFactory = JsoupFactory.getInstance(getActivity().getApplicationContext());
+    }
+    
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if(activity instanceof OnCommentSelectedListener){
+            mCommentSelectedListener = (OnCommentSelectedListener)activity;
+        }else{
+            CDLog.d(LOG_TAG, "Attach activity is not implements OnCommentSelectedListener!");
+        }
     }
 
     @Override
@@ -92,9 +114,13 @@ public class CommentsListFragment extends AbsBaseListFragment {
         EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
                 "comments_list_fragment_list_item_click", 0L);
         SNComment comment = mSnComments.getSnComments().get(position - 1);
-        Intent intent = new Intent(getActivity(), DiscussActivity.class);
-        intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, comment.getDiscussURL());
-        startActivity(intent);
+        if(mCommentSelectedListener != null){
+            mCommentSelectedListener.onCommentSelected(position - 1, comment.getDiscussURL());
+        }else{
+            Intent intent = new Intent(getActivity(), DiscussActivity.class);
+            intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, comment.getDiscussURL());
+            startActivity(intent);
+        }
     }
 
     @Override

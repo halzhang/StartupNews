@@ -13,6 +13,7 @@ import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
+import com.halzhang.android.apps.startupnews.ui.CommentsListFragment.OnCommentSelectedListener;
 import com.halzhang.android.apps.startupnews.ui.NewsListFragment.OnNewsSelectedListener;
 import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
 import com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment;
@@ -53,7 +54,7 @@ import java.io.IOException;
  * @author Hal
  */
 public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener,
-        ActionBar.TabListener {
+        ActionBar.TabListener,OnCommentSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -76,8 +77,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     private SNApiHelper mSnApiHelper;
 
     private SNNew mSnNew;
-
-//    private SlidingLayer mSlidingLayer;
 
     @SuppressWarnings("unused")
     private LogoutTask mLogoutTask;
@@ -229,18 +228,30 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 mSnApiHelper.upVote(mSnNew);
                 return true;
             case R.id.menu_show_comment:
-                Bundle args = new Bundle();
-                args.putSerializable(DiscussActivity.ARG_SNNEW, mSnNew);
-                args.putString(DiscussActivity.ARG_DISCUSS_URL, mSnNew.getDiscussURL());
-                DiscussFragment fragment = new DiscussFragment();
-                fragment.setArguments(args);
-                getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
-                        .replace(R.id.fragment_container, fragment, TAG_DISCUSS).commit();
+                showDiscussFragment();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showDiscussFragment() {
+        showDiscussFragment(mSnNew, null);
+    }
+    
+    private void showDiscussFragment(SNNew snNew,String discussUrl){
+        Bundle args = new Bundle();
+        if(snNew != null){
+            args.putSerializable(DiscussActivity.ARG_SNNEW, snNew);
+            args.putString(DiscussActivity.ARG_DISCUSS_URL, mSnNew.getDiscussURL());
+        }else{
+            args.putString(DiscussActivity.ARG_DISCUSS_URL, discussUrl);
+        }
+        DiscussFragment fragment = new DiscussFragment();
+        fragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                .replace(R.id.fragment_container, fragment, TAG_DISCUSS).commit();
     }
 
     @Override
@@ -336,7 +347,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 case 2:
                     fragment = new CommentsListFragment();
                 default:
-                    break;
+                    throw new IndexOutOfBoundsException("Fragment count error!");
             }
             return fragment;
         }
@@ -474,6 +485,18 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     @Override
     public void onTabReselected(Tab tab, FragmentTransaction ft) {
 
+    }
+
+    @Override
+    public void onCommentSelected(int position, String discussUrl) {
+        if(isMultiplePanel()){
+            showDiscussFragment(null, discussUrl);
+        }else{
+            //phone
+            Intent intent = new Intent(this, DiscussActivity.class);
+            intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, discussUrl);
+            startActivity(intent);
+        }
     }
 
 }
