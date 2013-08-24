@@ -9,8 +9,9 @@
     <item
         android:id="@+id/menu_show_comment"
         android:showAsAction="always"
+        android:icon="@drawable/ic_action_chat"
         android:title="@string/menu_show_comment"/>
-  <!--   <item
+    <!-- <item
         android:id="@+id/menu_up_vote"
         android:showAsAction="always"
         android:title="@string/menu_up_vote"/> -->

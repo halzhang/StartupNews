@@ -38,11 +38,12 @@ public class SNApiHelper {
         mActivityRef = new WeakReference<Activity>(activity);
     }
 
-    public void upVote(SNNew snNew) {
+    /**
+     * 
+     * @param postID {@link SNNew#getPostID()}
+     */
+    public void upVote(String postID) {
 
-        if (snNew == null) {
-            return;
-        }
         final Activity activity = mActivityRef.get();
         if (activity == null) {
             return;
@@ -50,7 +51,7 @@ public class SNApiHelper {
         SessionManager sm = SessionManager.getInstance(activity);
         if (sm.isValid()) {
             SNApi api = new SNApi(activity);
-            final String url = activity.getString(R.string.vote_url, snNew.getPostID(),
+            final String url = activity.getString(R.string.vote_url, postID,
                     sm.getSessionId(), sm.getSessionUser());
             api.upVote(url, new AsyncHttpResponseHandler() {
                 @Override

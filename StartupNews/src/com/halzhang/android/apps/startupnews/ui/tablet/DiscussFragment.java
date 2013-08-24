@@ -70,9 +70,11 @@ import android.widget.Toast;
 public class DiscussFragment extends SherlockFragment implements OnItemClickListener {
 
     private static final String LOG_TAG = DiscussFragment.class.getSimpleName();
-    
-    public interface OnMenuSelectedListener{
+
+    public interface OnMenuSelectedListener {
         public void onShowArticleSelected(SNNew snNew);
+
+        public void onUpVoteSelected(String postId);
     }
 
     private SNDiscuss mSnDiscuss;
@@ -100,13 +102,13 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
     private JsoupFactory mJsoupFactory;
 
     private OnMenuSelectedListener mListener;
-    
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mJsoupFactory = JsoupFactory.getInstance(activity.getApplicationContext());
-        if(activity instanceof OnMenuSelectedListener){
-            mListener = (OnMenuSelectedListener)activity;
+        if (activity instanceof OnMenuSelectedListener) {
+            mListener = (OnMenuSelectedListener) activity;
         }
     }
 
@@ -119,13 +121,12 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
         mSnDiscuss = new SNDiscuss();
         Bundle args = getArguments();
         SNNew snNew = null;
-        if (args != null 
-                && args.containsKey(DiscussActivity.ARG_DISCUSS_URL)) {
+        if (args != null && args.containsKey(DiscussActivity.ARG_DISCUSS_URL)) {
             mDiscussURL = args.getString(DiscussActivity.ARG_DISCUSS_URL);
         } else {
             throw new IllegalArgumentException("Discuss URL is required!");
         }
-        if(args.containsKey(DiscussActivity.ARG_SNNEW)){
+        if (args.containsKey(DiscussActivity.ARG_SNNEW)) {
             snNew = (SNNew) args.getSerializable(DiscussActivity.ARG_SNNEW);
             mSnDiscuss.setSnNew(snNew);
         }
@@ -290,10 +291,14 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
                 loadData();
                 return true;
             case R.id.menu_show_article:
-                if(mListener != null){
+                if (mListener != null) {
                     mListener.onShowArticleSelected(mSnDiscuss.getSnNew());
                 }
                 return true;
+            case R.id.menu_up_vote:
+                if(mListener != null){
+                    mListener.onUpVoteSelected(mSnDiscuss.getSnNew().getPostID());
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }

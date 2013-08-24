@@ -213,9 +213,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 // mLogoutTask = new LogoutTask();
                 // mLogoutTask.execute((Void) null);
                 return true;
-            case R.id.menu_up_vote:
-                mSnApiHelper.upVote(mSnNew);
-                return true;
             case R.id.menu_show_comment:
                 showDiscussFragment();
                 return true;
@@ -336,7 +333,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 case 2:
                     fragment = new CommentsListFragment();
                 default:
-                    throw new IndexOutOfBoundsException("Fragment count error!");
+                    break;
             }
             return fragment;
         }
@@ -496,6 +493,11 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     public void onShowArticleSelected(SNNew snNew) {
         mSnNew = snNew;
         showBrowseFragment(snNew);
+    }
+
+    @Override
+    public void onUpVoteSelected(String postId) {
+        mSnApiHelper.upVote(postId);
     }
 
 }

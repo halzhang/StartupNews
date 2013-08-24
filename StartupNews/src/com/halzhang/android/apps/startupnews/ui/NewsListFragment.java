@@ -13,7 +13,6 @@ import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
-import com.halzhang.android.apps.startupnews.utils.UIUtils;
 import com.halzhang.android.common.CDLog;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -85,6 +84,8 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     
     private SNApiHelper mSnApiHelper;
     
+    private boolean mIsTablet;
+    
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
         @Override
@@ -110,6 +111,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         mSnApiHelper = new SNApiHelper(activity);
         try {
             mNewsSelectedListener = (OnNewsSelectedListener) activity;
+            mIsTablet = ((MainActivity)activity).isMultiplePanel();
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnNewsSelectedListener");
@@ -164,7 +166,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        if(!UIUtils.isTablet(getActivity())){
+        if(!mIsTablet){
             getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
         }
     }
@@ -188,7 +190,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
             case R.id.menu_up_vote:
                 EasyTracker.getTracker().sendEvent("ui_action", "context_item_selected",
                         "newslistfragment_menu_upvote", 0L);
-                mSnApiHelper.upVote(snNew);
+                mSnApiHelper.upVote(snNew.getPostID());
                 return true;
             default:
                 break;

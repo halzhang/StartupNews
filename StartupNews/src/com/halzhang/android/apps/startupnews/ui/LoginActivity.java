@@ -371,6 +371,10 @@ public class LoginActivity extends BaseFragmentActivity {
          */
         @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
         public void showProgress(final boolean show) {
+            if(getActivity() == null){
+                //防止 not attact to activity 出错
+                return;
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
                 int shortAnimTime = getResources().getInteger(
                         android.R.integer.config_shortAnimTime);

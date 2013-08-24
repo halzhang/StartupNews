@@ -71,7 +71,7 @@
     <string name="pref_title_version">版本</string>
     <string name="pref_summary_version">V<xliff:g id="VERSION_NAME">%1$s</xliff:g></string>
     <string name="pref_title_donation">这个APP用的还不错？</string>
-    <string name="pref_summary_donation">你可以向作者捐款用于购买平板测试设备</string>
+    <string name="pref_summary_donation">你可以向作者捐款</string>
 
     <string-array name="html_provider_entries">
         <item>Readabilily</item>
