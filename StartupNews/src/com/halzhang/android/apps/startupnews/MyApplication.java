@@ -42,7 +42,7 @@ public class MyApplication extends Application {
     /**
      * debug mode
      */
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private HashSet<String> mHistorySet = new HashSet<String>();
 
