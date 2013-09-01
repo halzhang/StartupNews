@@ -131,7 +131,7 @@ public class LoginActivity extends BaseFragmentActivity {
             final HttpPost httpPost = new HttpPost(getString(R.string.host, "/y"));
             httpPost.addHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded");
             httpPost.addHeader("Accept-Language", "zh-cn");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
                 httpPost.addHeader(HTTP.USER_AGENT,
                         WebSettings.getDefaultUserAgent(getApplicationContext()));
             }

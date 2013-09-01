@@ -61,7 +61,7 @@ public class SNApi {
         mAsyncHttpClient.addHeader("Accept", "*/*");
         mAsyncHttpClient.addHeader("Cookie", SessionManager.getInstance(context).getCookieString());
         mAsyncHttpClient.setUserAgent(USER_AGENT);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
             mAsyncHttpClient.setUserAgent(WebSettings.getDefaultUserAgent(context));
         } else {
             mAsyncHttpClient.setUserAgent(USER_AGENT);
