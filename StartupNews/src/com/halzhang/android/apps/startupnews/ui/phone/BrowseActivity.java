@@ -9,6 +9,8 @@ import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.ui.BaseFragmentActivity;
 import com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -21,6 +23,7 @@ import android.text.TextUtils;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class BrowseActivity extends BaseFragmentActivity {
 
     // private static final String LOG_TAG =
@@ -35,6 +38,8 @@ public class BrowseActivity extends BaseFragmentActivity {
         setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);// 注释掉，ShareActionProvider无法解析
         super.onCreate(arg0);
         requestWindowFeature(Window.FEATURE_PROGRESS);
+//        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+//        getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_bg_black));
         setContentView(R.layout.activity_browse);
 
         String mOriginalUrl = getIntent().getStringExtra(EXTRA_URL);

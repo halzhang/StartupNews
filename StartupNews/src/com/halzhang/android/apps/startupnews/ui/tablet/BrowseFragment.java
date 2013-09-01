@@ -8,31 +8,40 @@ import com.actionbarsherlock.widget.ShareActionProvider.OnShareTargetSelectedLis
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
+import com.halzhang.android.apps.startupnews.ui.widgets.ObservableWebView;
+import com.halzhang.android.apps.startupnews.ui.widgets.ObservableWebView.OnScrollChangedCallback;
 import com.halzhang.android.apps.startupnews.ui.widgets.WebViewController;
 import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
 import com.halzhang.android.common.CDLog;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 
 /**
  * 浏览器 Created by Hal on 13-5-25.
  */
-public class BrowseFragment extends SherlockFragment {
+public class BrowseFragment extends SherlockFragment implements OnScrollChangedCallback {
 
     private static final String LOG_TAG = BrowseFragment.class.getSimpleName();
 
-    private WebView mWebView;
+    private ObservableWebView mWebView;
 
     private WebViewController mWebViewController;
 
     private String mTitle;
 
     private String mOriginalUrl;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,20 +53,23 @@ public class BrowseFragment extends SherlockFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         final View view = inflater.inflate(R.layout.fragment_browse, null);
-        mWebView = (WebView) view.findViewById(R.id.webview);
+        mWebView = (ObservableWebView) view.findViewById(R.id.webview);
+        Activity activity = getActivity();
+        mWebView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        mWebView.setOnScrollChangedCallback(this);
         mWebViewController.initControllerView(mWebView, view);
         Bundle args = getArguments();
         if (args != null && args.containsKey(BrowseActivity.EXTRA_TITLE)
                 && args.containsKey(BrowseActivity.EXTRA_URL)) {
             mTitle = args.getString(BrowseActivity.EXTRA_TITLE);
             mOriginalUrl = args.getString(BrowseActivity.EXTRA_URL);
-            String mHtmlProvider = PreferenceUtils.getHtmlProvider(getActivity());
+            String mHtmlProvider = PreferenceUtils.getHtmlProvider(activity);
             final String url = mHtmlProvider + mOriginalUrl;
             mWebViewController.loadUrl(url);
         }
         return view;
     }
-    
+
     public void setTitle(String title) {
         mTitle = title;
     }
@@ -84,8 +96,7 @@ public class BrowseFragment extends SherlockFragment {
             public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
                 /*
                  * 这里改变intent是没用的，intent只是一份拷贝，只能自己启动修改后的Intent
-                 * 然而自己启动Intent并不会改变历史记录
-                 * 增加setAllowPolicyChangeIntent方法解决这问题
+                 * 然而自己启动Intent并不会改变历史记录 增加setAllowPolicyChangeIntent方法解决这问题
                  */
                 String packageName = intent.getComponent().getPackageName();
                 CDLog.i(LOG_TAG, packageName);
@@ -95,7 +106,7 @@ public class BrowseFragment extends SherlockFragment {
                 if (getString(R.string.weibo_package_name).equals(packageName)) {
                     intent.putExtra(Intent.EXTRA_TEXT, shareContent + " "
                             + getString(R.string.weibo_share_suffix));
-                }else{
+                } else {
                     intent.putExtra(Intent.EXTRA_TEXT, shareContent);
                 }
                 return false;
@@ -119,8 +130,6 @@ public class BrowseFragment extends SherlockFragment {
     private String getShareContent() {
         StringBuilder builder = new StringBuilder();
         builder.append(mTitle).append(" ").append(mOriginalUrl);
-        // builder.append(" （").append("分享自StartupNews: ").append(getString(R.string.google_play_url))
-        // .append("）");
         return builder.toString();
     }
 
@@ -135,6 +144,25 @@ public class BrowseFragment extends SherlockFragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onScroll(int l, int t, int oldl, int oldt) {
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public void onScrollUp() {
+        // getActivity().getActionBar().show();
+        mWebViewController.showBrowseBar();
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public void onScrollDown() {
+        // getActivity().getActionBar().hide();
+        mWebViewController.hideBrowseBar();
     }
 
 }

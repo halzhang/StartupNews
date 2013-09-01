@@ -16,6 +16,8 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -39,6 +41,8 @@ public class WebViewController implements OnClickListener {
     private ImageButton mReadabilityButton;
     private ImageButton mRefreshButton;
     private ImageButton mWebSiteButton;
+    
+    private View mToolBar;
     
     private String mCurrentUrl;
     
@@ -70,6 +74,8 @@ public class WebViewController implements OnClickListener {
         mReadabilityButton = (ImageButton) view.findViewById(R.id.browse_readability);
         mRefreshButton = (ImageButton) view.findViewById(R.id.browse_refresh);
         mWebSiteButton = (ImageButton) view.findViewById(R.id.browse_website);
+        
+        mToolBar = view.findViewById(R.id.browse_bar);
         
         mBackButton.setOnClickListener(this);
         mForwardButton.setOnClickListener(this);
@@ -205,4 +211,20 @@ public class WebViewController implements OnClickListener {
         mWebView.loadUrl(url);
     }
 
+    public void showBrowseBar(){
+        if(mToolBar != null){
+            Animation animation = AnimationUtils.loadAnimation(mActivityRef.get(), R.anim.push_up_in);
+            mToolBar.startAnimation(animation);
+            mToolBar.setVisibility(View.VISIBLE);
+        }
+    }
+    
+    public void hideBrowseBar(){
+        if(mToolBar != null){
+            Animation animation = AnimationUtils.loadAnimation(mActivityRef.get(), R.anim.push_down_out);
+            mToolBar.startAnimation(animation);
+            mToolBar.setVisibility(View.GONE);
+        }
+    }
+    
 }

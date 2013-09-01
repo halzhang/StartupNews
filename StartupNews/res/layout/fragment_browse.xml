@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <WebView
+    android:layout_height="match_parent" >
+
+    <com.halzhang.android.apps.startupnews.ui.widgets.ObservableWebView
         android:id="@+id/webview"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1" />
-	<include layout="@layout/browse_bar"/>
-</LinearLayout>
+        android:layout_height="match_parent" />
+
+    <include
+        android:layout_alignParentBottom="true"
+        layout="@layout/browse_bar" />
+
+</RelativeLayout>

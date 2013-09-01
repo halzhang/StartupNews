@@ -6,8 +6,6 @@
 
 package com.halzhang.android.apps.startupnews.ui.widgets;
 
-import com.halzhang.android.common.CDLog;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.webkit.WebView;
@@ -21,6 +19,14 @@ import android.webkit.WebView;
  * @version Aug 25, 2013
  */
 public class ObservableWebView extends WebView {
+
+    private final static int TOUCH_STATE_REST = 0;
+
+    private final static int TOUCH_STATE_SCROLL_UP = 1;
+
+    private final static int TOUCH_STATE_SCROLL_DOWN = 2;
+
+    private int mTouchState = TOUCH_STATE_REST;
 
     private OnScrollChangedCallback mOnScrollChangedCallback;
 
@@ -39,13 +45,14 @@ public class ObservableWebView extends WebView {
     @Override
     protected void onScrollChanged(final int l, final int t, final int oldl, final int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
-        CDLog.i(VIEW_LOG_TAG, "l: " + l + " t: " + t + " oldl: " + oldl + " oldt: " + oldt);
         if (mOnScrollChangedCallback != null) {
             mOnScrollChangedCallback.onScroll(l, t, oldl, oldt);
             if (t >= 0 && oldt >= 0) {
-                if (oldt > t) {
+                if (oldt > t && mTouchState != TOUCH_STATE_SCROLL_UP) {
+                    mTouchState = TOUCH_STATE_SCROLL_UP;
                     mOnScrollChangedCallback.onScrollUp();
-                } else {
+                } else if (oldt < t && mTouchState != TOUCH_STATE_SCROLL_DOWN) {
+                    mTouchState = TOUCH_STATE_SCROLL_DOWN;
                     mOnScrollChangedCallback.onScrollDown();
                 }
             }
