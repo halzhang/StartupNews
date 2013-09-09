@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="action_button_min_width">56dp</dimen>
-
     <!-- sliding layer -->
     <dimen name="shadow_width">8dp</dimen>
     <dimen name="layer_width">500dp</dimen>

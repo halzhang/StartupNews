@@ -30,3 +30,7 @@ StartupNews/res/values/analytics.xml
 *.iml
 out
 module_*.xml
+
+#gradle
+build/
+.gradle/

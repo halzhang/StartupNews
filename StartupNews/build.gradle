@@ -3,12 +3,19 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.4'
+        classpath 'com.android.tools.build:gradle:0.5.+'
     }
 }
 apply plugin: 'android'
 
 dependencies {
+    compile fileTree(dir:'libs',include:'*.jar')
+    compile project(':library:abslibrary')
+    compile project(':library:android-async-http')
+    compile project(':library:commonlog')
+    compile project(':library:commontoast')
+    compile project(':library:pulltorefresh')
+    compile project(':library:viewpagerindicator')
 }
 
 android {
@@ -32,4 +39,29 @@ android {
 
         instrumentTest.setRoot('tests')
     }
+
+    signingConfigs {
+
+        release {
+            storeFile file("zhanghanguo.keystore")
+            storePassword "zhanghanguo"
+            keyAlias "zhanghanguo"
+            keyPassword "zhanghanguo"
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            packageNameSuffix ".debug"
+        }
+
+        release{
+            debuggable false
+            signingConfig signingConfigs.release
+            runProguard true
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+        }
+    }
+
 }

@@ -6,20 +6,19 @@ buildscript {
         classpath 'com.android.tools.build:gradle:0.5.+'
     }
 }
-apply plugin: 'android'
+apply plugin: 'android-library'
 
 dependencies {
-    compile project(':StartupNews')
     compile fileTree(dir:'libs',include:'*.jar')
 }
 
 android {
-    compileSdkVersion 14
+    compileSdkVersion 17
     buildToolsVersion "17"
 
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 10
+        minSdkVersion 4
+        targetSdkVersion 16
     }
     sourceSets {
         main {
