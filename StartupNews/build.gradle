@@ -20,7 +20,7 @@ dependencies {
 
 android {
     compileSdkVersion 17
-    buildToolsVersion "18"
+    buildToolsVersion "18.0.1"
 
     defaultConfig {
         minSdkVersion 10
@@ -41,13 +41,14 @@ android {
     }
 
     signingConfigs {
-
+        /*
         release {
             storeFile file("")
             storePassword ""
             keyAlias ""
             keyPassword ""
         }
+        */
     }
 
     buildTypes {
@@ -58,7 +59,7 @@ android {
 
         release{
             debuggable false
-            signingConfig signingConfigs.release
+            /*signingConfig signingConfigs.release*/
             runProguard true
             proguardFile getDefaultProguardFile('proguard-android.txt')
         }
