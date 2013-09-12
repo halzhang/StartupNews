@@ -43,10 +43,10 @@ android {
     signingConfigs {
 
         release {
-            storeFile file("zhanghanguo.keystore")
-            storePassword "zhanghanguo"
-            keyAlias "zhanghanguo"
-            keyPassword "zhanghanguo"
+            storeFile file("")
+            storePassword ""
+            keyAlias ""
+            keyPassword ""
         }
     }
 
