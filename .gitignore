@@ -22,13 +22,12 @@ local.properties
 #build
 ant.properties
 *.keystore
-res_bak.zip
 StartupNews/res/values/analytics.xml
 
 # IntelliJ files
 .idea
 *.iml
-out
+out/
 module_*.xml
 
 #gradle
