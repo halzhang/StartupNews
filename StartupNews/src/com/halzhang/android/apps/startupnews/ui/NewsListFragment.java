@@ -34,6 +34,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -344,23 +345,41 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                 holder.user = (TextView) convertView.findViewById(R.id.news_item_user);
                 holder.createat = (TextView) convertView.findViewById(R.id.news_item_createat);
                 holder.title = (TextView) convertView.findViewById(R.id.news_item_title);
-                holder.subText = (TextView) convertView.findViewById(R.id.news_item_subtext);
+                //holder.subText = (TextView) convertView.findViewById(R.id.news_item_subtext);
+                holder.points = (TextView) convertView.findViewById(R.id.news_item_points);
+                holder.comments = (TextView) convertView.findViewById(R.id.news_item_comments);
                 holder.domain = (TextView) convertView.findViewById(R.id.news_item_domain);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            SNNew entity = mSnFeed.getSnNews().get(position);
+            final SNNew entity = mSnFeed.getSnNews().get(position);
             holder.user.setText(entity.getUser().getId());
             holder.title.setText(entity.getTitle());
-            holder.subText.setText(getString(R.string.news_subtext, entity.getPoints(),
-                    entity.getCommentsCount()));
+            //holder.subText.setText(getString(R.string.news_subtext, entity.getPoints(),
+            //        entity.getCommentsCount()));
+            holder.points.setText(getString(R.string.news_points, entity.getPoints()));
+            holder.comments.setText(getString(R.string.news_comments, entity.getCommentsCount()));
+            holder.comments.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					openDiscuss(entity);
+				}            	
+            });
+            holder.points.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					mSnApiHelper.upVote(entity.getPostID());
+				}            	
+            });
             holder.createat.setText(entity.getCreateat());
             holder.domain.setText(entity.getUrlDomain());
             int textColor = AppUtils.getMyApplication(getActivity()).isHistoryContains(
                     entity.getUrl()) ? Color.GRAY : Color.BLACK;
             holder.title.setTextColor(textColor);
-            holder.subText.setTextColor(textColor);
+            //holder.subText.setTextColor(textColor);
+            holder.points.setTextColor(textColor);
+            holder.comments.setTextColor(textColor);
             holder.domain.setTextColor(textColor);
             holder.createat.setTextColor(textColor);
             return convertView;
@@ -374,6 +393,8 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
             TextView title;
 
             TextView subText;
+            TextView points;
+            TextView comments;
 
             TextView domain;
         }

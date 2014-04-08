@@ -16,6 +16,8 @@
     <string name="vote_url">http://news.dbanotes.net/vote?for=<xliff:g id="ITEM_ID">%1$s</xliff:g>&amp;dir=up&amp;by=<xliff:g id="USERID">%2$s</xliff:g>&amp;auth=<xliff:g id="USER">%3$s</xliff:g>&amp;whence=news</string>
     <string name="comment_artist_title">on:<xliff:g id="TITLE">%1$s</xliff:g></string>
     <string name="news_subtext"><xliff:g id="POINTS">%1$d</xliff:g> points · <xliff:g id="COMMENTS">%2$d</xliff:g> comments</string>
+    <string name="news_points"><xliff:g id="POINTS">%1$d</xliff:g> points · </string>
+    <string name="news_comments"><xliff:g id="COMMENTS">%1$d</xliff:g> comments</string>
     <string name="username">用户名：</string>
     <string name="password">密码：</string>
     <string name="error">哎呀，出错了!</string>

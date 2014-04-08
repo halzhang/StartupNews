@@ -37,7 +37,7 @@
         android:text="Androodban"
         android:textAppearance="?android:attr/textAppearanceMedium"
          />
-
+	<!-- 
     <TextView
         android:id="@+id/news_item_subtext"
         android:layout_width="wrap_content"
@@ -47,12 +47,32 @@
         android:text="subtext"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColorLink="@color/holo_blue_dark" />
+        -->
+    <TextView
+        android:id="@+id/news_item_points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/news_item_title"
+        android:layout_margin="5dip"
+        android:text="points"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColorLink="@color/holo_blue_dark" />
+    <TextView
+        android:id="@+id/news_item_comments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/news_item_title"
+        android:layout_toRightOf="@id/news_item_points"
+        android:layout_margin="5dip"
+        android:text="comments"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColorLink="@color/holo_blue_dark" />
 
     <TextView
         android:id="@+id/news_item_domain"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/news_item_subtext"
+        android:layout_toRightOf="@id/news_item_comments"
         android:layout_below="@id/news_item_title"
         android:gravity="right"
         android:layout_margin="5dip"
