@@ -19,8 +19,8 @@ before_install:
   - export PATH=$GRADLE_HOME/bin:$PATH
 
   # install android build tools
-  - wget https://dl-ssl.google.com/android/repository/build-tools_r19.1.0-linux.zip
-  - unzip build-tools_r19.1.0-linux.zip -d $ANDROID_HOME
+  - wget https://dl-ssl.google.com/android/repository/build-tools_r19.1-linux.zip
+  - unzip build-tools_r19.1-linux.zip -d $ANDROID_HOME
   - mkdir -p $ANDROID_HOME/build-tools/
   - mv $ANDROID_HOME/android-4.3 $ANDROID_HOME/build-tools/19.1.0
 
