@@ -1,12 +1,4 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.5.+'
-    }
-}
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 dependencies {
     compile fileTree(dir:'libs',include:'*.jar')
@@ -20,9 +12,10 @@ dependencies {
 
 android {
     compileSdkVersion 17
-    buildToolsVersion "18.0.1"
+    buildToolsVersion "19.1.0"
 
     defaultConfig {
+        applicationId "com.halzhang.android.apps.startupnews"
         minSdkVersion 10
         targetSdkVersion 16
     }
@@ -54,14 +47,20 @@ android {
     buildTypes {
         debug {
             debuggable true
-            packageNameSuffix ".debug"
+            applicationIdSuffix ".debug"
         }
 
         release{
             debuggable false
             /*signingConfig signingConfigs.release*/
-            runProguard true
+            runProguard false
             proguardFile getDefaultProguardFile('proguard-android.txt')
+        }
+
+        foo{
+            debuggable false
+            runProguard false
+            zipAlign false
         }
     }
 

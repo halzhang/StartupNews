@@ -15,3 +15,19 @@ ext.buildToolsVersion="18.0.0"
 ext.minSdkVersion=7
 ext.targetSdkVersion=18
 */
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.12.+'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
