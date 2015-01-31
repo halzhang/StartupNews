@@ -19,7 +19,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 16
     }
-    sourceSets {
+    /*sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
             java.srcDirs = ['src']
@@ -31,17 +31,18 @@ android {
         }
 
         instrumentTest.setRoot('tests')
-    }
 
+    }
+*/
     signingConfigs {
-        /*
+
         release {
-            storeFile file("")
-            storePassword ""
-            keyAlias ""
-            keyPassword ""
+            storeFile file("debug.keystore")
+            storePassword "android"
+            keyAlias "android"
+            keyPassword "android"
         }
-        */
+
     }
 
     buildTypes {

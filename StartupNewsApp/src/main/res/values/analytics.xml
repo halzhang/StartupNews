@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 开发过程屏蔽统计 -->
+    <string name="ga_trackingId">UA-39500428-1</string>
+    <bool name="ga_autoActivityTracking">true</bool>
+    <bool name="ga_reportUncaughtExceptions">true</bool>
+    <integer name="ga_sessionTimeout">120</integer>
+    <integer name="ga_dispatchInterval">120</integer>
+    <string name="ga_appVersion">1.0.2.0</string>
+    <string name="ga_appName">StartupNews</string>
+
+</resources>
