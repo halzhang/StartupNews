@@ -53,14 +53,13 @@ android {
         release{
             debuggable false
             /*signingConfig signingConfigs.release*/
-            runProguard false
+            minifyEnabled false
             proguardFile getDefaultProguardFile('proguard-android.txt')
         }
 
         foo{
             debuggable false
-            runProguard false
-            zipAlign false
+            minifyEnabled false
         }
     }
 
