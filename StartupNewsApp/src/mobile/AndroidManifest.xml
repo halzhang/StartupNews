@@ -7,7 +7,7 @@
 
     <supports-screens
         android:anyDensity="true"
-        android:xlargeScreens="true" />
+        android:xlargeScreens="true"/>
 
     <uses-sdk
         android:minSdkVersion="10"
@@ -25,11 +25,14 @@
         android:description="@string/app_description"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
+
+        <activity android:name=".ui.MainActivity"/>
 
         <activity-alias
             android:name=".ui.LauncherActivity"
-            android:targetActivity=".ui.MainActivity">
+            android:targetActivity=".ui.MainActivity"
+            tools:replace="android:targetActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,17 +41,12 @@
         </activity-alias>
 
         <activity
-            android:name=".ui.MainActivity"
-            android:label="@string/app_name"
-            android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize">
-        </activity>
-        <activity
             android:name=".ui.phone.BrowseActivity"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize" />
         <activity
             android:name=".ui.DiscussActivity"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize"
-            android:label="@string/title_discuss" />
+            android:label="@string/title_discuss"/>
         <!--
              <activity
             android:name=".ui.SubmitActivity"
