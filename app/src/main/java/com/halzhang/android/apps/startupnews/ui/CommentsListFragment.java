@@ -6,6 +6,7 @@ package com.halzhang.android.apps.startupnews.ui;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNComments;
 import com.halzhang.android.apps.startupnews.parser.SNCommentsParser;
@@ -111,7 +112,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
+        Tracker.getInstance().sendEvent("ui_action", "list_item_click",
                 "comments_list_fragment_list_item_click", 0L);
         SNComment comment = mSnComments.getSnComments().get(position - 1);
         if(mCommentSelectedListener != null){
@@ -126,7 +127,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
     @Override
     protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
-        EasyTracker.getTracker().sendEvent("ui_action", "pull_down_list_view_refresh",
+        Tracker.getInstance().sendEvent("ui_action", "pull_down_list_view_refresh",
                 "comments_list_fragment_pull_down_list_view_refresh", 0L);
         if (mTask != null) {
             return;
@@ -138,7 +139,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
     @Override
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullUpListViewRefresh(refreshListView);
-        EasyTracker.getTracker().sendEvent("ui_action", "pull_up_list_view_refresh",
+        Tracker.getInstance().sendEvent("ui_action", "pull_up_list_view_refresh",
                 "comments_list_fragment_pull_up_list_view_refresh", 0L);
         if (mTask != null) {
             return;
@@ -185,7 +186,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
                 return true;
             } catch (Exception e) {
                 Log.e(LOG_TAG, "", e);
-                EasyTracker.getTracker().sendException("CommentsTask", e, false);
+                Tracker.getInstance().sendException("CommentsTask", e, false);
                 return false;
             }
         }

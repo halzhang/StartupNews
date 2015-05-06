@@ -4,6 +4,7 @@ package com.halzhang.android.apps.startupnews.utils;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants;
 import com.halzhang.android.apps.startupnews.MyApplication;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -24,6 +25,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -39,7 +41,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
     private Map<String, String> infos = new HashMap<String, String>();
 
-    private DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+    private DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.getDefault());
 
     private CrashHandler() {
     }
@@ -62,7 +64,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             ex.printStackTrace();
             handleException(ex);
         }
-        EasyTracker.getTracker().sendException(ex.getMessage(), ex, true);
+        Tracker.getInstance().sendException(ex.getMessage(), ex, true);
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(0);
     }

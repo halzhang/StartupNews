@@ -8,6 +8,7 @@ package com.halzhang.android.apps.startupnews.ui;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
@@ -59,7 +60,7 @@ public class SNApiHelper {
                     if (statusCode == HttpStatus.SC_OK && TextUtils.isEmpty(content)) {
                         CDToast.showToast(activity, R.string.tip_vote_success);
                     } else {
-                        EasyTracker.getTracker().sendEvent("ui_action_feedback", "upvote_feedback",
+                        Tracker.getInstance().sendEvent("ui_action_feedback", "upvote_feedback",
                                 content, 0L);
                         if (content.contains("mismatch")) {
                             // 用户cookie无效
@@ -74,7 +75,7 @@ public class SNApiHelper {
 
                 @Override
                 public void onFailure(Throwable error, String content) {
-                    EasyTracker.getTracker()
+                    Tracker.getInstance()
                             .sendException("up vote error:" + content, error, false);
                     CDToast.showToast(activity, activity.getString(R.string.tip_vote_failure));
                 }

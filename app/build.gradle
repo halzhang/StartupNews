@@ -21,54 +21,37 @@ android {
         targetSdkVersion 22
     }
 
-    sourceSets {
-        tv {
-            java.srcDirs=['src/tv/java']
-            res.srcDirs=['src/tv/res']
-        }
-
-        mobile {
-            java.srcDirs=['src/mobile/java']
-            res.srcDirs=['src/mobile/res']
-        }
-
-        instrumentTest.setRoot('tests')
-
-    }
-
     signingConfigs {
-/*
+
         release {
-            storeFile file("")
-            storePassword ""
-            keyAlias ""
-            keyPassword ""
+//            storeFile file("")
+//            storePassword ""
+//            keyAlias ""
+//            keyPassword ""
         }
-        */
+
 
     }
 
     buildTypes {
         debug {
             debuggable true
+            versionNameSuffix "-debug"
             applicationIdSuffix ".debug"
         }
 
-        release{
+        release {
             debuggable false
-//            signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFile getDefaultProguardFile('proguard-android.txt')
         }
 
     }
 
-    productFlavors{
-        tv{
-            applicationId "com.halzhang.android.apps.startupnewstv"
-        }
-        mobile{
-            applicationId "com.halzhang.android.apps.startupnews"
+    productFlavors {
+        defaultFlavor {
+            proguardFile 'proguard-project.txt'
         }
     }
 

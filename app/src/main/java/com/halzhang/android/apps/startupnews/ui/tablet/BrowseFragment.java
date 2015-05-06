@@ -7,6 +7,7 @@ import com.actionbarsherlock.widget.ShareActionProvider;
 import com.actionbarsherlock.widget.ShareActionProvider.OnShareTargetSelectedListener;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
 import com.halzhang.android.apps.startupnews.ui.widgets.ObservableWebView;
 import com.halzhang.android.apps.startupnews.ui.widgets.ObservableWebView.OnScrollChangedCallback;
@@ -102,7 +103,7 @@ public class BrowseFragment extends SherlockFragment implements OnScrollChangedC
                 CDLog.i(LOG_TAG, packageName);
                 String shareContent = getShareContent();
                 intent.putExtra(Intent.EXTRA_SUBJECT, mTitle);
-                EasyTracker.getTracker().sendEvent("ui_action", "share", packageName, 0L);
+                Tracker.getInstance().sendEvent("ui_action", "share", packageName, 0L);
                 if (getString(R.string.weibo_package_name).equals(packageName)) {
                     intent.putExtra(Intent.EXTRA_TEXT, shareContent + " "
                             + getString(R.string.weibo_share_suffix));
@@ -137,7 +138,7 @@ public class BrowseFragment extends SherlockFragment implements OnScrollChangedC
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_original_url:
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                         "browseactivity_menu_original_url", 0L);
                 mWebViewController.loadUrl(mOriginalUrl);
                 return true;

@@ -8,6 +8,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 
 import android.os.Bundle;
@@ -61,14 +62,14 @@ public class AboutActivity extends SherlockPreferenceActivity implements OnPrefe
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         final String key = preference.getKey();
         if (getString(R.string.pref_key_html_provider).equals(key)) {
-            EasyTracker.getTracker().sendEvent("preference_change_action",
+            Tracker.getInstance().sendEvent("preference_change_action",
                     "preference_change_html_provider",
                     String.format("html_provider_%1$s", (String) newValue), 0L);
             ListPreference listPreference = (ListPreference) preference;
             preference.setSummary(listPreference.getEntries()[listPreference
                     .findIndexOfValue((String) newValue)]);
         } else if (getString(R.string.pref_key_default_browse).equals(key)) {
-            EasyTracker.getTracker().sendEvent("preference_change_action",
+            Tracker.getInstance().sendEvent("preference_change_action",
                     "preference_change_default_browse",
                     String.format("default_browse_%1$s", String.valueOf(newValue)), 0L);
         }
@@ -78,13 +79,13 @@ public class AboutActivity extends SherlockPreferenceActivity implements OnPrefe
     @Override
     protected void onStart() {
         super.onStart();
-        EasyTracker.getInstance().activityStart(this);
+        EasyTracker.getInstance(this).activityStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        EasyTracker.getInstance().activityStop(this);
+        EasyTracker.getInstance(this).activityStop(this);
     }
 
 }

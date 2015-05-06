@@ -8,6 +8,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.Window;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
@@ -83,9 +84,9 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CDLog.i(LOG_TAG, "MainAction create!");
-        super.onCreate(savedInstanceState);
+        CDLog.i(LOG_TAG, "MainActivity create!");
         requestWindowFeature(Window.FEATURE_PROGRESS);
+        super.onCreate(savedInstanceState);
         if (isFinishing()) {
             return;
         }
@@ -184,12 +185,12 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_settings:
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                         "mainactivity_menu_settings", 0L);
                 startActivity(new Intent(this, AboutActivity.class));
                 return true;
             case R.id.menu_feedback:
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                         "mainactivity_menu_feedback", 0L);
                 if (ActivityUtils.isIntentAvailable(getApplicationContext(), mFeedbackEmailIntent)) {
                     startActivity(mFeedbackEmailIntent);
@@ -199,14 +200,14 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 }
                 return true;
             case R.id.menu_login: {
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                         "mainactivity_menu_login", 0L);
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
             }
                 return true;
             case R.id.menu_logout:
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                         "mainactivity_menu_logout", 0L);
                 SessionManager.getInstance(this).clear();
                 CDToast.showToast(this, R.string.tip_logout_success);
@@ -388,7 +389,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                     }
                 } catch (IOException e) {
                     CDLog.w(LOG_TAG, null, e);
-                    EasyTracker.getTracker().sendException("User Logout error!", e, false);
+                    Tracker.getInstance().sendException("User Logout error!", e, false);
                 }
 
             }

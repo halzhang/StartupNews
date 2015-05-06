@@ -4,6 +4,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Window;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.utils.UIUtils;
 
 import android.annotation.SuppressLint;
@@ -157,7 +158,7 @@ public class WebViewController implements OnClickListener {
     }
 
     private void back() {
-        EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+        Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                 "browseactivity_menu_back", 0L);
         if (mWebView.canGoBack()) {
             mWebView.goBack();
@@ -165,7 +166,7 @@ public class WebViewController implements OnClickListener {
     }
 
     private void forward() {
-        EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+        Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                 "browseactivity_menu_forward", 0L);
         if (mWebView.canGoForward()) {
             mWebView.goForward();
@@ -173,7 +174,7 @@ public class WebViewController implements OnClickListener {
     }
 
     private void readability() {
-        EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+        Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                 "browseactivity_menu_readability", 0L);
         if(TextUtils.isEmpty(mCurrentUrl)){
             return;
@@ -182,14 +183,14 @@ public class WebViewController implements OnClickListener {
     }
 
     private void refresh() {
-        EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+        Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                 "browseactivity_menu_refresh", 0L);
         mWebView.reload();
     }
 
     private void webSite() {
         // 打开原链接，还是转码的链接呢？
-        EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+        Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                 "browseactivity_menu_website", 0L);
         if(TextUtils.isEmpty(mCurrentUrl)){
             return;

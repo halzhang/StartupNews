@@ -10,6 +10,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
@@ -63,7 +64,7 @@ import java.util.List;
  * <p>
  * 登陆
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Apr 20, 2013
  */
@@ -109,8 +110,8 @@ public class LoginActivity extends BaseFragmentActivity {
                 finish();
                 return true;
             case R.id.menu_login:
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
-                        "loginactivity_menu_login", 0L);
+                EasyTracker.getInstance(this).send(MapBuilder.createEvent("ui_action", "options_item_selected",
+                        "loginactivity_menu_login", 0L).build());
                 mLoginFragment.attemptLogin();
                 return true;
             default:
@@ -177,7 +178,7 @@ public class LoginActivity extends BaseFragmentActivity {
                     CookieSyncManager.getInstance().sync();
                 }
             } catch (IOException e1) {
-                EasyTracker.getTracker().sendException("User login error!", e1, false);
+                EasyTracker.getInstance(getApplication()).send(MapBuilder.createException("User login error!",false).build());
                 CDLog.e(LOG_TAG, null, e1);
                 return user;
             } finally {
@@ -210,7 +211,7 @@ public class LoginActivity extends BaseFragmentActivity {
 
     /**
      * Parse login url and fnid
-     * 
+     *
      * @author Hal
      */
     private class LoginPreTask extends AsyncTask<String, Void, String> {
@@ -302,7 +303,7 @@ public class LoginActivity extends BaseFragmentActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_login, null);
             mUsernameView = (EditText) view.findViewById(R.id.username);
             mPasswordView = (EditText) view.findViewById(R.id.password);
@@ -371,7 +372,7 @@ public class LoginActivity extends BaseFragmentActivity {
          */
         @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
         public void showProgress(final boolean show) {
-            if(getActivity() == null){
+            if (getActivity() == null) {
                 //防止 not attact to activity 出错
                 return;
             }

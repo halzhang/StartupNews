@@ -5,11 +5,15 @@
 package com.halzhang.android.apps.startupnews;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.halzhang.android.apps.startupnews.analytics.MyExceptionParser;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.CrashHandler;
+import com.halzhang.android.common.CDLog;
 
 import android.app.Application;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -31,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * app
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 8, 2013
  */
@@ -42,7 +46,7 @@ public class MyApplication extends Application {
     /**
      * debug mode
      */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private HashSet<String> mHistorySet = new HashSet<String>();
 
@@ -70,12 +74,25 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        EasyTracker.getInstance().setContext(this);
-        EasyTracker.getTracker().setExceptionParser(new MyExceptionParser(getApplicationContext()));
+        Tracker.getInstance().init(this);
         CrashHandler.getInstance().init(this);
         SessionManager.getInstance(this).initSession();
         mExecutorService = Executors.newSingleThreadExecutor(sThreadFactory);
         initHistory();
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode
+                    .ThreadPolicy.Builder()
+                    .detectDiskReads()
+                    .detectDiskWrites()
+                    .detectNetwork()
+                    .penaltyLog()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectActivityLeaks()
+                    .detectLeakedClosableObjects()
+                    .penaltyLog()
+                    .build());
+        }
     }
 
     private void initHistory() {
@@ -92,9 +109,11 @@ public class MyApplication extends Application {
                 mHistorySet.add(s);
             }
         } catch (FileNotFoundException e) {
-            EasyTracker.getTracker().sendException("History file not found!", e, false);
+            CDLog.e(LOG_TAG, "", e);
+            EasyTracker.getInstance(this).send(MapBuilder.createException("History file not found!", false).build());
         } catch (IOException e) {
-            EasyTracker.getTracker().sendException("Read History file error!", e, false);
+            CDLog.e(LOG_TAG, "", e);
+            EasyTracker.getInstance(this).send(MapBuilder.createException("Read History file error!", false).build());
         } finally {
             if (reader != null) {
                 try {
@@ -118,8 +137,8 @@ public class MyApplication extends Application {
                 try {
                     file.createNewFile();
                 } catch (IOException e) {
-                    Log.e(LOG_TAG, "Create history file error!");
-                    EasyTracker.getTracker().sendException("Create history file error!", e, false);
+                    CDLog.e(LOG_TAG, "Create history file error!");
+//                    EasyTracker.getTracker().sendException("Create history file error!", e, false);
                 }
             }
             PrintWriter writer = null;
@@ -128,8 +147,8 @@ public class MyApplication extends Application {
                 writer.write(builder.toString());
                 writer.close();
             } catch (FileNotFoundException e) {
-                Log.e(LOG_TAG, "History file not found!");
-                EasyTracker.getTracker().sendException("History file not found!", e, false);
+                CDLog.e(LOG_TAG, "History file not found!");
+//                EasyTracker.getTracker().sendException("History file not found!", e, false);
             } finally {
                 if (writer != null) {
                     writer.close();
@@ -140,7 +159,7 @@ public class MyApplication extends Application {
 
     /**
      * 增加访问历史记录
-     * 
+     *
      * @param url
      */
     public void addHistory(String url) {

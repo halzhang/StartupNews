@@ -8,7 +8,10 @@ package com.halzhang.android.apps.startupnews.snkit;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
+import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
+import com.handmark.pulltorefresh.library.internal.Utils;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
@@ -121,7 +124,7 @@ public class SNApi {
             }
         } catch (Exception e) {
             CDLog.w(LOG_TAG, null, e);
-            EasyTracker.getTracker().sendException("User logout error!", e, false);
+            Tracker.getInstance().sendException("User logout error!", e, false);
             return false;
         }
         return false;
@@ -146,7 +149,7 @@ public class SNApi {
                     SessionManager.getInstance(context).clear();
                 }
             } catch (IOException e) {
-                EasyTracker.getTracker().sendException(e.getMessage(), e, false);
+                Tracker.getInstance().sendException(e.getMessage(), e, false);
             }
 
         }

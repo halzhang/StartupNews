@@ -23,6 +23,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
@@ -168,7 +169,7 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
 
         @Override
         public void onClick(View v) {
-            EasyTracker.getTracker().sendEvent("ui_action", "view_clicked",
+            Tracker.getInstance().sendEvent("ui_action", "view_clicked",
                     "discussactivity_button_comment", 0L);
             if (!SessionManager.getInstance(getActivity()).isValid()) {
                 // 未登陆
@@ -183,7 +184,7 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
                         public void onSuccess(int statusCode, String content) {
                             mCommentEdit.setText(null);
                             CDToast.showToast(getActivity(), R.string.tip_comment_success);
-                            EasyTracker.getTracker().sendEvent("ui_action_feedback",
+                            Tracker.getInstance().sendEvent("ui_action_feedback",
                                     "comment_feedback", "success", 0L);
                             loadData();
                         }
@@ -205,13 +206,13 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
                                  */
                                 CDToast.showToast(getActivity(), R.string.tip_cookie_invalid);
                                 startActivity(new Intent(getActivity(), LoginActivity.class));
-                                EasyTracker.getTracker().sendEvent("ui_action_feedback",
+                                Tracker.getInstance().sendEvent("ui_action_feedback",
                                         "comment_feedback", getString(R.string.tip_cookie_invalid),
                                         0L);
                             } else if (refreerLocation.contains("item")) {
                                 onSuccess(statusCode, content);
                             } else {
-                                EasyTracker.getTracker().sendEvent("ui_action_feedback",
+                                Tracker.getInstance().sendEvent("ui_action_feedback",
                                         "comment_feedback", content, 0L);
                                 CDToast.showToast(getActivity(), R.string.tip_comment_failure);
                             }
@@ -220,7 +221,7 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
                         @Override
                         public void onFailure(Throwable error, String content) {
                             CDToast.showToast(getActivity(), R.string.tip_comment_failure);
-                            EasyTracker.getTracker().sendException("comment error:" + content,
+                            Tracker.getInstance().sendException("comment error:" + content,
                                     error, false);
                         }
                     });
@@ -286,7 +287,7 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_refresh:
-                EasyTracker.getTracker().sendEvent("ui_action", "options_item_selected",
+                Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                         "discussactivity_menu_refresh", 0L);
                 loadData();
                 return true;
@@ -321,7 +322,7 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
                 mSnDiscuss.copy(discuss);
             } catch (Exception e) {
                 // Log.e(LOG_TAG, "", e);
-                EasyTracker.getTracker().sendException("DiscussTask", e, false);
+                Tracker.getInstance().sendException("DiscussTask", e, false);
                 return false;
             }
             return true;
@@ -408,7 +409,7 @@ public class DiscussFragment extends SherlockFragment implements OnItemClickList
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (position == 0 && mListener == null) {
-            EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
+            Tracker.getInstance().sendEvent("ui_action", "list_item_click",
                     "discuss_activity_list_header_click", 0L);
             // 查看文章
             ActivityUtils.openArticle(getActivity(), mSnDiscuss.getSnNew());

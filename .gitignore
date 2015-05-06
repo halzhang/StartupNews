@@ -22,7 +22,7 @@ local.properties
 #build
 ant.properties
 *.keystore
-StartupNews/res/values/analytics.xml
+StartupNews/app/src/main/res/values/analytics.xml
 
 # IntelliJ files
 .idea

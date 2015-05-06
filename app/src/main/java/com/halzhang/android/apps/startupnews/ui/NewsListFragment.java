@@ -7,6 +7,7 @@ package com.halzhang.android.apps.startupnews.ui;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
@@ -178,17 +179,17 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         Log.i(LOG_TAG, snNew.toString());
         switch (item.getItemId()) {
             case R.id.menu_show_comment:
-                EasyTracker.getTracker().sendEvent("ui_action", "context_item_selected",
+                Tracker.getInstance().sendEvent("ui_action", "context_item_selected",
                         "newslistfragment_menu_show_comment", 0L);
                 openDiscuss(snNew);
                 return true;
             case R.id.menu_show_article:
-                EasyTracker.getTracker().sendEvent("ui_action", "context_item_selected",
+                Tracker.getInstance().sendEvent("ui_action", "context_item_selected",
                         "newslistfragment_menu_show_acticle", 0L);
                 openArticle(position - 1, snNew);
                 return true;
             case R.id.menu_up_vote:
-                EasyTracker.getTracker().sendEvent("ui_action", "context_item_selected",
+                Tracker.getInstance().sendEvent("ui_action", "context_item_selected",
                         "newslistfragment_menu_upvote", 0L);
                 mSnApiHelper.upVote(snNew.getPostID());
                 return true;
@@ -201,7 +202,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
-        EasyTracker.getTracker().sendEvent("ui_action", "pull_down_list_view_refresh",
+        Tracker.getInstance().sendEvent("ui_action", "pull_down_list_view_refresh",
                 "news_list_fragment_pull_down_list_view_refresh", 0L);
         if (mNewsTask != null) {
             return;
@@ -213,7 +214,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
         super.onPullDownListViewRefresh(refreshListView);
-        EasyTracker.getTracker().sendEvent("ui_action", "pull_up_list_view_refresh",
+        Tracker.getInstance().sendEvent("ui_action", "pull_up_list_view_refresh",
                 "news_list_fragment_pull_up_list_view_refresh", 0L);
         if (mNewsTask != null) {
             return;
@@ -229,7 +230,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        EasyTracker.getTracker().sendEvent("ui_action", "list_item_click",
+        Tracker.getInstance().sendEvent("ui_action", "list_item_click",
                 "news_list_fragment_list_item_click", 0L);
         mAdapter.notifyDataSetChanged();
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
@@ -282,7 +283,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
                 return true;
             } catch (Exception e) {
                 CDLog.w(LOG_TAG, "", e);
-                EasyTracker.getTracker().sendException("NewsTask", e, false);
+                Tracker.getInstance().sendException("NewsTask", e, false);
                 return false;
             }
 
@@ -382,7 +383,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        EasyTracker.getTracker().sendEvent("ui_action", "list_item_long_click",
+        Tracker.getInstance().sendEvent("ui_action", "list_item_long_click",
                 "news_list_fragment_list_item_long_click", 0L);
         SNNew entity = (SNNew) mAdapter.getItem(position - 1);
         openDiscuss(entity);
