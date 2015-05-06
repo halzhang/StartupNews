@@ -7,7 +7,7 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="AppBaseTheme" parent="@style/Theme.Sherlock.Light.DarkActionBar"></style>
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar"/>
 
     <style name="LoginFormContainer">
         <item name="android:layout_width">match_parent</item>

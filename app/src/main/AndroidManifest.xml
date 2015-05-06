@@ -26,6 +26,7 @@
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
+            android:theme="@style/AppTheme"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,9 +36,11 @@
         </activity>
         <activity
             android:name=".ui.phone.BrowseActivity"
+            android:theme="@style/AppTheme"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize" />
         <activity
             android:name=".ui.DiscussActivity"
+            android:theme="@style/AppTheme"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize"
             android:label="@string/title_discuss" />
         <!--
@@ -56,10 +59,12 @@
         -->
         <activity
             android:name=".ui.AboutActivity"
+            android:theme="@style/AppTheme"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize"
             android:label="@string/title_settings" />
         <activity
             android:name=".ui.LoginActivity"
+            android:theme="@style/AppTheme"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize"
             android:label="@string/title_login"
             android:windowSoftInputMode="stateHidden" />

@@ -6,9 +6,6 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.MenuItem;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
@@ -40,10 +37,14 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -98,8 +99,8 @@ public class LoginActivity extends BaseFragmentActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.activity_login, menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_login, menu);
         return true;
     }
 
@@ -270,7 +271,7 @@ public class LoginActivity extends BaseFragmentActivity {
     }
 
     @SuppressLint("ValidFragment")
-    private static class LoginFragment extends SherlockFragment {
+    private static class LoginFragment extends Fragment {
 
         // Values for email and password at the time of the login attempt.
         private String mUsername;

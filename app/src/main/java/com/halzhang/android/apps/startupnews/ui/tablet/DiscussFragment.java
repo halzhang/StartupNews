@@ -17,11 +17,6 @@
 
 package com.halzhang.android.apps.startupnews.ui.tablet;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
@@ -47,12 +42,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -68,7 +69,7 @@ import android.widget.Toast;
 /**
  * Created by Hal on 13-5-26.
  */
-public class DiscussFragment extends SherlockFragment implements OnItemClickListener {
+public class DiscussFragment extends Fragment implements OnItemClickListener {
 
     private static final String LOG_TAG = DiscussFragment.class.getSimpleName();
 

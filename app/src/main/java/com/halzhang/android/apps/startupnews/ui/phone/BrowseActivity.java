@@ -4,7 +4,6 @@
 
 package com.halzhang.android.apps.startupnews.ui.phone;
 
-import com.actionbarsherlock.view.Window;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.ui.BaseFragmentActivity;
 import com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment;
@@ -12,7 +11,10 @@ import com.halzhang.android.apps.startupnews.ui.tablet.BrowseFragment;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
+import android.view.MenuItem;
+import android.view.Window;
 
 /**
  * StartupNews
@@ -35,13 +37,9 @@ public class BrowseActivity extends BaseFragmentActivity {
 
     @Override
     protected void onCreate(Bundle arg0) {
-        setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);// 注释掉，ShareActionProvider无法解析
-        super.onCreate(arg0);
         requestWindowFeature(Window.FEATURE_PROGRESS);
-//        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-//        getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_bg_black));
+        super.onCreate(arg0);
         setContentView(R.layout.activity_browse);
-
         String mOriginalUrl = getIntent().getStringExtra(EXTRA_URL);
         if (TextUtils.isEmpty(mOriginalUrl)) {
             finish();
@@ -49,7 +47,7 @@ public class BrowseActivity extends BaseFragmentActivity {
         }
         String mTitle = getIntent().getStringExtra(EXTRA_TITLE);
 
-        final com.actionbarsherlock.app.ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -63,7 +61,7 @@ public class BrowseActivity extends BaseFragmentActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();

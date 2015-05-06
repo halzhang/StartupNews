@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.viewpagerindicator.TitlePageIndicator
-        android:id="@+id/titles"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ab_solid_sn" />
-
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"

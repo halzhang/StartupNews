@@ -4,8 +4,6 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
@@ -15,22 +13,26 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 
 /**
  * StartupNews
  * <p>
  * 设置
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 8, 2013
  */
-public class AboutActivity extends SherlockPreferenceActivity implements OnPreferenceChangeListener {
+public class AboutActivity extends PreferenceActivity implements OnPreferenceChangeListener {
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
         ListPreference listPreference = (ListPreference) findPreference(getString(R.string.pref_key_html_provider));
@@ -41,12 +43,24 @@ public class AboutActivity extends SherlockPreferenceActivity implements OnPrefe
         Preference versionPref = findPreference(getString(R.string.pref_key_version));
         versionPref.setSummary(getString(R.string.pref_summary_version,
                 AppUtils.getVersionName(getApplicationContext())));
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
-    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
+        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.preference_toolbar, root, false);
+        root.addView(bar, 0); // insert at top
+        bar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();

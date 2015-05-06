@@ -1,12 +1,7 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.Window;
-import com.google.analytics.tracking.android.EasyTracker;
+
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
@@ -24,7 +19,6 @@ import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
-import com.viewpagerindicator.TitlePageIndicator;
 
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
@@ -43,7 +37,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -51,7 +49,7 @@ import java.io.IOException;
 
 /**
  * 主页
- * 
+ *
  * @author Hal
  */
 public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener,
@@ -110,9 +108,9 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
             Context context = getSupportActionBar().getThemedContext();
             ArrayAdapter<CharSequence> list = ArrayAdapter.createFromResource(context,
-                    R.array.section_titles, R.layout.sherlock_spinner_item);
-            list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
-            actionBar.setListNavigationCallbacks(list, new OnNavigationListener() {
+                    R.array.section_titles, R.layout.support_simple_spinner_dropdown_item);
+            list.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+            actionBar.setListNavigationCallbacks(list, new ActionBar.OnNavigationListener() {
 
                 @Override
                 public boolean onNavigationItemSelected(int itemPosition, long itemId) {
@@ -121,17 +119,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 }
             });
 
-            // actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-            // String[] strArray =
-            // getResources().getStringArray(R.array.section_titles);
-            // for (int i = 0; i < strArray.length; i++) {
-            // ActionBar.Tab tab = getSupportActionBar().newTab();
-            // tab.setText(strArray[i]);
-            // tab.setTag(i);
-            // tab.setTabListener(this);
-            // getSupportActionBar().addTab(tab);
-            // }
-
             Fragment fragment = new NewsListFragment();
             Bundle args = new Bundle();
             args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
@@ -139,20 +126,49 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_frame_left, fragment, TAG_NEWS).commitAllowingStateLoss();
 
-        }
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        if (mViewPager != null) {
-            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-            mViewPager.setAdapter(mSectionsPagerAdapter);
-            TitlePageIndicator indicator = (TitlePageIndicator) findViewById(R.id.titles);
-            indicator.setViewPager(mViewPager);
+        } else {
+            final ActionBar actionBar = getSupportActionBar();
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+            mViewPager = (ViewPager) findViewById(R.id.pager);
+            if (mViewPager != null) {
+                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+                mViewPager.setAdapter(mSectionsPagerAdapter);
+                for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+                    actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i))
+                            .setTabListener(mTabListener), i);
+                }
+            }
+            mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    actionBar.setSelectedNavigationItem(position);
+                }
+            });
         }
     }
 
+    private ActionBar.TabListener mTabListener = new ActionBar.TabListener() {
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+            mViewPager.setCurrentItem(tab.getPosition());
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+
+        }
+    };
+
     private Intent createEmailIntent() {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {
-            "ghanguo@gmail.com"
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{
+                "ghanguo@gmail.com"
         });
         StringBuilder builder = new StringBuilder();
         builder.append(getString(R.string.app_name)).append(" v")
@@ -164,9 +180,9 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     }
 
     @Override
-    public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -182,7 +198,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     }
 
     @Override
-    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_settings:
                 Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
@@ -205,7 +221,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
             }
-                return true;
+            return true;
             case R.id.menu_logout:
                 Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                         "mainactivity_menu_logout", 0L);
@@ -266,7 +282,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 }
                 tag = TAG_NEWS;
             }
-                break;
+            break;
             case 1: {
                 Fragment fragment = fm.findFragmentByTag(TAG_NEWEST);
                 if (fragment == null) {
@@ -281,7 +297,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
                 tag = TAG_NEWEST;
             }
-                break;
+            break;
             case 2: {
                 Fragment fragment = fm.findFragmentByTag(TAG_COMMENT);
                 if (fragment == null) {
@@ -292,7 +308,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                 }
                 tag = TAG_COMMENT;
             }
-                break;
+            break;
             default:
                 throw new IllegalArgumentException("");
         }
@@ -455,7 +471,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
     /**
      * 平板布局
-     * 
+     *
      * @return
      */
     public boolean isMultiplePanel() {
@@ -463,18 +479,18 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     }
 
     @Override
-    public void onTabSelected(Tab tab, FragmentTransaction ft) {
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         int pos = (Integer) tab.getTag();
         switchNavigation(pos);
     }
 
     @Override
-    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
     }
 
     @Override
-    public void onTabReselected(Tab tab, FragmentTransaction ft) {
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
     }
 

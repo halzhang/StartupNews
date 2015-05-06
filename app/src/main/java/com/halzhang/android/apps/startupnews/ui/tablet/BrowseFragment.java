@@ -1,13 +1,25 @@
 
 package com.halzhang.android.apps.startupnews.ui.tablet;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.ShareActionProvider;
-import com.actionbarsherlock.widget.ShareActionProvider.OnShareTargetSelectedListener;
-import com.google.analytics.tracking.android.EasyTracker;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
+import com.halzhang.android.apps.startupnews.ui.BaseFragmentActivity;
 import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
 import com.halzhang.android.apps.startupnews.ui.widgets.ObservableWebView;
 import com.halzhang.android.apps.startupnews.ui.widgets.ObservableWebView.OnScrollChangedCallback;
@@ -15,19 +27,10 @@ import com.halzhang.android.apps.startupnews.ui.widgets.WebViewController;
 import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
 import com.halzhang.android.common.CDLog;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 /**
  * 浏览器 Created by Hal on 13-5-25.
  */
-public class BrowseFragment extends SherlockFragment implements OnScrollChangedCallback {
+public class BrowseFragment extends Fragment implements OnScrollChangedCallback {
 
     private static final String LOG_TAG = BrowseFragment.class.getSimpleName();
 
@@ -82,16 +85,17 @@ public class BrowseFragment extends SherlockFragment implements OnScrollChangedC
     }
 
     @Override
-    public void onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu,
-            com.actionbarsherlock.view.MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_browse, menu);
         super.onCreateOptionsMenu(menu, inflater);
         MenuItem actionItem = menu.findItem(R.id.menu_share);
-        ShareActionProvider actionProvider = (ShareActionProvider) actionItem.getActionProvider();
+        ShareActionProvider actionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(actionItem);
+        if (actionProvider == null){
+            return;
+        }
         actionProvider.setShareHistoryFileName(ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
         actionProvider.setShareIntent(createShareIntent());
-        actionProvider.setAllowPolicyChangeIntent(true);
-        actionProvider.setOnShareTargetSelectedListener(new OnShareTargetSelectedListener() {
+        actionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
 
             @Override
             public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
@@ -130,16 +134,14 @@ public class BrowseFragment extends SherlockFragment implements OnScrollChangedC
 
     private String getShareContent() {
         StringBuilder builder = new StringBuilder();
-        builder.append(mTitle).append(" ").append(mOriginalUrl);
-        return builder.toString();
+        return builder.append(mTitle).append(" ").append(mOriginalUrl).toString();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_original_url:
-                Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
-                        "browseactivity_menu_original_url", 0L);
+                Tracker.getInstance().sendEvent("ui_action", "options_item_selected", "browseactivity_menu_original_url", 0L);
                 mWebViewController.loadUrl(mOriginalUrl);
                 return true;
             default:
@@ -155,14 +157,17 @@ public class BrowseFragment extends SherlockFragment implements OnScrollChangedC
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onScrollUp() {
-        // getActivity().getActionBar().show();
+        //TODO 需要判断 Activity 的类型
+        BaseFragmentActivity activity = (BaseFragmentActivity) getActivity();
+        activity.getSupportActionBar().show();
         mWebViewController.showBrowseBar();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onScrollDown() {
-        // getActivity().getActionBar().hide();
+        BaseFragmentActivity activity = (BaseFragmentActivity) getActivity();
+        activity.getSupportActionBar().hide();
         mWebViewController.hideBrowseBar();
     }
 

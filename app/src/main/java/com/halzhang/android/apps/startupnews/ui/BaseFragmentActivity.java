@@ -3,11 +3,11 @@
  */
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 /**
  * StartupNews
@@ -16,11 +16,10 @@ import android.os.Bundle;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 13, 2013
  */
-public class BaseFragmentActivity extends SherlockFragmentActivity {
+public class BaseFragmentActivity extends AppCompatActivity {
     
     @Override
     protected void onCreate(Bundle arg0) {
-        setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
         super.onCreate(arg0);
     }
     

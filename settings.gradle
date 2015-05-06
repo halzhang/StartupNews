@@ -1,1 +1,6 @@
-include ':library:abslibrary', ':library:android-async-http', ':library:commonlog', ':library:commontoast', ':library:pulltorefresh', ':library:viewpagerindicator', ':app', ':mvp'
+include ':library:android-async-http',
+        ':library:commonlog',
+        ':library:commontoast',
+        ':library:pulltorefresh',
+        ':app',
+        ':mvp'

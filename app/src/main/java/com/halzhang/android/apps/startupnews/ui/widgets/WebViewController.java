@@ -1,10 +1,8 @@
 package com.halzhang.android.apps.startupnews.ui.widgets;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Window;
-import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
+import com.halzhang.android.apps.startupnews.ui.BaseFragmentActivity;
 import com.halzhang.android.apps.startupnews.utils.UIUtils;
 
 import android.annotation.SuppressLint;
@@ -17,6 +15,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebChromeClient;
@@ -120,8 +119,8 @@ public class WebViewController implements OnClickListener {
             super.onProgressChanged(view, newProgress);
             int progress = (Window.PROGRESS_END - Window.PROGRESS_START) / 100 * newProgress;
             Activity activity = mActivityRef.get();
-            if(activity != null && activity instanceof SherlockFragmentActivity){
-                ((SherlockFragmentActivity)activity).setSupportProgress(progress);
+            if(activity != null && activity instanceof BaseFragmentActivity){
+                ((BaseFragmentActivity)activity).setSupportProgress(progress);
             }
         }
 

@@ -5,6 +5,7 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.Constants;
 import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
+import com.halzhang.android.common.CDLog;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -61,7 +62,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
         if (MyApplication.DEBUG) {
-            ex.printStackTrace();
+            CDLog.e(LOG_TAG,"",ex);
             handleException(ex);
         }
         Tracker.getInstance().sendException(ex.getMessage(), ex, true);

@@ -4,8 +4,6 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.ui.tablet.DiscussFragment;
@@ -16,6 +14,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 
 /**
  * StartupNews
@@ -54,7 +54,6 @@ public class DiscussActivity extends BaseFragmentActivity {
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
         setContentView(R.layout.activity_discuss);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //SNNew snNew = (SNNew) getIntent().getSerializableExtra(ARG_SNNEW);
