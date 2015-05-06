@@ -1,37 +1,24 @@
 apply plugin: 'com.android.application'
 
-dependencies {
-    compile fileTree(dir:'libs',include:'*.jar')
-    compile project(':library:abslibrary')
-    compile project(':library:android-async-http')
-    compile project(':library:commonlog')
-    compile project(':library:commontoast')
-    compile project(':library:pulltorefresh')
-    compile project(':library:viewpagerindicator')
-}
-
 android {
     compileSdkVersion 17
     buildToolsVersion "19.1.0"
 
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 16
+        minSdkVersion 14
+        targetSdkVersion 22
     }
 
     sourceSets {
         tv {
-            java.srcDirs=['src/tv/java']
-            res.srcDirs=['src/tv/res']
+            java.srcDirs = ['src/tv/java']
+            res.srcDirs = ['src/tv/res']
         }
 
         mobile {
-            java.srcDirs=['src/mobile/java']
-            res.srcDirs=['src/mobile/res']
+            java.srcDirs = ['src/mobile/java']
+            res.srcDirs = ['src/mobile/res']
         }
-
-        instrumentTest.setRoot('tests')
-
     }
 
     signingConfigs {
@@ -52,7 +39,7 @@ android {
             applicationIdSuffix ".debug"
         }
 
-        release{
+        release {
             debuggable false
 //            signingConfig signingConfigs.release
             minifyEnabled false
@@ -61,13 +48,25 @@ android {
 
     }
 
-    productFlavors{
-        tv{
+    productFlavors {
+        tv {
             applicationId "com.halzhang.android.apps.startupnewstv"
         }
-        mobile{
+        mobile {
             applicationId "com.halzhang.android.apps.startupnews"
         }
     }
 
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
+    compile project(':library:abslibrary')
+    compile project(':library:android-async-http')
+    compile project(':library:commonlog')
+    compile project(':library:commontoast')
+    compile project(':library:pulltorefresh')
+    compile project(':library:viewpagerindicator')
+    compile 'org.jsoup:jsoup:1.7.2'
+    compile project(':mvp')
 }
