@@ -74,6 +74,12 @@ public class BrowseFragment extends Fragment implements OnScrollChangedCallback 
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        mWebViewController.destroy();
+        super.onDestroy();
+    }
+
     public void setTitle(String title) {
         mTitle = title;
     }
@@ -90,7 +96,7 @@ public class BrowseFragment extends Fragment implements OnScrollChangedCallback 
         super.onCreateOptionsMenu(menu, inflater);
         MenuItem actionItem = menu.findItem(R.id.menu_share);
         ShareActionProvider actionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(actionItem);
-        if (actionProvider == null){
+        if (actionProvider == null) {
             return;
         }
         actionProvider.setShareHistoryFileName(ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
@@ -121,7 +127,7 @@ public class BrowseFragment extends Fragment implements OnScrollChangedCallback 
 
     /**
      * Creates a sharing {@link Intent}.
-     * 
+     *
      * @return The sharing intent.
      */
     private Intent createShareIntent() {

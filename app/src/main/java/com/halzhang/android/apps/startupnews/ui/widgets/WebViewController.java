@@ -15,6 +15,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -28,32 +29,33 @@ import java.lang.ref.WeakReference;
 
 /**
  * WebView and Browse Bar Controller
+ *
  * @author Hal
  */
 public class WebViewController implements OnClickListener {
-    
+
     private WeakReference<Activity> mActivityRef;
-    
+
     private WebView mWebView;
-    
+
     private ImageButton mBackButton;
     private ImageButton mForwardButton;
     private ImageButton mReadabilityButton;
     private ImageButton mRefreshButton;
     private ImageButton mWebSiteButton;
-    
+
     private View mToolBar;
-    
+
     private String mCurrentUrl;
-    
-    public WebViewController(Activity activity){
+
+    public WebViewController(Activity activity) {
         mActivityRef = new WeakReference<Activity>(activity);
     }
-    
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @SuppressLint("SetJavaScriptEnabled")
-    public void initControllerView(WebView webView,View view){
-        if(webView == null || view == null){
+    public void initControllerView(WebView webView, View view) {
+        if (webView == null || view == null) {
             return;
         }
         mWebView = webView;
@@ -74,16 +76,16 @@ public class WebViewController implements OnClickListener {
         mReadabilityButton = (ImageButton) view.findViewById(R.id.browse_readability);
         mRefreshButton = (ImageButton) view.findViewById(R.id.browse_refresh);
         mWebSiteButton = (ImageButton) view.findViewById(R.id.browse_website);
-        
+
         mToolBar = view.findViewById(R.id.browse_bar);
-        
+
         mBackButton.setOnClickListener(this);
         mForwardButton.setOnClickListener(this);
         mReadabilityButton.setOnClickListener(this);
         mRefreshButton.setOnClickListener(this);
         mWebSiteButton.setOnClickListener(this);
     }
-    
+
     private class MyWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -103,11 +105,11 @@ public class WebViewController implements OnClickListener {
             setCurrentUrl(url);
         }
     }
-    
+
     private void setCurrentUrl(String url) {
         mCurrentUrl = url;
     }
-    
+
     private String getCurrentUrl() {
         return mCurrentUrl; //TextUtils.isEmpty(mCurrentUrl) ? mOriginalUrl : mCurrentUrl;
     }
@@ -119,8 +121,8 @@ public class WebViewController implements OnClickListener {
             super.onProgressChanged(view, newProgress);
             int progress = (Window.PROGRESS_END - Window.PROGRESS_START) / 100 * newProgress;
             Activity activity = mActivityRef.get();
-            if(activity != null && activity instanceof BaseFragmentActivity){
-                ((BaseFragmentActivity)activity).setSupportProgress(progress);
+            if (activity != null && activity instanceof BaseFragmentActivity) {
+                ((BaseFragmentActivity) activity).setSupportProgress(progress);
             }
         }
 
@@ -131,7 +133,7 @@ public class WebViewController implements OnClickListener {
         }
 
     }
-    
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -175,7 +177,7 @@ public class WebViewController implements OnClickListener {
     private void readability() {
         Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                 "browseactivity_menu_readability", 0L);
-        if(TextUtils.isEmpty(mCurrentUrl)){
+        if (TextUtils.isEmpty(mCurrentUrl)) {
             return;
         }
         mWebView.loadUrl("http://www.readability.com/m?url=" + getCurrentUrl());
@@ -191,40 +193,55 @@ public class WebViewController implements OnClickListener {
         // 打开原链接，还是转码的链接呢？
         Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                 "browseactivity_menu_website", 0L);
-        if(TextUtils.isEmpty(mCurrentUrl)){
+        if (TextUtils.isEmpty(mCurrentUrl)) {
             return;
         }
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(getCurrentUrl()));
         mActivityRef.get().startActivity(intent);
     }
-    
-    public WebView getWebView(){
+
+    public WebView getWebView() {
         return mWebView;
     }
-    
-    public void loadUrl(String url){
-        if(TextUtils.isEmpty(url) || url.equals(mCurrentUrl)){
+
+    public void destroy() {
+
+        if (mWebView != null) {
+            ((ViewGroup) mWebView.getParent()).removeAllViews();
+            mWebView.clearHistory();
+            mWebView.clearCache(true);
+            mWebView.loadUrl("about:blank");
+            mWebView.pauseTimers();
+            mWebView.destroy();
+            mWebView = null;
+        }
+        mActivityRef.clear();
+
+    }
+
+    public void loadUrl(String url) {
+        if (TextUtils.isEmpty(url) || url.equals(mCurrentUrl)) {
             return;
         }
         mWebView.clearHistory();
         mWebView.loadUrl(url);
     }
 
-    public void showBrowseBar(){
-        if(mToolBar != null){
+    public void showBrowseBar() {
+        if (mToolBar != null) {
             Animation animation = AnimationUtils.loadAnimation(mActivityRef.get(), R.anim.push_up_in);
             mToolBar.startAnimation(animation);
             mToolBar.setVisibility(View.VISIBLE);
         }
     }
-    
-    public void hideBrowseBar(){
-        if(mToolBar != null){
+
+    public void hideBrowseBar() {
+        if (mToolBar != null) {
             Animation animation = AnimationUtils.loadAnimation(mActivityRef.get(), R.anim.push_down_out);
             mToolBar.startAnimation(animation);
             mToolBar.setVisibility(View.GONE);
         }
     }
-    
+
 }

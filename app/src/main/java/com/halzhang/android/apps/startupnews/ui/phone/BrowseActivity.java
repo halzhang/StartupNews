@@ -37,7 +37,6 @@ public class BrowseActivity extends BaseFragmentActivity {
 
     @Override
     protected void onCreate(Bundle arg0) {
-        requestWindowFeature(Window.FEATURE_PROGRESS);
         super.onCreate(arg0);
         setContentView(R.layout.activity_browse);
         String mOriginalUrl = getIntent().getStringExtra(EXTRA_URL);

@@ -6,8 +6,11 @@ package com.halzhang.android.apps.startupnews.ui;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Window;
+import android.view.WindowManager;
 
 /**
  * StartupNews
@@ -21,6 +24,11 @@ public class BaseFragmentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+//            Window w = getWindow();
+//            w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+//            w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//        }
     }
     
     @Override
