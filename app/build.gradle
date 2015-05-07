@@ -2,10 +2,10 @@ apply plugin: 'com.android.application'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile project(':library:android-async-http')
-    compile project(':library:commonlog')
-    compile project(':library:commontoast')
-    compile project(':library:pulltorefresh')
+    compile project(':3rdlib:android-async-http')
+    compile project(':3rdlib:commonlog')
+    compile project(':3rdlib:commontoast')
+    compile project(':3rdlib:pulltorefresh')
     compile 'org.jsoup:jsoup:1.7.2'
     compile project(':mvp')
     compile 'com.android.support:appcompat-v7:22.1.1'

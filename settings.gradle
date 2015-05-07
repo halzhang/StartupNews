@@ -1,6 +1,6 @@
-include ':library:android-async-http',
-        ':library:commonlog',
-        ':library:commontoast',
-        ':library:pulltorefresh',
+include ':3rdlib:android-async-http',
+        ':3rdlib:commonlog',
+        ':3rdlib:commontoast',
+        ':3rdlib:pulltorefresh',
         ':app',
         ':mvp'
