@@ -4,18 +4,14 @@
 
 package com.halzhang.android.apps.startupnews;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.halzhang.android.apps.startupnews.analytics.MyExceptionParser;
+import android.app.Application;
+import android.os.StrictMode;
+import android.text.TextUtils;
+
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.CrashHandler;
 import com.halzhang.android.common.CDLog;
-
-import android.app.Application;
-import android.os.StrictMode;
-import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -110,10 +106,10 @@ public class MyApplication extends Application {
             }
         } catch (FileNotFoundException e) {
             CDLog.e(LOG_TAG, "", e);
-            EasyTracker.getInstance(this).send(MapBuilder.createException("History file not found!", false).build());
+            Tracker.getInstance().sendException("History file not found!", e, false);
         } catch (IOException e) {
             CDLog.e(LOG_TAG, "", e);
-            EasyTracker.getInstance(this).send(MapBuilder.createException("Read History file error!", false).build());
+            Tracker.getInstance().sendException("Read History file error!", e, false);
         } finally {
             if (reader != null) {
                 try {
@@ -138,7 +134,7 @@ public class MyApplication extends Application {
                     file.createNewFile();
                 } catch (IOException e) {
                     CDLog.e(LOG_TAG, "Create history file error!");
-//                    EasyTracker.getTracker().sendException("Create history file error!", e, false);
+                    Tracker.getInstance().sendException("Create history file error!", e, false);
                 }
             }
             PrintWriter writer = null;
@@ -148,7 +144,7 @@ public class MyApplication extends Application {
                 writer.close();
             } catch (FileNotFoundException e) {
                 CDLog.e(LOG_TAG, "History file not found!");
-//                EasyTracker.getTracker().sendException("History file not found!", e, false);
+                Tracker.getInstance().sendException("History file not found!", e, false);
             } finally {
                 if (writer != null) {
                     writer.close();
