@@ -12,6 +12,7 @@ import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.CrashHandler;
 import com.halzhang.android.common.CDLog;
+import com.squareup.leakcanary.LeakCanary;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -89,6 +90,7 @@ public class MyApplication extends Application {
                     .penaltyLog()
                     .build());
         }
+        LeakCanary.install(this);
     }
 
     private void initHistory() {

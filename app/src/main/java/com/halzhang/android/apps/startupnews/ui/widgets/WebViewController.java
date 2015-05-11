@@ -206,7 +206,6 @@ public class WebViewController implements OnClickListener {
     }
 
     public void destroy() {
-
         if (mWebView != null) {
             ((ViewGroup) mWebView.getParent()).removeAllViews();
             mWebView.clearHistory();
@@ -217,7 +216,6 @@ public class WebViewController implements OnClickListener {
             mWebView = null;
         }
         mActivityRef.clear();
-
     }
 
     public void loadUrl(String url) {

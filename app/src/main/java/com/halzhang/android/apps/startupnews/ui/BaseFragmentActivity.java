@@ -5,6 +5,8 @@ package com.halzhang.android.apps.startupnews.ui;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.mvp.presenter.Presenter;
+import com.halzhang.android.mvp.support.v7.MVPAppCompatActivity;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -19,7 +21,7 @@ import android.view.WindowManager;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 13, 2013
  */
-public class BaseFragmentActivity extends AppCompatActivity {
+public class BaseFragmentActivity<PresenterType extends Presenter> extends MVPAppCompatActivity<PresenterType> {
     
     @Override
     protected void onCreate(Bundle arg0) {

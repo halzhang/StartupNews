@@ -10,10 +10,13 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
+import com.halzhang.android.apps.startupnews.presenter.LoginPresenter;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
+import com.halzhang.android.mvp.annotation.RequiresPresenter;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -69,18 +72,12 @@ import java.util.List;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Apr 20, 2013
  */
-public class LoginActivity extends BaseFragmentActivity {
+@RequiresPresenter(LoginPresenter.class)
+public class LoginActivity extends BaseFragmentActivity<LoginPresenter> {
 
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
 
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
-
     private String mFnid;
-
-    private LoginPreTask mPreTask;
 
     private LoginFragment mLoginFragment;
 
@@ -94,8 +91,6 @@ public class LoginActivity extends BaseFragmentActivity {
         mLoginFragment = new LoginFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mLoginFragment)
                 .commit();
-        mPreTask = new LoginPreTask();
-        mPreTask.execute("");
     }
 
     @Override
@@ -121,154 +116,41 @@ public class LoginActivity extends BaseFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public class UserLoginTask extends AsyncTask<Void, Void, String> {
-        @Override
-        protected String doInBackground(Void... params) {
-            String user = null;
-            final HttpPost httpPost = new HttpPost(getString(R.string.host, "/y"));
-            httpPost.addHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded");
-            httpPost.addHeader("Accept-Language", "zh-cn");
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-                httpPost.addHeader(HTTP.USER_AGENT,
-                        WebSettings.getDefaultUserAgent(getApplicationContext()));
-            }
-            httpPost.addHeader("Accept", "*/*");
-            httpPost.addHeader("Accept-Encoding", "gzip,deflate");
-            httpPost.addHeader("Connection", "keep-alive");
-            ArrayList<NameValuePair> valuePairs = new ArrayList<NameValuePair>(3);
-            valuePairs.add(new BasicNameValuePair("fnid", mFnid));
-            valuePairs.add(new BasicNameValuePair("p", mLoginFragment.mPassword));
-            valuePairs.add(new BasicNameValuePair("u", mLoginFragment.mUsername));
-            try {
-                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(valuePairs, HTTP.UTF_8);
-                httpPost.setEntity(entity);
-            } catch (UnsupportedEncodingException e) {
+    // Presenter 与 View 之间的接口
+    public void onLoginPreTaskPostExecute(String result){
+        mLoginFragment.showProgress(false);
+        mLoginFragment.mUsernameView.requestFocus();
+    }
 
-            }
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            httpClient.getCookieStore().clear();
-            try {
-                HttpResponse response = httpClient.execute(httpPost);
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode != HttpStatus.SC_OK && statusCode != HttpStatus.SC_MOVED_TEMPORARILY) {
-                    CDLog.w(LOG_TAG, "http response error,code: " + statusCode);
-                    return null;
-                }
-                List<Cookie> cookies = httpClient.getCookieStore().getCookies();
-                if (cookies == null || cookies.size() < 1) {
-                    return null;
-                }
-                CookieSyncManager.createInstance(getApplicationContext());
-                for (Cookie cookie : cookies) {
-                    if ("user".equals(cookie.getName())) {
-                        String value = cookie.getValue();
-                        CDLog.i(LOG_TAG, "Cookie name: user " + " Value: " + cookie.getValue());
-                        SessionManager.getInstance(getApplicationContext()).storeSesson(value,
-                                mLoginFragment.mUsername);
-                        user = value;
-                    }
-                    // sync cookie to webview
-                    CookieManager cookieManager = CookieManager.getInstance();
-                    cookieManager.setCookie(getString(R.string.host), cookie.getName() + "="
-                            + cookie.getValue());
-                    CookieSyncManager.getInstance().sync();
-                }
-            } catch (IOException e1) {
-                EasyTracker.getInstance(getApplication()).send(MapBuilder.createException("User login error!",false).build());
-                CDLog.e(LOG_TAG, null, e1);
-                return user;
-            } finally {
-                httpClient.getConnectionManager().shutdown();
-            }
-            return user;
-        }
+    public void onLoginPreTaskCancel(){
+        mLoginFragment.showProgress(false);
+    }
 
-        @Override
-        protected void onPostExecute(final String user) {
-            mAuthTask = null;
-            mLoginFragment.showProgress(false);
-            if (!TextUtils.isEmpty(user)) {
-                CDToast.showToast(getApplicationContext(), R.string.tip_login_success);
-                Intent intent = new Intent(IntentAction.ACTION_LOGIN);
-                intent.putExtra(IntentAction.EXTRA_LOGIN_USER, user);
-                sendBroadcast(intent);
-                finish();
-            } else {
-                CDToast.showToast(getApplicationContext(), R.string.tip_login_failure);
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            mLoginFragment.showProgress(false);
+    public void onUserLoginTaskPostExecute(String user){
+        mLoginFragment.showProgress(false);
+        if (!TextUtils.isEmpty(user)) {
+            CDToast.showToast(getApplicationContext(), R.string.tip_login_success);
+            Intent intent = new Intent(IntentAction.ACTION_LOGIN);
+            intent.putExtra(IntentAction.EXTRA_LOGIN_USER, user);
+            sendBroadcast(intent);
+            finish();
+        } else {
+            CDToast.showToast(getApplicationContext(), R.string.tip_login_failure);
         }
     }
 
-    /**
-     * Parse login url and fnid
-     *
-     * @author Hal
-     */
-    private class LoginPreTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            String loginUrl = null;
-            Document doc = null;
-            try {
-                doc = Jsoup.connect(getString(R.string.host, "/news")).get();
-                if (doc != null) {
-                    Elements loginElements = doc.select("a:matches(Login/Register)");
-                    if (loginElements.size() == 1) {
-                        loginUrl = BaseHTMLParser.resolveRelativeSNURL(loginElements.first().attr(
-                                "href"));
-                    }
-                }
-            } catch (IOException e1) {
-                Log.w(LOG_TAG, e1);
-            }
-            Log.i(LOG_TAG, "Login Url: " + loginUrl);
-            String fnid = null;
-            if (!TextUtils.isEmpty(loginUrl)) {
-                try {
-                    doc = Jsoup.connect(loginUrl).get();
-                    if (doc != null) {
-                        Elements inputElements = doc.select("input[name=fnid]");
-                        if (inputElements != null && inputElements.size() > 0) {
-                            fnid = inputElements.first().attr("value");
-                            Log.i(LOG_TAG, "Login fnid: " + fnid);
-                        }
-                    }
-                } catch (IOException e) {
-                    return fnid;
-                }
-            }
-            return fnid;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            mFnid = result;
-            mPreTask = null;
-            mLoginFragment.showProgress(false);
-            mLoginFragment.mUsernameView.requestFocus();
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            mPreTask = null;
-            mLoginFragment.showProgress(false);
-        }
-
+    public void onUserLoginTaskCancel(){
+        mLoginFragment.showProgress(false);
     }
+
+    public String getUsername(){
+        return mLoginFragment.mUsername;
+    }
+
+    public String getPassword(){
+        return mLoginFragment.mPassword;
+    }
+    //end interface
 
     @SuppressLint("ValidFragment")
     private static class LoginFragment extends Fragment {
@@ -299,7 +181,7 @@ public class LoginActivity extends BaseFragmentActivity {
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            mLoginActivityRef = new WeakReference<LoginActivity>((LoginActivity) activity);
+            mLoginActivityRef = new WeakReference<>((LoginActivity) activity);
         }
 
         @Override
@@ -333,10 +215,6 @@ public class LoginActivity extends BaseFragmentActivity {
          * the errors are presented and no actual login attempt is made.
          */
         public void attemptLogin() {
-            if (mLoginActivityRef.get().mAuthTask != null) {
-                return;
-            }
-
             // Reset errors.
             mUsernameView.setError(null);
             mPasswordView.setError(null);
@@ -363,8 +241,7 @@ public class LoginActivity extends BaseFragmentActivity {
             } else {
                 mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
                 showProgress(true);
-                mLoginActivityRef.get().mAuthTask = mLoginActivityRef.get().new UserLoginTask();
-                mLoginActivityRef.get().mAuthTask.execute((Void) null);
+                mLoginActivityRef.get().getPresenter().doUserLoginTask();
             }
         }
 
