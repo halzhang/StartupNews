@@ -150,7 +150,12 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
         if (mNewsTask == null && mAdapter.isEmpty()) {
             mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
             mNewsTask.execute(mNewsURL);
-            mSwipeRefreshLayout.setRefreshing(true);
+            mSwipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                }
+            });
         }
     }
 

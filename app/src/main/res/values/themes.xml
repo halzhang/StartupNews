@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Generated with http://android-holo-colors.com -->
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
@@ -7,9 +7,12 @@
     </style>
 
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#673AB7</item>
-        <item name="colorPrimaryDark">#512DA8</item>
-        <item name="colorAccent">#FF4081</item>
+        <item name="android:colorPrimary" tools:ignore="NewApi">@android:color/holo_blue_dark</item>
+        <item name="android:colorPrimaryDark" tools:ignore="NewApi">@android:color/holo_blue_dark</item>
+        <item name="android:colorAccent" tools:ignore="NewApi">@android:color/holo_blue_light</item>
+        <item name="colorPrimary">@android:color/holo_blue_dark</item>
+        <item name="colorPrimaryDark">@android:color/holo_blue_dark</item>
+        <item name="colorAccent">@android:color/holo_blue_light</item>
     </style>
 
     <style name="LoginFormContainer">
@@ -20,8 +23,8 @@
 
     <style name="borderlessButtonStyle">
         <item name="android:background">@drawable/background_boardless</item>
-        <item name="android:paddingStart">4dip</item>
-        <item name="android:paddingEnd">4dip</item>
+        <item name="android:paddingStart" tools:ignore="NewApi">4dip</item>
+        <item name="android:paddingEnd" tools:ignore="NewApi">4dip</item>
         <item name="android:minHeight">48dip</item>
         <item name="android:minWidth">64dip</item>
     </style>
