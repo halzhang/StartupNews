@@ -2,15 +2,15 @@
  * Copyright (C) 2013 HalZhang
  */
 
-package com.halzhang.android.apps.startupnews.ui;
+package com.halzhang.android.apps.startupnews.ui.fragment;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
 import com.halzhang.android.apps.startupnews.entity.SNComments;
 import com.halzhang.android.apps.startupnews.parser.SNCommentsParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
+import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
 import com.halzhang.android.apps.startupnews.utils.DateUtils;
 import com.halzhang.android.common.CDLog;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;

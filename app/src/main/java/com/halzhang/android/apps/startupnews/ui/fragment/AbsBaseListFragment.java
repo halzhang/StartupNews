@@ -1,5 +1,5 @@
 
-package com.halzhang.android.apps.startupnews.ui;
+package com.halzhang.android.apps.startupnews.ui.fragment;
 
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.utils.UIUtils;

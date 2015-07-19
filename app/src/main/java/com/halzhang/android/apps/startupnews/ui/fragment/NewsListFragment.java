@@ -2,7 +2,7 @@
  * Copyright (C) 2013 HalZhang
  */
 
-package com.halzhang.android.apps.startupnews.ui;
+package com.halzhang.android.apps.startupnews.ui.fragment;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -32,7 +32,9 @@ import com.halzhang.android.apps.startupnews.entity.SNFeed;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
-import com.halzhang.android.apps.startupnews.ui.fragment.SwipeRefreshRecyclerFragment;
+import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
+import com.halzhang.android.apps.startupnews.ui.MainActivity;
+import com.halzhang.android.apps.startupnews.ui.SNApiHelper;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
 
