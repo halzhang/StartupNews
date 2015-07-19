@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generated with http://android-holo-colors.com -->
+<?xml version="1.0" encoding="utf-8"?><!-- Generated with http://android-holo-colors.com -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Application theme. -->
@@ -7,7 +6,11 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar"/>
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#673AB7</item>
+        <item name="colorPrimaryDark">#512DA8</item>
+        <item name="colorAccent">#FF4081</item>
+    </style>
 
     <style name="LoginFormContainer">
         <item name="android:layout_width">match_parent</item>

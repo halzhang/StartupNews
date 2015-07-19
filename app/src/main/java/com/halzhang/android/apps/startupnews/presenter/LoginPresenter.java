@@ -41,9 +41,41 @@ import java.util.List;
  * 登录业务封装
  * Created by Hal on 15/5/6.
  */
-public class LoginPresenter extends Presenter<LoginActivity> {
+public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPresenter.ILoginCallback> {
 
     private static final String LOG_TAG = LoginPresenter.class.getSimpleName();
+
+    public interface ILoginCallback {
+        public void onLogin();
+    }
+
+    public interface ILoginView extends Presenter.IView<ILoginCallback> {
+
+        public String getUsername();
+
+        public String getPassword();
+
+        public Context getContext();
+
+        public void onLoginPreTaskPostExecute(String result);
+
+        public void onLoginPreTaskCancel();
+
+        public void onUserLoginTaskPostExecute(String user);
+
+        public void onUserLoginTaskCancel();
+
+    }
+
+    @Override
+    public ILoginCallback createViewCallback(IView view) {
+        return new ILoginCallback() {
+            @Override
+            public void onLogin() {
+                doUserLoginTask();
+            }
+        };
+    }
 
     private String mFnid;
     private LoginPreTask mLoginPreTask;
@@ -54,7 +86,7 @@ public class LoginPresenter extends Presenter<LoginActivity> {
     @Override
     protected void onCreate(Bundle saveState) {
         super.onCreate(saveState);
-        if (saveState != null){
+        if (saveState != null) {
             mFnid = saveState.getString(FNID_KEY);
         }
     }
@@ -66,7 +98,7 @@ public class LoginPresenter extends Presenter<LoginActivity> {
     }
 
     @Override
-    protected void onAttachView(LoginActivity view) {
+    protected void onAttachView(ILoginView view) {
         super.onAttachView(view);
         doLoginPreTask();
     }
@@ -78,7 +110,7 @@ public class LoginPresenter extends Presenter<LoginActivity> {
         if (mLoginPreTask != null) {
             return;
         }
-        if (TextUtils.isEmpty(mFnid)){
+        if (TextUtils.isEmpty(mFnid)) {
             mLoginPreTask = new LoginPreTask();
             mLoginPreTask.execute();
         }
@@ -107,7 +139,7 @@ public class LoginPresenter extends Presenter<LoginActivity> {
             String loginUrl = null;
             Document doc = null;
             try {
-                doc = Jsoup.connect(getView().getString(R.string.host, "/news")).get();
+                doc = Jsoup.connect(getView().getContext().getString(R.string.host, "/news")).get();
                 if (doc != null) {
                     Elements loginElements = doc.select("a:matches(Login/Register)");
                     if (loginElements.size() == 1) {
@@ -162,9 +194,9 @@ public class LoginPresenter extends Presenter<LoginActivity> {
     public class UserLoginTask extends AsyncTask<Void, Void, String> {
         @Override
         protected String doInBackground(Void... params) {
-            Context context = getView().getApplicationContext();
+            Context context = getView().getContext();
             String user = null;
-            final HttpPost httpPost = new HttpPost(getView().getString(R.string.host, "/y"));
+            final HttpPost httpPost = new HttpPost(getView().getContext().getString(R.string.host, "/y"));
             httpPost.addHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded");
             httpPost.addHeader("Accept-Language", "zh-cn");
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
@@ -208,7 +240,7 @@ public class LoginPresenter extends Presenter<LoginActivity> {
                     }
                     // sync cookie to webview
                     CookieManager cookieManager = CookieManager.getInstance();
-                    cookieManager.setCookie(getView().getString(R.string.host), cookie.getName() + "="
+                    cookieManager.setCookie(getView().getContext().getString(R.string.host), cookie.getName() + "="
                             + cookie.getValue());
                     CookieSyncManager.getInstance().sync();
                 }

@@ -32,12 +32,14 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,8 +54,7 @@ import java.io.IOException;
  *
  * @author Hal
  */
-public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener,
-        ActionBar.TabListener, OnCommentSelectedListener, OnMenuSelectedListener {
+public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener, OnCommentSelectedListener, OnMenuSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -99,10 +100,10 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
         super.onPostCreate(savedInstanceState);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void setupViews() {
         if (isMultiplePanel()) {
             // 横屏，平板布局
+            //TODO 平板的 actionbar 要重新处理
             final ActionBar actionBar = getSupportActionBar();
             actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -127,43 +128,21 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                     .add(R.id.content_frame_left, fragment, TAG_NEWS).commitAllowingStateLoss();
 
         } else {
-            final ActionBar actionBar = getSupportActionBar();
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+            //手机布局
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            final ActionBar ab = getSupportActionBar();
+            ab.setDisplayHomeAsUpEnabled(false);
             mViewPager = (ViewPager) findViewById(R.id.pager);
             if (mViewPager != null) {
                 mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
                 mViewPager.setAdapter(mSectionsPagerAdapter);
-                for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-                    actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(mTabListener), i);
-                }
             }
-            mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
-                @Override
-                public void onPageSelected(int position) {
-                    super.onPageSelected(position);
-                    actionBar.setSelectedNavigationItem(position);
-                }
-            });
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+            tabLayout.setupWithViewPager(mViewPager);
+
         }
     }
-
-    private ActionBar.TabListener mTabListener = new ActionBar.TabListener() {
-        @Override
-        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-            mViewPager.setCurrentItem(tab.getPosition());
-        }
-
-        @Override
-        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-        }
-
-        @Override
-        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-        }
-    };
 
     private Intent createEmailIntent() {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
@@ -476,22 +455,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
      */
     public boolean isMultiplePanel() {
         return findViewById(R.id.fragment_container) != null;
-    }
-
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-        int pos = (Integer) tab.getTag();
-        switchNavigation(pos);
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
     }
 
     @Override

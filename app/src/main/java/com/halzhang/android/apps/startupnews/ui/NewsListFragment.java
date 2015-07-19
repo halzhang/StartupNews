@@ -4,22 +4,6 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.halzhang.android.apps.startupnews.Constants.IntentAction;
-import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.analytics.Tracker;
-import com.halzhang.android.apps.startupnews.entity.SNFeed;
-import com.halzhang.android.apps.startupnews.entity.SNNew;
-import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
-import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
-import com.halzhang.android.apps.startupnews.utils.AppUtils;
-import com.halzhang.android.apps.startupnews.utils.DateUtils;
-import com.halzhang.android.common.CDLog;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,6 +12,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -36,23 +21,33 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.halzhang.android.apps.startupnews.Constants.IntentAction;
+import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
+import com.halzhang.android.apps.startupnews.entity.SNFeed;
+import com.halzhang.android.apps.startupnews.entity.SNNew;
+import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
+import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
+import com.halzhang.android.apps.startupnews.ui.fragment.SwipeRefreshRecyclerFragment;
+import com.halzhang.android.apps.startupnews.utils.AppUtils;
+import com.halzhang.android.common.CDLog;
+
+import org.jsoup.Connection;
+import org.jsoup.nodes.Document;
 
 /**
  * StartupNews
  * <p>
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class NewsListFragment extends AbsBaseListFragment implements OnItemLongClickListener {
+public class NewsListFragment extends SwipeRefreshRecyclerFragment {
 
     private static final String LOG_TAG = NewsListFragment.class.getSimpleName();
 
@@ -62,9 +57,9 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     public interface OnNewsSelectedListener {
         /**
          * 处理news被选中事件
-         * 
+         *
          * @param position list position
-         * @param snNew {@link SNNew}
+         * @param snNew    {@link SNNew}
          */
         public void onNewsSelected(int position, SNNew snNew);
     }
@@ -82,11 +77,11 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     private NewsAdapter mAdapter;
 
     private JsoupFactory mJsoupFactory;
-    
+
     private SNApiHelper mSnApiHelper;
-    
+
     private boolean mIsTablet;
-    
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
         @Override
@@ -112,11 +107,17 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         mSnApiHelper = new SNApiHelper(activity);
         try {
             mNewsSelectedListener = (OnNewsSelectedListener) activity;
-            mIsTablet = ((MainActivity)activity).isMultiplePanel();
+            mIsTablet = ((MainActivity) activity).isMultiplePanel();
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnNewsSelectedListener");
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mNewsSelectedListener = null;
     }
 
     @Override
@@ -136,22 +137,27 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     }
 
     @Override
+    protected int getViewLayout() {
+        return R.layout.refresh_recycler_view_layout;
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // getListView().setOnItemLongClickListener(this);
-        registerForContextMenu(getListView());
-        setListAdapter(mAdapter);
+//        registerForContextMenu(getListView());
+        mRecyclerView.setAdapter(mAdapter);
         if (mNewsTask == null && mAdapter.isEmpty()) {
             mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
             mNewsTask.execute(mNewsURL);
-            getPullToRefreshListView().setRefreshing(true);
+            mSwipeRefreshLayout.setRefreshing(true);
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        CDLog.d(LOG_TAG, this.toString()+" destroy view!");
+        CDLog.d(LOG_TAG, this.toString() + " destroy view!");
     }
 
     @Override
@@ -163,11 +169,11 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         }
         getActivity().unregisterReceiver(mReceiver);
     }
-    
+
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        if(!mIsTablet){
+        if (!mIsTablet) {
             getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
         }
     }
@@ -175,7 +181,7 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         int position = ((AdapterContextMenuInfo) item.getMenuInfo()).position;
-        final SNNew snNew = (SNNew) mAdapter.getItem(position - 1);
+        final SNNew snNew = null;/*= (SNNew) mAdapter.getItem(position - 1)*/;
         Log.i(LOG_TAG, snNew.toString());
         switch (item.getItemId()) {
             case R.id.menu_show_comment:
@@ -198,12 +204,11 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         }
         return true;
     }
-    
+
     @Override
-    protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
-        super.onPullDownListViewRefresh(refreshListView);
-        Tracker.getInstance().sendEvent("ui_action", "pull_down_list_view_refresh",
-                "news_list_fragment_pull_down_list_view_refresh", 0L);
+    protected void onRefreshData() {
+        super.onRefreshData();
+        Tracker.getInstance().sendEvent("ui_action", "pull_down_list_view_refresh", "news_list_fragment_pull_down_list_view_refresh", 0L);
         if (mNewsTask != null) {
             return;
         }
@@ -212,33 +217,24 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
     }
 
     @Override
-    protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
-        super.onPullDownListViewRefresh(refreshListView);
-        Tracker.getInstance().sendEvent("ui_action", "pull_up_list_view_refresh",
-                "news_list_fragment_pull_up_list_view_refresh", 0L);
+    protected void onLoadMore() {
+        super.onLoadMore();
+        Tracker.getInstance().sendEvent("ui_action", "pull_up_list_view_refresh", "news_list_fragment_pull_up_list_view_refresh", 0L);
         if (mNewsTask != null) {
             return;
         }
         if (TextUtils.isEmpty(mSnFeed.getMoreUrl())) {
             Toast.makeText(getActivity(), R.string.tip_last_page, Toast.LENGTH_SHORT).show();
-            getPullToRefreshListView().onRefreshComplete();
+            onRefreshComplete();
         } else {
             mNewsTask = new NewsTask(NewsTask.TYPE_LOADMORE);
             mNewsTask.execute(mSnFeed.getMoreUrl());
         }
     }
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        Tracker.getInstance().sendEvent("ui_action", "list_item_click",
-                "news_list_fragment_list_item_click", 0L);
-        mAdapter.notifyDataSetChanged();
-        SNNew entity = (SNNew) mAdapter.getItem(position - 1);
-        openArticle(position - 1, entity);
-    }
 
     private void openArticle(int position, SNNew snNew) {
-        if(mNewsSelectedListener != null){
+        if (mNewsSelectedListener != null) {
             mNewsSelectedListener.onNewsSelected(position, snNew);
         }
     }
@@ -292,66 +288,61 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
-                onDataFirstLoadComplete();
                 mAdapter.notifyDataSetChanged();
             } else {
                 Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_LONG).show();
             }
             mNewsTask = null;
-            getPullToRefreshListView().getLoadingLayoutProxy().setLastUpdatedLabel(
-                    DateUtils.getLastUpdateLabel(getActivity()));
-            getPullToRefreshListView().onRefreshComplete();
+            onRefreshComplete();
             super.onPostExecute(result);
         }
 
         @Override
         protected void onCancelled() {
-            getPullToRefreshListView().onRefreshComplete();
+            onRefreshComplete();
             mNewsTask = null;
             super.onCancelled();
         }
 
     }
 
-    @Override
-    public int getContentViewId() {
-        return R.layout.ptr_list_layout;
-    }
+    private class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
-    private class NewsAdapter extends BaseAdapter {
+        public final class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Override
-        public int getCount() {
-            return mSnFeed.size();
-        }
+            public final TextView user;
 
-        @Override
-        public Object getItem(int position) {
-            return mSnFeed.getSnNews().get(position);
-        }
+            public final TextView createat;
 
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
+            public final TextView title;
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                convertView = LayoutInflater.from(getActivity()).inflate(R.layout.news_list_item,
-                        null);
-                holder.user = (TextView) convertView.findViewById(R.id.news_item_user);
-                holder.createat = (TextView) convertView.findViewById(R.id.news_item_createat);
-                holder.title = (TextView) convertView.findViewById(R.id.news_item_title);
-                holder.subText = (TextView) convertView.findViewById(R.id.news_item_subtext);
-                holder.domain = (TextView) convertView.findViewById(R.id.news_item_domain);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
+            public final TextView subText;
+
+            public final TextView domain;
+
+            public final View mView;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                mView = itemView;
+                user = (TextView) itemView.findViewById(R.id.news_item_user);
+                createat = (TextView) itemView.findViewById(R.id.news_item_createat);
+                title = (TextView) itemView.findViewById(R.id.news_item_title);
+                subText = (TextView) itemView.findViewById(R.id.news_item_subtext);
+                domain = (TextView) itemView.findViewById(R.id.news_item_domain);
+
             }
-            SNNew entity = mSnFeed.getSnNews().get(position);
+        }
+
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.news_list_item, null));
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            final SNNew entity = mSnFeed.getSnNews().get(position);
             holder.user.setText(entity.getUser().getId());
             holder.title.setText(entity.getTitle());
             holder.subText.setText(getString(R.string.news_subtext, entity.getPoints(),
@@ -364,30 +355,27 @@ public class NewsListFragment extends AbsBaseListFragment implements OnItemLongC
             holder.subText.setTextColor(textColor);
             holder.domain.setTextColor(textColor);
             holder.createat.setTextColor(textColor);
-            return convertView;
+            final int localPosition = position;
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Tracker.getInstance().sendEvent("ui_action", "list_item_click",
+                            "news_list_fragment_list_item_click", 0L);
+                    mAdapter.notifyDataSetChanged();
+                    openArticle(localPosition, entity);
+                }
+            });
         }
 
-        class ViewHolder {
-            TextView user;
-
-            TextView createat;
-
-            TextView title;
-
-            TextView subText;
-
-            TextView domain;
+        @Override
+        public int getItemCount() {
+            return mSnFeed.getSnNews().size();
         }
 
-    }
+        public boolean isEmpty() {
+            return getItemCount() == 0;
+        }
 
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Tracker.getInstance().sendEvent("ui_action", "list_item_long_click",
-                "news_list_fragment_list_item_long_click", 0L);
-        SNNew entity = (SNNew) mAdapter.getItem(position - 1);
-        openDiscuss(entity);
-        return true;
     }
 
 }

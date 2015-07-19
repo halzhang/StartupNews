@@ -21,7 +21,7 @@ import android.view.WindowManager;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 13, 2013
  */
-public class BaseFragmentActivity<PresenterType extends Presenter> extends MVPAppCompatActivity<PresenterType> {
+public class BaseFragmentActivity<PresenterType extends Presenter,IViewCallback> extends MVPAppCompatActivity<PresenterType,IViewCallback> {
     
     @Override
     protected void onCreate(Bundle arg0) {
@@ -44,5 +44,4 @@ public class BaseFragmentActivity<PresenterType extends Presenter> extends MVPAp
         super.onStop();
         EasyTracker.getInstance(this).activityStop(this);
     }
-
 }

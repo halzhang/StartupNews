@@ -45,4 +45,6 @@
     <!-- Widget -->
     <dimen name="widget_margin">8dp</dimen>
 
+    <dimen name="card_insets">5dp</dimen>
+
 </resources>

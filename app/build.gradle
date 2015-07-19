@@ -8,10 +8,14 @@ dependencies {
     compile project(':3rdlib:pulltorefresh')
     compile 'org.jsoup:jsoup:1.7.2'
     compile project(':mvp')
-    compile 'com.android.support:appcompat-v7:22.1.1'
-    compile 'com.android.support:support-v4:22.1.1'
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:support-v4:22.2.0'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
+    compile 'com.android.support:support-annotations:22.2.0'
+    compile 'com.android.support:recyclerview-v7:22.2.0'
+    compile 'com.android.support:cardview-v7:22.2.0'
+    compile 'com.android.support:design:22.2.0'
 }
 
 android {
@@ -46,7 +50,7 @@ android {
             debuggable false
             signingConfig signingConfigs.release
             minifyEnabled false
-            proguardFile getDefaultProguardFile('proguard-android.txt')
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
 
     }

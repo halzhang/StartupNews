@@ -17,6 +17,7 @@ import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
 import com.halzhang.android.mvp.annotation.RequiresPresenter;
+import com.halzhang.android.mvp.presenter.Presenter;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -36,6 +37,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -63,6 +65,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.halzhang.android.apps.startupnews.presenter.LoginPresenter.*;
+
 /**
  * StartupNews
  * <p>
@@ -73,7 +77,7 @@ import java.util.List;
  * @version Apr 20, 2013
  */
 @RequiresPresenter(LoginPresenter.class)
-public class LoginActivity extends BaseFragmentActivity<LoginPresenter> {
+public class LoginActivity extends BaseFragmentActivity<LoginPresenter,LoginPresenter.ILoginCallback> implements ILoginView {
 
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
 
@@ -116,6 +120,13 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter> {
         return super.onOptionsItemSelected(item);
     }
 
+    private ILoginCallback mCallback;
+
+    @Override
+    protected void onSetCallback(ILoginCallback iLoginCallback) {
+        mCallback = iLoginCallback;
+    }
+
     // Presenter 与 View 之间的接口
     public void onLoginPreTaskPostExecute(String result){
         mLoginFragment.showProgress(false);
@@ -149,6 +160,11 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter> {
 
     public String getPassword(){
         return mLoginFragment.mPassword;
+    }
+
+    @Override
+    public Context getContext() {
+        return getApplicationContext();
     }
     //end interface
 
@@ -241,7 +257,7 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter> {
             } else {
                 mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
                 showProgress(true);
-                mLoginActivityRef.get().getPresenter().doUserLoginTask();
+                mLoginActivityRef.get().mCallback.onLogin();
             }
         }
 

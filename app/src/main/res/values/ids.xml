@@ -13,4 +13,7 @@
     <item name="browse_refresh" type="id"/>
     <item name="browse_website" type="id"/>
     <item name="browse_webview" type="id"/>
+
+    <item name="swipe_refresh_layout" type="id"/>
+    <item name="recycler_view" type="id"/>
 </resources>
