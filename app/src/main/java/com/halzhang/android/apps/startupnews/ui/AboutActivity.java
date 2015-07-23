@@ -4,21 +4,18 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.analytics.Tracker;
-import com.halzhang.android.apps.startupnews.utils.AppUtils;
-
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.preference.PreferenceFragment;
+import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
+
+import com.google.analytics.tracking.android.EasyTracker;
+import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
+import com.halzhang.android.apps.startupnews.utils.AppUtils;
 
 /**
  * StartupNews
@@ -29,34 +26,32 @@ import android.widget.LinearLayout;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 8, 2013
  */
-public class AboutActivity extends PreferenceActivity implements OnPreferenceChangeListener {
+public class AboutActivity extends BaseFragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
-        ListPreference listPreference = (ListPreference) findPreference(getString(R.string.pref_key_html_provider));
-        listPreference.setOnPreferenceChangeListener(this);
-        listPreference.setSummary(listPreference.getEntry());
-        (findPreference(getString(R.string.pref_key_default_browse)))
-                .setOnPreferenceChangeListener(this);
-        Preference versionPref = findPreference(getString(R.string.pref_key_version));
-        versionPref.setSummary(getString(R.string.pref_summary_version,
-                AppUtils.getVersionName(getApplicationContext())));
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new AppPreferenceFragment()).commit();
+
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
-        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.preference_toolbar, root, false);
-        root.addView(bar, 0); // insert at top
-        bar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+//        LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
+//        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.preference_toolbar, root, false);
+//        root.addView(bar, 0); // insert at top
+//        bar.setTitleTextColor(getResources().getColor(android.R.color.white));
+//        bar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                finish();
+//            }
+//        });
     }
 
     @Override
@@ -72,23 +67,40 @@ public class AboutActivity extends PreferenceActivity implements OnPreferenceCha
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        final String key = preference.getKey();
-        if (getString(R.string.pref_key_html_provider).equals(key)) {
-            Tracker.getInstance().sendEvent("preference_change_action",
-                    "preference_change_html_provider",
-                    String.format("html_provider_%1$s", (String) newValue), 0L);
-            ListPreference listPreference = (ListPreference) preference;
-            preference.setSummary(listPreference.getEntries()[listPreference
-                    .findIndexOfValue((String) newValue)]);
-        } else if (getString(R.string.pref_key_default_browse).equals(key)) {
-            Tracker.getInstance().sendEvent("preference_change_action",
-                    "preference_change_default_browse",
-                    String.format("default_browse_%1$s", String.valueOf(newValue)), 0L);
+    public static class AppPreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preferences);
+            ListPreference listPreference = (ListPreference) findPreference(getString(R.string.pref_key_html_provider));
+            listPreference.setOnPreferenceChangeListener(this);
+            listPreference.setSummary(listPreference.getEntry());
+            (findPreference(getString(R.string.pref_key_default_browse)))
+                    .setOnPreferenceChangeListener(this);
+            Preference versionPref = findPreference(getString(R.string.pref_key_version));
+            versionPref.setSummary(getString(R.string.pref_summary_version,
+                    AppUtils.getVersionName(getActivity())));
         }
-        return true;
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            final String key = preference.getKey();
+            if (getString(R.string.pref_key_html_provider).equals(key)) {
+                Tracker.getInstance().sendEvent("preference_change_action",
+                        "preference_change_html_provider",
+                        String.format("html_provider_%1$s", (String) newValue), 0L);
+                ListPreference listPreference = (ListPreference) preference;
+                preference.setSummary(listPreference.getEntries()[listPreference
+                        .findIndexOfValue((String) newValue)]);
+            } else if (getString(R.string.pref_key_default_browse).equals(key)) {
+                Tracker.getInstance().sendEvent("preference_change_action",
+                        "preference_change_default_browse",
+                        String.format("default_browse_%1$s", String.valueOf(newValue)), 0L);
+            }
+            return true;
+        }
     }
+
 
     @Override
     protected void onStart() {

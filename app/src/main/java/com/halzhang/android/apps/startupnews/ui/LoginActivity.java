@@ -6,32 +6,6 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.halzhang.android.apps.startupnews.Constants.IntentAction;
-import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.analytics.Tracker;
-import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
-import com.halzhang.android.apps.startupnews.presenter.LoginPresenter;
-import com.halzhang.android.apps.startupnews.snkit.SessionManager;
-import com.halzhang.android.common.CDLog;
-import com.halzhang.android.common.CDToast;
-import com.halzhang.android.mvp.annotation.RequiresPresenter;
-import com.halzhang.android.mvp.presenter.Presenter;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
@@ -39,13 +13,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -53,19 +25,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.webkit.WebSettings;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.halzhang.android.apps.startupnews.Constants.IntentAction;
+import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.presenter.LoginPresenter;
+import com.halzhang.android.apps.startupnews.snkit.SessionManager;
+import com.halzhang.android.common.CDToast;
+import com.halzhang.android.mvp.annotation.RequiresPresenter;
 
-import static com.halzhang.android.apps.startupnews.presenter.LoginPresenter.*;
+import java.lang.ref.WeakReference;
+
+import static com.halzhang.android.apps.startupnews.presenter.LoginPresenter.ILoginCallback;
+import static com.halzhang.android.apps.startupnews.presenter.LoginPresenter.ILoginView;
 
 /**
  * StartupNews
@@ -77,7 +52,7 @@ import static com.halzhang.android.apps.startupnews.presenter.LoginPresenter.*;
  * @version Apr 20, 2013
  */
 @RequiresPresenter(LoginPresenter.class)
-public class LoginActivity extends BaseFragmentActivity<LoginPresenter,LoginPresenter.ILoginCallback> implements ILoginView {
+public class LoginActivity extends BaseFragmentActivity<LoginPresenter, LoginPresenter.ILoginCallback> implements ILoginView {
 
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
 
@@ -89,7 +64,9 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter,LoginPres
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
         setContentView(R.layout.activity_login);
         SessionManager.getInstance(this).clear();
         mLoginFragment = new LoginFragment();
@@ -128,16 +105,16 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter,LoginPres
     }
 
     // Presenter 与 View 之间的接口
-    public void onLoginPreTaskPostExecute(String result){
+    public void onLoginPreTaskPostExecute(String result) {
         mLoginFragment.showProgress(false);
         mLoginFragment.mUsernameView.requestFocus();
     }
 
-    public void onLoginPreTaskCancel(){
+    public void onLoginPreTaskCancel() {
         mLoginFragment.showProgress(false);
     }
 
-    public void onUserLoginTaskPostExecute(String user){
+    public void onUserLoginTaskPostExecute(String user) {
         mLoginFragment.showProgress(false);
         if (!TextUtils.isEmpty(user)) {
             CDToast.showToast(getApplicationContext(), R.string.tip_login_success);
@@ -150,15 +127,15 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter,LoginPres
         }
     }
 
-    public void onUserLoginTaskCancel(){
+    public void onUserLoginTaskCancel() {
         mLoginFragment.showProgress(false);
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return mLoginFragment.mUsername;
     }
 
-    public String getPassword(){
+    public String getPassword() {
         return mLoginFragment.mPassword;
     }
 

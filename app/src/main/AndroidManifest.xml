@@ -19,13 +19,12 @@
         android:name=".MyApplication"
         android:allowBackup="true"
         android:description="@string/app_description"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:icon="@drawable/ic_launcher">
 
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
+            android:theme="@style/AppTheme"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,12 +57,12 @@
         -->
         <activity
             android:name=".ui.AboutActivity"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppPreferenceTheme"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize"
             android:label="@string/title_settings" />
         <activity
             android:name=".ui.LoginActivity"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppPreferenceTheme"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize"
             android:label="@string/title_login"
             android:windowSoftInputMode="stateHidden" />

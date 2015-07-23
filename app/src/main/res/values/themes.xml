@@ -6,13 +6,33 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:colorPrimary" tools:ignore="NewApi">@android:color/holo_blue_dark</item>
+    <style name="AppPreferenceTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:colorPrimary" tools:ignore="NewApi">@android:color/holo_blue_light</item>
         <item name="android:colorPrimaryDark" tools:ignore="NewApi">@android:color/holo_blue_dark</item>
         <item name="android:colorAccent" tools:ignore="NewApi">@android:color/holo_blue_light</item>
         <item name="colorPrimary">@android:color/holo_blue_light</item>
         <item name="colorPrimaryDark">@android:color/holo_blue_dark</item>
         <item name="colorAccent">@android:color/holo_blue_light</item>
+    </style>
+
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:colorPrimary" tools:ignore="NewApi">@android:color/holo_blue_light</item>
+        <item name="android:colorPrimaryDark" tools:ignore="NewApi">@android:color/holo_blue_dark</item>
+        <item name="android:colorAccent" tools:ignore="NewApi">@android:color/holo_blue_light</item>
+        <item name="colorPrimary">@android:color/holo_blue_light</item>
+        <item name="colorPrimaryDark">@android:color/holo_blue_dark</item>
+        <item name="colorAccent">@android:color/holo_blue_light</item>
+        <item name="android:windowTranslucentNavigation" tools:ignore="NewApi">false</item>
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+
+    <style name="AppActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:titleTextStyle">@style/AppActionBarTitleText</item>
+        <item name="titleTextStyle">@style/AppActionBarTitleText</item>
+    </style>
+
+    <style name="AppActionBarTitleText">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="LoginFormContainer">
