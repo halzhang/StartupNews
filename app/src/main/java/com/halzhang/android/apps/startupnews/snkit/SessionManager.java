@@ -51,7 +51,7 @@ public class SessionManager {
         saveSessionToPref();
     }
 
-    public void storeSesson(String user, String id) {
+    public void storeSession(String user, String id) {
         if (mSession == null) {
             mSession = new SNSession(user, id);
         } else {

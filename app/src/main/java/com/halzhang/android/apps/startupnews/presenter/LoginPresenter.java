@@ -15,7 +15,6 @@ import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
-import com.halzhang.android.apps.startupnews.ui.LoginActivity;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.mvp.presenter.Presenter;
 
@@ -68,7 +67,7 @@ public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPr
     }
 
     @Override
-    public ILoginCallback createViewCallback(IView view) {
+    protected ILoginCallback onCreateViewCallback(IView view) {
         return new ILoginCallback() {
             @Override
             public void onLogin() {
@@ -234,7 +233,7 @@ public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPr
                     if ("user".equals(cookie.getName())) {
                         String value = cookie.getValue();
                         CDLog.i(LOG_TAG, "Cookie name: user " + " Value: " + cookie.getValue());
-                        SessionManager.getInstance(context).storeSesson(value,
+                        SessionManager.getInstance(context).storeSession(value,
                                 getView().getUsername());
                         user = value;
                     }

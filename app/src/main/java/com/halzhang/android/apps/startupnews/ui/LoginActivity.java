@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -72,12 +73,6 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter, LoginPre
         mLoginFragment = new LoginFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mLoginFragment)
                 .commit();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_login, menu);
-        return true;
     }
 
     @Override
@@ -199,6 +194,13 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter, LoginPre
             mLoginStatusMessageView = (TextView) view.findViewById(R.id.login_status_message);
             mLoginStatusMessageView.setText(R.string.login_progress_init);
             showProgress(true);
+            Button loginBtn = (Button) view.findViewById(R.id.btn_login);
+            loginBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    attemptLogin();
+                }
+            });
             return view;
         }
 
