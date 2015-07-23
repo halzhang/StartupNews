@@ -4,6 +4,19 @@
 
 package com.halzhang.android.apps.startupnews.ui.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNComment;
@@ -11,37 +24,21 @@ import com.halzhang.android.apps.startupnews.entity.SNComments;
 import com.halzhang.android.apps.startupnews.parser.SNCommentsParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
-import com.halzhang.android.apps.startupnews.utils.DateUtils;
 import com.halzhang.android.common.CDLog;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * StartupNews
  * <p>
  * 评论
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class CommentsListFragment extends AbsBaseListFragment {
+public class CommentsListFragment extends SwipeRefreshRecyclerFragment {
 
     private static final String LOG_TAG = CommentsListFragment.class.getSimpleName();
 
@@ -61,12 +58,13 @@ public class CommentsListFragment extends AbsBaseListFragment {
 
     // private String mMoreUrl;
 
-    private SNComments mSnComments = new SNComments();;
+    private SNComments mSnComments = new SNComments();
+    ;
 
     private static final String NEWCOMMENTS_URL_PATH = "/newcomments";
 
     private JsoupFactory mJsoupFactory;
-    
+
     private OnCommentSelectedListener mCommentSelectedListener;
 
     @Override
@@ -75,13 +73,13 @@ public class CommentsListFragment extends AbsBaseListFragment {
         mAdapter = new CommentsAdapter();
         mJsoupFactory = JsoupFactory.getInstance(getActivity().getApplicationContext());
     }
-    
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if(activity instanceof OnCommentSelectedListener){
-            mCommentSelectedListener = (OnCommentSelectedListener)activity;
-        }else{
+        if (activity instanceof OnCommentSelectedListener) {
+            mCommentSelectedListener = (OnCommentSelectedListener) activity;
+        } else {
             CDLog.d(LOG_TAG, "Attach activity is not implements OnCommentSelectedListener!");
         }
     }
@@ -89,7 +87,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setListAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
         if (mTask == null && mAdapter.isEmpty()) {
             mTask = new CommentsTask(CommentsTask.TYPE_REFRESH);
             mTask.execute(getString(R.string.host, NEWCOMMENTS_URL_PATH));
@@ -111,22 +109,8 @@ public class CommentsListFragment extends AbsBaseListFragment {
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        Tracker.getInstance().sendEvent("ui_action", "list_item_click",
-                "comments_list_fragment_list_item_click", 0L);
-        SNComment comment = mSnComments.getSnComments().get(position - 1);
-        if(mCommentSelectedListener != null){
-            mCommentSelectedListener.onCommentSelected(position - 1, comment.getDiscussURL());
-        }else{
-            Intent intent = new Intent(getActivity(), DiscussActivity.class);
-            intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, comment.getDiscussURL());
-            startActivity(intent);
-        }
-    }
-
-    @Override
-    protected void onPullDownListViewRefresh(PullToRefreshListView refreshListView) {
-        super.onPullDownListViewRefresh(refreshListView);
+    protected void onRefreshData() {
+        super.onRefreshData();
         Tracker.getInstance().sendEvent("ui_action", "pull_down_list_view_refresh",
                 "comments_list_fragment_pull_down_list_view_refresh", 0L);
         if (mTask != null) {
@@ -137,8 +121,8 @@ public class CommentsListFragment extends AbsBaseListFragment {
     }
 
     @Override
-    protected void onPullUpListViewRefresh(PullToRefreshListView refreshListView) {
-        super.onPullUpListViewRefresh(refreshListView);
+    protected void onLoadMore() {
+        super.onLoadMore();
         Tracker.getInstance().sendEvent("ui_action", "pull_up_list_view_refresh",
                 "comments_list_fragment_pull_up_list_view_refresh", 0L);
         if (mTask != null) {
@@ -146,7 +130,7 @@ public class CommentsListFragment extends AbsBaseListFragment {
         }
         if (TextUtils.isEmpty(mSnComments.getMoreURL())) {
             Toast.makeText(getActivity(), R.string.tip_last_page, Toast.LENGTH_SHORT).show();
-            getPullToRefreshListView().onRefreshComplete();
+            onRefreshComplete();
         } else {
             mTask = new CommentsTask(CommentsTask.TYPE_LOADMORE);
             mTask.execute(mSnComments.getMoreURL());
@@ -194,37 +178,76 @@ public class CommentsListFragment extends AbsBaseListFragment {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
-                onDataFirstLoadComplete();
                 mAdapter.notifyDataSetChanged();
             } else {
                 Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_LONG).show();
             }
-            getPullToRefreshListView().getLoadingLayoutProxy().setLastUpdatedLabel(
-                    DateUtils.getLastUpdateLabel(getActivity()));
-            getPullToRefreshListView().onRefreshComplete();
+            onRefreshComplete();
             mTask = null;
             super.onPostExecute(result);
         }
 
         @Override
         protected void onCancelled() {
-            getPullToRefreshListView().onRefreshComplete();
+            onRefreshComplete();
             mTask = null;
             super.onCancelled();
         }
 
     }
 
-    private class CommentsAdapter extends BaseAdapter {
+    private class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder> {
 
-        @Override
-        public int getCount() {
-            return mSnComments.size();
+        public final class ViewHolder extends RecyclerView.ViewHolder {
+
+            public final TextView mUserId;
+
+            public final TextView mCreated;
+
+            public final TextView mCommentText;
+
+            public final TextView mArtistTitle;
+
+            public final View mItemView;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                mItemView = itemView;
+                mUserId = (TextView) itemView.findViewById(R.id.comment_item_user_id);
+                mCreated = (TextView) itemView.findViewById(R.id.comment_item_created);
+                mCommentText = (TextView) itemView.findViewById(R.id.comment_item_text);
+                mArtistTitle = (TextView) itemView.findViewById(R.id.comment_item_artist_titile);
+            }
         }
 
         @Override
-        public Object getItem(int position) {
-            return mSnComments.getSnComments().get(position);
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new ViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.comment_list_item, null));
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            SNComment comment = mSnComments.getSnComments().get(position);
+            holder.mUserId.setText(comment.getUser().getId());
+            holder.mCreated.setText(comment.getCreated());
+            holder.mCommentText.setText(comment.getText());
+            holder.mArtistTitle.setText(getString(R.string.comment_artist_title, comment.getArtistTitle()));
+            holder.mItemView.setTag(position);
+            holder.mItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Tracker.getInstance().sendEvent("ui_action", "list_item_click", "comments_list_fragment_list_item_click", 0L);
+                    int position = (int) v.getTag();
+                    SNComment comment = mSnComments.getSnComments().get(position - 1);
+                    if (mCommentSelectedListener != null) {
+                        mCommentSelectedListener.onCommentSelected(position - 1, comment.getDiscussURL());
+                    } else {
+                        Intent intent = new Intent(getActivity(), DiscussActivity.class);
+                        intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, comment.getDiscussURL());
+                        startActivity(intent);
+                    }
+                }
+            });
         }
 
         @Override
@@ -233,45 +256,18 @@ public class CommentsListFragment extends AbsBaseListFragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                convertView = LayoutInflater.from(getActivity()).inflate(
-                        R.layout.comment_list_item, null);
-                holder.mUserId = (TextView) convertView.findViewById(R.id.comment_item_user_id);
-                holder.mCreated = (TextView) convertView.findViewById(R.id.comment_item_created);
-                holder.mCommentText = (TextView) convertView.findViewById(R.id.comment_item_text);
-                holder.mArtistTitle = (TextView) convertView
-                        .findViewById(R.id.comment_item_artist_titile);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            SNComment comment = mSnComments.getSnComments().get(position);
-            holder.mUserId.setText(comment.getUser().getId());
-            holder.mCreated.setText(comment.getCreated());
-            holder.mCommentText.setText(comment.getText());
-            holder.mArtistTitle.setText(getString(R.string.comment_artist_title,
-                    comment.getArtistTitle()));
-            return convertView;
+        public int getItemCount() {
+            return mSnComments.size();
         }
 
-        class ViewHolder {
-            TextView mUserId;
-
-            TextView mCreated;
-
-            TextView mCommentText;
-
-            TextView mArtistTitle;
+        public boolean isEmpty() {
+            return getItemCount() == 0;
         }
-
     }
 
     @Override
-    public int getContentViewId() {
-        return R.layout.ptr_list_layout;
+    public int getViewLayout() {
+        return R.layout.refresh_recycler_view_layout;
     }
 
 }

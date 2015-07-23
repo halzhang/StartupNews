@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.ui.widgets.DividerDecoration;
 
 public abstract class SwipeRefreshRecyclerFragment extends Fragment {
+
+    private static final String LOG_TAG = SwipeRefreshRecyclerFragment.class.getSimpleName();
 
     protected SwipeRefreshLayout mSwipeRefreshLayout;
     protected RecyclerView mRecyclerView;
@@ -28,14 +31,15 @@ public abstract class SwipeRefreshRecyclerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
     protected abstract int getViewLayout();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(getViewLayout(),null);
+        View view = inflater.inflate(getViewLayout(), null);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        if(mRecyclerView == null || mSwipeRefreshLayout == null){
+        if (mRecyclerView == null || mSwipeRefreshLayout == null) {
             throw new IllegalArgumentException("mush be have RecyclerView and SwipeRefreshLayout");
         }
         mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light, android.R.color.holo_blue_light);
@@ -61,12 +65,13 @@ public abstract class SwipeRefreshRecyclerFragment extends Fragment {
                 int itemCount = mLinearLayoutManager.getItemCount();
                 int firstVisibleItemPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
                 int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
-                if (visibleItemCount > 0) {
-                    boolean firstItemVisible = firstVisibleItemPosition == 0;
-                    boolean topOfFirstItemVisible = mLinearLayoutManager.getChildAt(0).getTop() == 0;
-                    enable = firstItemVisible && topOfFirstItemVisible;
-                }
-                mSwipeRefreshLayout.setEnabled(enable);
+//                if (visibleItemCount > 0) {
+//                    boolean firstItemVisible = firstVisibleItemPosition == 0;
+//                    boolean topOfFirstItemVisible = mLinearLayoutManager.getChildAt(0).getTop() == 0;
+//                    enable = firstItemVisible && topOfFirstItemVisible;
+//                    Log.d(LOG_TAG, "SwipeRefreshLayout enable: " + enable);
+//                }
+//                mSwipeRefreshLayout.setEnabled(enable);
                 if (lastVisibleItemPosition == itemCount - 1) {
                     onLoadMore();
                 }
@@ -79,15 +84,17 @@ public abstract class SwipeRefreshRecyclerFragment extends Fragment {
     /**
      * 刷新数据
      */
-    protected void onRefreshData(){}
+    protected void onRefreshData() {
+    }
 
     /**
      * 加载更多
      */
-    protected void onLoadMore(){}
+    protected void onLoadMore() {
+    }
 
-    protected void onRefreshComplete(){
-        if (mSwipeRefreshLayout != null){
+    protected void onRefreshComplete() {
+        if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.setRefreshing(false);
         }
     }
