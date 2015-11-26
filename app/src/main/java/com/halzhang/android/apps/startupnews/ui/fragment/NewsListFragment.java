@@ -146,8 +146,6 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        // getListView().setOnItemLongClickListener(this);
-//        registerForContextMenu(getListView());
         mRecyclerView.setAdapter(mAdapter);
         if (mNewsTask == null && mAdapter.isEmpty()) {
             mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
@@ -177,18 +175,10 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
         getActivity().unregisterReceiver(mReceiver);
     }
 
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        if (!mIsTablet) {
-            getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
-        }
-    }
-
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         int position = ((AdapterContextMenuInfo) item.getMenuInfo()).position;
-        final SNNew snNew = null;/*= (SNNew) mAdapter.getItem(position - 1)*/;
+        final SNNew snNew = mSnFeed.getSnNews().get(position);
         Log.i(LOG_TAG, snNew.toString());
         switch (item.getItemId()) {
             case R.id.menu_show_comment:
@@ -315,11 +305,11 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
 
     private class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
-        public final class ViewHolder extends RecyclerView.ViewHolder {
+        public final class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
             public final TextView user;
 
-            public final TextView createat;
+            public final TextView createAt;
 
             public final TextView title;
 
@@ -333,11 +323,29 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
                 super(itemView);
                 mView = itemView;
                 user = (TextView) itemView.findViewById(R.id.news_item_user);
-                createat = (TextView) itemView.findViewById(R.id.news_item_createat);
+                createAt = (TextView) itemView.findViewById(R.id.news_item_createat);
                 title = (TextView) itemView.findViewById(R.id.news_item_title);
                 subText = (TextView) itemView.findViewById(R.id.news_item_subtext);
                 domain = (TextView) itemView.findViewById(R.id.news_item_domain);
+                mView.setOnCreateContextMenuListener(this);
+                mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int position = (int) v.getTag();
+                        SNNew entity = mSnFeed.getSnNews().get(position);
+                        Tracker.getInstance().sendEvent("ui_action", "list_item_click",
+                                "news_list_fragment_list_item_click", 0L);
+                        mAdapter.notifyDataSetChanged();
+                        openArticle(position, entity);
+                    }
+                });
+            }
 
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+                if (!mIsTablet) {
+                    getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
+                }
             }
         }
 
@@ -354,24 +362,15 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
             holder.title.setText(entity.getTitle());
             holder.subText.setText(getString(R.string.news_subtext, entity.getPoints(),
                     entity.getCommentsCount()));
-            holder.createat.setText(entity.getCreateat());
+            holder.createAt.setText(entity.getCreateat());
             holder.domain.setText(entity.getUrlDomain());
             int textColor = AppUtils.getMyApplication(getActivity()).isHistoryContains(
                     entity.getUrl()) ? Color.GRAY : Color.BLACK;
             holder.title.setTextColor(textColor);
             holder.subText.setTextColor(textColor);
             holder.domain.setTextColor(textColor);
-            holder.createat.setTextColor(textColor);
-            final int localPosition = position;
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Tracker.getInstance().sendEvent("ui_action", "list_item_click",
-                            "news_list_fragment_list_item_click", 0L);
-                    mAdapter.notifyDataSetChanged();
-                    openArticle(localPosition, entity);
-                }
-            });
+            holder.createAt.setTextColor(textColor);
+            holder.mView.setTag(position);
         }
 
         @Override

@@ -24,6 +24,7 @@
         <item name="colorAccent">@android:color/holo_blue_light</item>
         <item name="android:windowTranslucentNavigation" tools:ignore="NewApi">false</item>
         <item name="android:fitsSystemWindows">false</item>
+        <item name="android:navigationBarColor" tools:ignore="NewApi">@android:color/holo_blue_light</item>
     </style>
 
     <style name="AppActionBar" parent="Widget.AppCompat.ActionBar">

@@ -1,4 +1,4 @@
-include ':3rdlib:android-async-http',
+include ':3rdlib:android-async-http', ':data',
         ':3rdlib:commonlog',
         ':3rdlib:commontoast',
         ':3rdlib:pulltorefresh',

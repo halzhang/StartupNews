@@ -1,5 +1,48 @@
 apply plugin: 'com.android.application'
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        applicationId "com.halzhang.android.apps.startupnews"
+        minSdkVersion 14
+        targetSdkVersion 22
+        versionCode 13
+        versionName "1.0.2"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(properties.getProperty("key.store"))
+            storePassword properties.getProperty("key.store.password")
+            keyAlias properties.getProperty("key.alias")
+            keyPassword properties.getProperty("key.alias.password")
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            versionNameSuffix "-debug"
+            applicationIdSuffix ".debug"
+        }
+
+        release {
+            shrinkResources true
+            debuggable false
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+        }
+
+    }
+
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':3rdlib:android-async-http')
@@ -16,49 +59,4 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.2.0'
     compile 'com.android.support:cardview-v7:22.2.0'
     compile 'com.android.support:design:22.2.0'
-}
-
-android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
-
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 22
-    }
-
-    signingConfigs {
-
-        release {
-//            storeFile file("")
-//            storePassword ""
-//            keyAlias ""
-//            keyPassword ""
-        }
-
-
-    }
-
-    buildTypes {
-        debug {
-            debuggable true
-            versionNameSuffix "-debug"
-            applicationIdSuffix ".debug"
-        }
-
-        release {
-            debuggable false
-            signingConfig signingConfigs.release
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
-        }
-
-    }
-
-    productFlavors {
-        defaultFlavor {
-            proguardFile 'proguard-project.txt'
-        }
-    }
-
 }

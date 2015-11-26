@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.halzhang.android.apps.startupnews"
-    android:versionCode="13"
-    android:versionName="1.0.2.0">
+    package="com.halzhang.android.apps.startupnews">
 
     <supports-screens
         android:anyDensity="true"
@@ -34,7 +32,7 @@
         </activity>
         <activity
             android:name=".ui.phone.BrowseActivity"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppPreferenceTheme"
             android:configChanges="uiMode|mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|screenSize" />
         <activity
             android:name=".ui.DiscussActivity"

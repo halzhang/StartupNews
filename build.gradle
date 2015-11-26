@@ -1,26 +1,10 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-/*定义整个 project 的编译脚本和变量*/
-/*
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.5.+'
-    }
-}
-
-ext.compileSdkVersion=18
-ext.buildToolsVersion="18.0.0"
-ext.minSdkVersion=7
-ext.targetSdkVersion=18
-*/
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.1'
+        classpath 'com.android.tools.build:gradle:1.5.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -28,6 +12,7 @@ buildscript {
 }
 allprojects {
     repositories {
+        jcenter()
         mavenCentral()
     }
 }

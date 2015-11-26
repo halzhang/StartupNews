@@ -105,21 +105,22 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
             // 横屏，平板布局
             //TODO 平板的 actionbar 要重新处理
             final ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-            Context context = getSupportActionBar().getThemedContext();
-            ArrayAdapter<CharSequence> list = ArrayAdapter.createFromResource(context,
-                    R.array.section_titles, R.layout.support_simple_spinner_dropdown_item);
-            list.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-            actionBar.setListNavigationCallbacks(list, new ActionBar.OnNavigationListener() {
+            if (actionBar != null) {
+                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+                actionBar.setDisplayShowTitleEnabled(false);
+                Context context = getSupportActionBar().getThemedContext();
+                ArrayAdapter<CharSequence> list = ArrayAdapter.createFromResource(context,
+                        R.array.section_titles, R.layout.support_simple_spinner_dropdown_item);
+                list.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                actionBar.setListNavigationCallbacks(list, new ActionBar.OnNavigationListener() {
 
-                @Override
-                public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-                    switchNavigation(itemPosition);
-                    return false;
-                }
-            });
-
+                    @Override
+                    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+                        switchNavigation(itemPosition);
+                        return false;
+                    }
+                });
+            }
             Fragment fragment = new NewsListFragment();
             Bundle args = new Bundle();
             args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
@@ -132,7 +133,9 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             final ActionBar ab = getSupportActionBar();
-            ab.setDisplayHomeAsUpEnabled(false);
+            if (ab != null) {
+                ab.setDisplayHomeAsUpEnabled(false);
+            }
             mViewPager = (ViewPager) findViewById(R.id.pager);
             if (mViewPager != null) {
                 mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
