@@ -2,5 +2,4 @@ include ':3rdlib:android-async-http', ':data',
         ':3rdlib:commonlog',
         ':3rdlib:commontoast',
         ':3rdlib:pulltorefresh',
-        ':app',
-        ':mvp'
+        ':app'

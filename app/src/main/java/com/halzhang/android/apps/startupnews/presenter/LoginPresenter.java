@@ -66,16 +66,6 @@ public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPr
 
     }
 
-    @Override
-    protected ILoginCallback onCreateViewCallback(IView view) {
-        return new ILoginCallback() {
-            @Override
-            public void onLogin() {
-                doUserLoginTask();
-            }
-        };
-    }
-
     private String mFnid;
     private LoginPreTask mLoginPreTask;
     private UserLoginTask mUserLoginTask;
@@ -88,6 +78,16 @@ public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPr
         if (saveState != null) {
             mFnid = saveState.getString(FNID_KEY);
         }
+    }
+
+    @Override
+    public ILoginCallback createViewCallback(IView view) {
+        return new ILoginCallback() {
+            @Override
+            public void onLogin() {
+                doUserLoginTask();
+            }
+        };
     }
 
     @Override

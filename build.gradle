@@ -1,3 +1,6 @@
+
+apply from: 'buildsystem/dependencies.gradle'
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
@@ -13,6 +16,5 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        mavenCentral()
     }
 }

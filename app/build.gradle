@@ -4,13 +4,15 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    def globalConfiguration = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion globalConfiguration.getAt("androidCompileSdkVersion")
+    buildToolsVersion globalConfiguration.getAt("androidBuildToolsVersion")
 
     defaultConfig {
+        minSdkVersion globalConfiguration.getAt("androidMinSdkVersion")
+        targetSdkVersion globalConfiguration.getAt("androidTargetSdkVersion")
         applicationId "com.halzhang.android.apps.startupnews"
-        minSdkVersion 14
-        targetSdkVersion 22
         versionCode 13
         versionName "1.0.2"
     }
@@ -44,19 +46,24 @@ android {
 }
 
 dependencies {
+
+    def androidSupportVersion = rootProject.ext.androidSupportVersion
+
     compile fileTree(dir: 'libs', include: '*.jar')
+    compile 'org.jsoup:jsoup:1.7.2'
+    compile "com.android.support:appcompat-v7:${androidSupportVersion}"
+    compile "com.android.support:support-v4:${androidSupportVersion}"
+    compile "com.android.support:support-annotations:${androidSupportVersion}"
+    compile "com.android.support:recyclerview-v7:${androidSupportVersion}"
+    compile "com.android.support:cardview-v7:${androidSupportVersion}"
+    compile "com.android.support:design:${androidSupportVersion}"
+    compile 'com.github.halzhang:mvp:1.0.0'
+    compile 'com.github.halzhang:mvp-support-v4:1.0.0'
+    compile 'com.github.halzhang:mvp-support-v7:1.0.0'
     compile project(':3rdlib:android-async-http')
     compile project(':3rdlib:commonlog')
     compile project(':3rdlib:commontoast')
     compile project(':3rdlib:pulltorefresh')
-    compile 'org.jsoup:jsoup:1.7.2'
-    compile project(':mvp')
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.android.support:support-v4:22.2.0'
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
-    compile 'com.android.support:support-annotations:22.2.0'
-    compile 'com.android.support:recyclerview-v7:22.2.0'
-    compile 'com.android.support:cardview-v7:22.2.0'
-    compile 'com.android.support:design:22.2.0'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
 }
