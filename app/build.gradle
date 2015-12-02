@@ -1,8 +1,5 @@
 apply plugin: 'com.android.application'
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
 android {
     def globalConfiguration = rootProject.extensions.getByName("ext")
 
@@ -18,12 +15,24 @@ android {
     }
 
     signingConfigs {
-        release {
-            storeFile file(properties.getProperty("key.store"))
-            storePassword properties.getProperty("key.store.password")
-            keyAlias properties.getProperty("key.alias")
-            keyPassword properties.getProperty("key.alias.password")
+        release
+    }
+
+    File storeFile = file("../local.properties")
+    if (storeFile.canRead()) {
+        Properties p = new Properties()
+        p.load(storeFile.newDataInputStream())
+        if (p != null && p.containsKey('key.store') && p.containsKey("key.store.password")
+                && p.containsKey("key.alias") && p.containsKey("key.alias.password")) {
+            android.signingConfigs.release.storeFile =  file(p.getProperty("key.store"))
+            android.signingConfigs.release.storePassword =  p.getProperty("key.store.password")
+            android.signingConfigs.release.keyAlias =  p.getProperty("key.alias")
+            android.signingConfigs.release.keyPassword =  p.getProperty("key.alias.password")
+        } else {
+            android.buildTypes.release.signingConfig = null
         }
+    } else {
+        android.buildTypes.release.signingConfig = null
     }
 
     buildTypes {
@@ -57,9 +66,9 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${androidSupportVersion}"
     compile "com.android.support:cardview-v7:${androidSupportVersion}"
     compile "com.android.support:design:${androidSupportVersion}"
-    compile 'com.github.halzhang:mvp:1.0.0'
-    compile 'com.github.halzhang:mvp-support-v4:1.0.0'
-    compile 'com.github.halzhang:mvp-support-v7:1.0.0'
+    compile 'com.github.halzhang:mvp:1.0.1'
+    compile 'com.github.halzhang:mvp-support-v4:1.0.1'
+    compile 'com.github.halzhang:mvp-support-v7:1.0.1'
     compile project(':3rdlib:android-async-http')
     compile project(':3rdlib:commonlog')
     compile project(':3rdlib:commontoast')

@@ -94,11 +94,6 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter, LoginPre
 
     private ILoginCallback mCallback;
 
-    @Override
-    protected void onSetCallback(ILoginCallback iLoginCallback) {
-        mCallback = iLoginCallback;
-    }
-
     // Presenter 与 View 之间的接口
     public void onLoginPreTaskPostExecute(String result) {
         mLoginFragment.showProgress(false);
@@ -137,6 +132,11 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter, LoginPre
     @Override
     public Context getContext() {
         return getApplicationContext();
+    }
+
+    @Override
+    public void setCallback(ILoginCallback callback) {
+        mCallback = callback;
     }
     //end interface
 

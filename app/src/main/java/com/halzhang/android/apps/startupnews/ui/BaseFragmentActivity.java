@@ -21,7 +21,7 @@ import android.view.WindowManager;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 13, 2013
  */
-public class BaseFragmentActivity<PresenterType extends Presenter,IViewCallback> extends MVPAppCompatActivity<PresenterType,IViewCallback> {
+public class BaseFragmentActivity<PresenterType extends Presenter,IViewCallback> extends MVPAppCompatActivity<PresenterType> {
     
     @Override
     protected void onCreate(Bundle arg0) {
