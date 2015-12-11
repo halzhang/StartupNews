@@ -72,7 +72,6 @@ dependencies {
     compile project(':3rdlib:android-async-http')
     compile project(':3rdlib:commonlog')
     compile project(':3rdlib:commontoast')
-    compile project(':3rdlib:pulltorefresh')
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
 }

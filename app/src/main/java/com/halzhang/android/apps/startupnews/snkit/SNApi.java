@@ -6,12 +6,14 @@
 
 package com.halzhang.android.apps.startupnews.snkit;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
+import android.webkit.WebSettings;
+
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
-import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
-import com.handmark.pulltorefresh.library.internal.Utils;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
@@ -26,11 +28,6 @@ import org.apache.http.protocol.HTTP;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.os.Build;
-import android.webkit.WebSettings;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
