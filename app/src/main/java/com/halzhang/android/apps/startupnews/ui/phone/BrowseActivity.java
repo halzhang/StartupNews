@@ -21,11 +21,10 @@ import android.view.Window;
  * <p>
  * 浏览页面
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class BrowseActivity extends BaseFragmentActivity {
 
     // private static final String LOG_TAG =
@@ -47,8 +46,10 @@ public class BrowseActivity extends BaseFragmentActivity {
         String mTitle = getIntent().getStringExtra(EXTRA_TITLE);
 
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         BrowseFragment fragment = new BrowseFragment();
         Bundle bundle = new Bundle();

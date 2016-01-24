@@ -8,11 +8,11 @@ import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.ui.tablet.DiscussFragment;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +26,6 @@ import android.view.MenuItem;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 17, 2013
  */
-@SuppressLint("NewApi")
 public class DiscussActivity extends BaseFragmentActivity {
 
     //private static final String LOG_TAG = DiscussActivity.class.getSimpleName();
@@ -55,7 +54,10 @@ public class DiscussActivity extends BaseFragmentActivity {
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
         setContentView(R.layout.activity_discuss);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         //SNNew snNew = (SNNew) getIntent().getSerializableExtra(ARG_SNNEW);
         String mDiscussURL = getIntent().getStringExtra(ARG_DISCUSS_URL);
         if (TextUtils.isEmpty(mDiscussURL)) {

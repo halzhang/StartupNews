@@ -40,11 +40,6 @@ public class MyApplication extends Application {
 
     private static final String LOG_TAG = MyApplication.class.getSimpleName();
 
-    /**
-     * debug mode
-     */
-    public static final boolean DEBUG = true;
-
     private HashSet<String> mHistorySet = new HashSet<String>();
 
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
@@ -89,8 +84,8 @@ public class MyApplication extends Application {
                     .detectLeakedClosableObjects()
                     .penaltyLog()
                     .build());
+            LeakCanary.install(this);
         }
-        LeakCanary.install(this);
     }
 
     private void initHistory() {

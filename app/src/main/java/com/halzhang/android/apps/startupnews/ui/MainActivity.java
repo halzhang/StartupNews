@@ -68,10 +68,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
     private static final String TAG_DISCUSS = "tag_discuss";
 
-    private ViewPager mViewPager;
-
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-
     private Intent mFeedbackEmailIntent;
 
     private SNApiHelper mSnApiHelper;
@@ -101,49 +97,18 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     }
 
     private void setupViews() {
-        if (isMultiplePanel()) {
-            // 横屏，平板布局
-            //TODO 平板的 actionbar 要重新处理
-            final ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-                actionBar.setDisplayShowTitleEnabled(false);
-                Context context = getSupportActionBar().getThemedContext();
-                ArrayAdapter<CharSequence> list = ArrayAdapter.createFromResource(context,
-                        R.array.section_titles, R.layout.support_simple_spinner_dropdown_item);
-                list.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-                actionBar.setListNavigationCallbacks(list, new ActionBar.OnNavigationListener() {
-
-                    @Override
-                    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-                        switchNavigation(itemPosition);
-                        return false;
-                    }
-                });
-            }
-            Fragment fragment = new NewsListFragment();
-            Bundle args = new Bundle();
-            args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
-            fragment.setArguments(args);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_frame_left, fragment, TAG_NEWS).commitAllowingStateLoss();
-
-        } else {
-            //手机布局
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            final ActionBar ab = getSupportActionBar();
-            if (ab != null) {
-                ab.setDisplayHomeAsUpEnabled(false);
-            }
-            mViewPager = (ViewPager) findViewById(R.id.pager);
-            if (mViewPager != null) {
-                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-                mViewPager.setAdapter(mSectionsPagerAdapter);
-            }
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        final ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(false);
+        }
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        if (viewPager != null) {
+            SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+            viewPager.setAdapter(sectionsPagerAdapter);
             TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-            tabLayout.setupWithViewPager(mViewPager);
-
+            tabLayout.setupWithViewPager(viewPager);
         }
     }
 
@@ -242,67 +207,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-    }
-
-    private String mLastTag = TAG_NEWS;
-
-    private void switchNavigation(int position) {
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        String tag = null;
-        switch (position) {
-            case 0: {
-                Fragment fragment = fm.findFragmentByTag(TAG_NEWS);
-                if (fragment == null) {
-                    fragment = new NewsListFragment();
-                    Bundle args = new Bundle();
-                    args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
-                    fragment.setArguments(args);
-                    ft.add(R.id.content_frame_left, fragment, TAG_NEWS);
-                } else {
-                    ft.attach(fragment);
-                }
-                tag = TAG_NEWS;
-            }
-            break;
-            case 1: {
-                Fragment fragment = fm.findFragmentByTag(TAG_NEWEST);
-                if (fragment == null) {
-                    fragment = new NewsListFragment();
-                    Bundle args = new Bundle();
-                    args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/newest"));
-                    fragment.setArguments(args);
-                    ft.add(R.id.content_frame_left, fragment, TAG_NEWEST);
-                } else {
-                    ft.attach(fragment);
-                }
-
-                tag = TAG_NEWEST;
-            }
-            break;
-            case 2: {
-                Fragment fragment = fm.findFragmentByTag(TAG_COMMENT);
-                if (fragment == null) {
-                    fragment = new CommentsListFragment();
-                    ft.add(R.id.content_frame_left, fragment, TAG_COMMENT);
-                } else {
-                    ft.attach(fragment);
-                }
-                tag = TAG_COMMENT;
-            }
-            break;
-            default:
-                throw new IllegalArgumentException("");
-        }
-        if (!mLastTag.equals(tag)) {
-            Fragment fragment = fm.findFragmentByTag(mLastTag);
-            if (fragment != null) {
-                ft.detach(fragment);
-            }
-            mLastTag = tag;
-        }
-        ft.commitAllowingStateLoss();
-
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -424,13 +328,8 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
     @Override
     public void onNewsSelected(int position, SNNew snNew) {
-        // 处理文章被选中，竖屏启动Activity，平板更新右栏
         mSnNew = snNew;
-        if (isMultiplePanel()) {
-            showBrowseFragment(snNew);
-        } else {
-            ActivityUtils.openArticle(this, snNew);
-        }
+        ActivityUtils.openArticle(this, snNew);
     }
 
     private void showBrowseFragment(SNNew snNew) {
@@ -451,25 +350,11 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
         }
     }
 
-    /**
-     * 平板布局
-     *
-     * @return
-     */
-    public boolean isMultiplePanel() {
-        return findViewById(R.id.fragment_container) != null;
-    }
-
     @Override
     public void onCommentSelected(int position, String discussUrl) {
-        if (isMultiplePanel()) {
-            showDiscussFragment(null, discussUrl);
-        } else {
-            // phone
-            Intent intent = new Intent(this, DiscussActivity.class);
-            intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, discussUrl);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, DiscussActivity.class);
+        intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, discussUrl);
+        startActivity(intent);
     }
 
     @Override

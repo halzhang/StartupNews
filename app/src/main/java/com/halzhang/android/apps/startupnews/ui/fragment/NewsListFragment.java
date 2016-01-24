@@ -82,8 +82,6 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
 
     private SNApiHelper mSnApiHelper;
 
-    private boolean mIsTablet;
-
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
         @Override
@@ -109,7 +107,6 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
         mSnApiHelper = new SNApiHelper(activity);
         try {
             mNewsSelectedListener = (OnNewsSelectedListener) activity;
-            mIsTablet = ((MainActivity) activity).isMultiplePanel();
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnNewsSelectedListener");
@@ -343,9 +340,7 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
 
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-                if (!mIsTablet) {
-                    getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
-                }
+                getActivity().getMenuInflater().inflate(R.menu.fragment_news, menu);
             }
         }
 

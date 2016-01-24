@@ -2,6 +2,7 @@ package com.halzhang.android.apps.startupnews.analytics;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
@@ -11,6 +12,8 @@ import com.google.analytics.tracking.android.MapBuilder;
  * Created by Hal on 15/5/6.
  */
 public class Tracker {
+
+    private static final String LOG_TAG = "Tracker";
 
     private EasyTracker mEasyTracker;
 
@@ -31,10 +34,18 @@ public class Tracker {
     }
 
     public void sendException(String message, Throwable e, boolean fatal) {
+        if(mEasyTracker == null){
+            Log.w(LOG_TAG,"Tracker has not init!");
+            return;
+        }
         mEasyTracker.send(MapBuilder.createException(TextUtils.isEmpty(message) ? (e == null ? "" : e.getMessage()) : message, fatal).build());
     }
 
     public void sendEvent(String category, String action, String label, Long value) {
+        if(mEasyTracker == null){
+            Log.w(LOG_TAG,"Tracker has not init!");
+            return;
+        }
         mEasyTracker.send(MapBuilder.createEvent(category, action, label, value).build());
     }
 
