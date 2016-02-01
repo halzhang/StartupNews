@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.ui.widgets.CardViewDividerDecoration;
 import com.halzhang.android.apps.startupnews.ui.widgets.DividerDecoration;
 
 public abstract class SwipeRefreshRecyclerFragment extends Fragment {
@@ -77,7 +78,7 @@ public abstract class SwipeRefreshRecyclerFragment extends Fragment {
                 }
             }
         });
-        mRecyclerView.addItemDecoration(new DividerDecoration(getActivity()));
+        mRecyclerView.addItemDecoration(new CardViewDividerDecoration(getActivity()));
         return view;
     }
 
