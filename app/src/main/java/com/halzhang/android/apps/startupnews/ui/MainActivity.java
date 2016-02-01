@@ -2,6 +2,24 @@
 package com.halzhang.android.apps.startupnews.ui;
 
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.Window;
+import android.widget.Toast;
+
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
@@ -10,7 +28,6 @@ import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.ui.fragment.CommentsListFragment;
-import com.halzhang.android.apps.startupnews.ui.fragment.CommentsListFragment.OnCommentSelectedListener;
 import com.halzhang.android.apps.startupnews.ui.fragment.NewsListFragment;
 import com.halzhang.android.apps.startupnews.ui.fragment.NewsListFragment.OnNewsSelectedListener;
 import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
@@ -26,27 +43,6 @@ import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.Window;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
-
 import java.io.IOException;
 
 /**
@@ -54,7 +50,7 @@ import java.io.IOException;
  *
  * @author Hal
  */
-public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener, OnCommentSelectedListener, OnMenuSelectedListener {
+public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener, OnMenuSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -350,12 +346,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
         }
     }
 
-    @Override
-    public void onCommentSelected(int position, String discussUrl) {
-        Intent intent = new Intent(this, DiscussActivity.class);
-        intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, discussUrl);
-        startActivity(intent);
-    }
 
     @Override
     public void onShowArticleSelected(SNNew snNew) {

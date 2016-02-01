@@ -42,14 +42,6 @@ public class CommentsListFragment extends SwipeRefreshRecyclerFragment {
 
     private static final String LOG_TAG = CommentsListFragment.class.getSimpleName();
 
-    public interface OnCommentSelectedListener {
-        /**
-         * @param position
-         * @param discussUrl url
-         */
-        public void onCommentSelected(int position, String discussUrl);
-    }
-
     // private ArrayList<SNComment> mComments = new ArrayList<SNComment>(24);
 
     private CommentsAdapter mAdapter;
@@ -65,8 +57,6 @@ public class CommentsListFragment extends SwipeRefreshRecyclerFragment {
 
     private JsoupFactory mJsoupFactory;
 
-    private OnCommentSelectedListener mCommentSelectedListener;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,11 +67,6 @@ public class CommentsListFragment extends SwipeRefreshRecyclerFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if (activity instanceof OnCommentSelectedListener) {
-            mCommentSelectedListener = (OnCommentSelectedListener) activity;
-        } else {
-            CDLog.d(LOG_TAG, "Attach activity is not implements OnCommentSelectedListener!");
-        }
     }
 
     @Override
@@ -238,14 +223,10 @@ public class CommentsListFragment extends SwipeRefreshRecyclerFragment {
                 public void onClick(View v) {
                     Tracker.getInstance().sendEvent("ui_action", "list_item_click", "comments_list_fragment_list_item_click", 0L);
                     int position = (int) v.getTag();
-                    SNComment comment = mSnComments.getSnComments().get(position - 1);
-                    if (mCommentSelectedListener != null) {
-                        mCommentSelectedListener.onCommentSelected(position - 1, comment.getDiscussURL());
-                    } else {
-                        Intent intent = new Intent(getActivity(), DiscussActivity.class);
-                        intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, comment.getDiscussURL());
-                        startActivity(intent);
-                    }
+                    SNComment comment = mSnComments.getSnComments().get(position);
+                    Intent intent = new Intent(getActivity(), DiscussActivity.class);
+                    intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, comment.getDiscussURL());
+                    startActivity(intent);
                 }
             });
         }

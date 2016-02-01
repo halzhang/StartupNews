@@ -26,7 +26,7 @@ import java.util.List;
  * StartupNews
  * <p>
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 22, 2013
  */
@@ -51,6 +51,7 @@ public class ActivityUtils {
 
     /**
      * With window Animations
+     *
      * @param activity
      * @param snNew
      * @param v
@@ -78,12 +79,16 @@ public class ActivityUtils {
             intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(PreferenceUtils.getHtmlProvider(activity) + snNew.getUrl()));
         }
-        activity.startActivity(intent, b);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            activity.startActivity(intent, b);
+        } else {
+            activity.startActivity(intent);
+        }
     }
 
     /**
      * 判断Intent是否可用
-     * 
+     *
      * @param context
      * @param intent
      * @return

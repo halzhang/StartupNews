@@ -77,7 +77,7 @@ public class CustomTabsActivityHelper {
      * @param activity         {@link Activity}
      * @param url              链接
      * @param customTabsIntent {@link CustomTabsIntent},由用户自定义属性
-     * @param listener         {@link com.halzhang.android.examples.chromecustomtabs.CustomTabsActivityHelper.OnCustomTabsInvalidListener},没有处理，使用默认浏览器打开
+     * @param listener         {@link com.halzhang.android.apps.startupnews.utils.CustomTabsActivityHelper.OnCustomTabsInvalidListener},没有处理，使用默认浏览器打开
      */
     public void launchUrl(Activity activity, String url, CustomTabsIntent customTabsIntent, OnCustomTabsInvalidListener listener) {
         String packageName = CustomTabsHelper.getPackageNameToUse(activity);
