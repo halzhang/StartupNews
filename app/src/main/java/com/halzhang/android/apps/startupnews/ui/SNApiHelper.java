@@ -6,28 +6,27 @@
 
 package com.halzhang.android.apps.startupnews.ui;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import android.app.Activity;
+import android.content.Intent;
+
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.entity.SNNew;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.common.CDToast;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import org.apache.http.HttpStatus;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.text.TextUtils;
-
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 /**
  * StartupNews
  * <p>
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Jul 7, 2013
  */
@@ -40,7 +39,6 @@ public class SNApiHelper {
     }
 
     /**
-     * 
      * @param postID {@link SNNew#getPostID()}
      */
     public void upVote(String postID) {
@@ -54,12 +52,20 @@ public class SNApiHelper {
             SNApi api = new SNApi(activity);
             final String url = activity.getString(R.string.vote_url, postID,
                     sm.getSessionId(), sm.getSessionUser());
-            api.upVote(url, new AsyncHttpResponseHandler() {
+            api.upVote(url, new Callback() {
                 @Override
-                public void onSuccess(int statusCode, String content) {
-                    if (statusCode == HttpStatus.SC_OK && TextUtils.isEmpty(content)) {
+                public void onFailure(Request request, IOException e) {
+                    Tracker.getInstance()
+                            .sendException("up vote error!", e, false);
+                    CDToast.showToast(activity, activity.getString(R.string.tip_vote_failure));
+                }
+
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    if (response.isSuccessful()) {
                         CDToast.showToast(activity, R.string.tip_vote_success);
                     } else {
+                        String content = response.body().string();
                         Tracker.getInstance().sendEvent("ui_action_feedback", "upvote_feedback",
                                 content, 0L);
                         if (content.contains("mismatch")) {
@@ -71,13 +77,6 @@ public class SNApiHelper {
                                     activity.getString(R.string.tip_vote_duplicate));
                         }
                     }
-                }
-
-                @Override
-                public void onFailure(Throwable error, String content) {
-                    Tracker.getInstance()
-                            .sendException("up vote error:" + content, error, false);
-                    CDToast.showToast(activity, activity.getString(R.string.tip_vote_failure));
                 }
             });
         } else {

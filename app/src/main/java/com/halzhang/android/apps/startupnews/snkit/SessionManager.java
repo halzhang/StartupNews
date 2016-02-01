@@ -18,7 +18,7 @@ import android.text.TextUtils;
  * <p>
  * Session管理
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Apr 23, 2013
  */
@@ -74,7 +74,7 @@ public class SessionManager {
         String cookie = PreferenceUtils.get(mContext, mContext.getString(R.string.pref_key_cookie));
         if (!TextUtils.isEmpty(cookie)) {
             String[] datas = cookie.split(";");
-            if (datas != null && datas.length == 2) {
+            if (datas.length == 2) {
                 if (mSession == null) {
                     mSession = new SNSession(datas[1], datas[0]);
                 } else {
@@ -87,7 +87,7 @@ public class SessionManager {
 
     public void clear() {
         PreferenceUtils.set(mContext, mContext.getString(R.string.pref_key_cookie), "");
-        mSession = null;
+        mSession.clear();
     }
 
     public String getSessionId() {
@@ -106,6 +106,7 @@ public class SessionManager {
 
     /**
      * session是否有效
+     *
      * @return true 有效
      */
     public boolean isValid() {

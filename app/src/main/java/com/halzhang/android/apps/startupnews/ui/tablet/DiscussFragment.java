@@ -17,34 +17,11 @@
 
 package com.halzhang.android.apps.startupnews.ui.tablet;
 
-import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.analytics.Tracker;
-import com.halzhang.android.apps.startupnews.entity.SNComment;
-import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
-import com.halzhang.android.apps.startupnews.entity.SNNew;
-import com.halzhang.android.apps.startupnews.parser.SNDiscussParser;
-import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
-import com.halzhang.android.apps.startupnews.snkit.SNApi;
-import com.halzhang.android.apps.startupnews.snkit.SessionManager;
-import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
-import com.halzhang.android.apps.startupnews.ui.LoginActivity;
-import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
-import com.halzhang.android.common.CDLog;
-import com.halzhang.android.common.CDToast;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
-import org.apache.http.Header;
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -66,7 +43,31 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.analytics.Tracker;
+import com.halzhang.android.apps.startupnews.entity.SNComment;
+import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
+import com.halzhang.android.apps.startupnews.entity.SNNew;
+import com.halzhang.android.apps.startupnews.parser.SNDiscussParser;
+import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
+import com.halzhang.android.apps.startupnews.snkit.SNApi;
+import com.halzhang.android.apps.startupnews.snkit.SessionManager;
+import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
+import com.halzhang.android.apps.startupnews.ui.LoginActivity;
+import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
+import com.halzhang.android.common.CDToast;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.Headers;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.jsoup.Connection;
+import org.jsoup.nodes.Document;
+
+import java.io.IOException;
+
 /**
+ * 查看评论
  * Created by Hal on 13-5-26.
  */
 public class DiscussFragment extends Fragment implements OnItemClickListener {
@@ -179,54 +180,49 @@ public class DiscussFragment extends Fragment implements OnItemClickListener {
                 return;
             }
             SNApi api = new SNApi(getActivity());
-            api.comment(getActivity(), mSnDiscuss.getFnid(), mCommentEdit.getText().toString(),
-                    new AsyncHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, String content) {
+
+            api.comment(getActivity(), mSnDiscuss.getFnid(), mCommentEdit.getText().toString(), new Callback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    CDToast.showToast(getActivity(), R.string.tip_comment_failure);
+                    Tracker.getInstance().sendException("comment error!", e, false);
+                }
+
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String refreerLocation = null;
+                        Headers headers = response.headers();
+                        for (int i = 0; i < headers.size(); i++) {
+                            if ("Refreer-Location".equals(headers.name(i))) {
+                                refreerLocation = headers.value(i);
+                            }
+                        }
+
+                        if (TextUtils.isEmpty(refreerLocation)
+                                || refreerLocation.contains("fnid")) {
+                                /*
+                                 * Location:fnid=xxxxx Cookie失效，重新登陆
+                                 */
+                            CDToast.showToast(getActivity(), R.string.tip_cookie_invalid);
+                            startActivity(new Intent(getActivity(), LoginActivity.class));
+                            Tracker.getInstance().sendEvent("ui_action_feedback",
+                                    "comment_feedback", getString(R.string.tip_cookie_invalid),
+                                    0L);
+                        } else if (refreerLocation.contains("item")) {
                             mCommentEdit.setText(null);
                             CDToast.showToast(getActivity(), R.string.tip_comment_success);
                             Tracker.getInstance().sendEvent("ui_action_feedback",
                                     "comment_feedback", "success", 0L);
                             loadData();
-                        }
-
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, String content) {
-                            String refreerLocation = null;
-                            for (Header header : headers) {
-                                CDLog.w(LOG_TAG, header.getName() + " : " + header.getValue());
-                                if (AsyncHttpClient.REFREER_LOCATION.equals(header.getName())) {
-                                    refreerLocation = header.getValue();
-                                    break;
-                                }
-                            }
-                            if (TextUtils.isEmpty(refreerLocation)
-                                    || refreerLocation.contains("fnid")) {
-                                /*
-                                 * Location:fnid=xxxxx Cookie失效，重新登陆
-                                 */
-                                CDToast.showToast(getActivity(), R.string.tip_cookie_invalid);
-                                startActivity(new Intent(getActivity(), LoginActivity.class));
-                                Tracker.getInstance().sendEvent("ui_action_feedback",
-                                        "comment_feedback", getString(R.string.tip_cookie_invalid),
-                                        0L);
-                            } else if (refreerLocation.contains("item")) {
-                                onSuccess(statusCode, content);
-                            } else {
-                                Tracker.getInstance().sendEvent("ui_action_feedback",
-                                        "comment_feedback", content, 0L);
-                                CDToast.showToast(getActivity(), R.string.tip_comment_failure);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable error, String content) {
+                        } else {
+                            Tracker.getInstance().sendEvent("ui_action_feedback",
+                                    "comment_feedback", response.body().string(), 0L);
                             CDToast.showToast(getActivity(), R.string.tip_comment_failure);
-                            Tracker.getInstance().sendException("comment error:" + content,
-                                    error, false);
                         }
-                    });
-
+                    }
+                }
+            });
         }
     };
 
@@ -298,7 +294,7 @@ public class DiscussFragment extends Fragment implements OnItemClickListener {
                 }
                 return true;
             case R.id.menu_up_vote:
-                if(mListener != null){
+                if (mListener != null) {
                     mListener.onUpVoteSelected(mSnDiscuss.getSnNew().getPostID());
                 }
             default:

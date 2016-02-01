@@ -12,6 +12,7 @@ import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.CrashHandler;
 import com.halzhang.android.common.CDLog;
+import com.halzhang.android.startupnews.data.utils.OkHttpClientManager;
 import com.squareup.leakcanary.LeakCanary;
 
 import java.io.BufferedReader;
@@ -86,6 +87,12 @@ public class MyApplication extends Application {
                     .build());
             LeakCanary.install(this);
         }
+        OkHttpClientManager.getInstance().init(this, new OkHttpClientManager.CookieFactory() {
+            @Override
+            public String getCookie() {
+                return SessionManager.getInstance(MyApplication.instance()).getCookieString();
+            }
+        });
     }
 
     private void initHistory() {

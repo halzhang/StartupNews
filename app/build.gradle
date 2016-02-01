@@ -24,10 +24,10 @@ android {
         p.load(storeFile.newDataInputStream())
         if (p != null && p.containsKey('key.store') && p.containsKey("key.store.password")
                 && p.containsKey("key.alias") && p.containsKey("key.alias.password")) {
-            android.signingConfigs.release.storeFile =  file(p.getProperty("key.store"))
-            android.signingConfigs.release.storePassword =  p.getProperty("key.store.password")
-            android.signingConfigs.release.keyAlias =  p.getProperty("key.alias")
-            android.signingConfigs.release.keyPassword =  p.getProperty("key.alias.password")
+            android.signingConfigs.release.storeFile = file(p.getProperty("key.store"))
+            android.signingConfigs.release.storePassword = p.getProperty("key.store.password")
+            android.signingConfigs.release.keyAlias = p.getProperty("key.alias")
+            android.signingConfigs.release.keyPassword = p.getProperty("key.alias.password")
         } else {
             android.buildTypes.release.signingConfig = null
         }
@@ -66,12 +66,13 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${androidSupportVersion}"
     compile "com.android.support:cardview-v7:${androidSupportVersion}"
     compile "com.android.support:design:${androidSupportVersion}"
+    compile "com.android.support:customtabs:${androidSupportVersion}"
     compile 'com.github.halzhang:mvp:1.0.1'
     compile 'com.github.halzhang:mvp-support-v4:1.0.1'
     compile 'com.github.halzhang:mvp-support-v7:1.0.1'
-    compile project(':3rdlib:android-async-http')
     compile project(':3rdlib:commonlog')
     compile project(':3rdlib:commontoast')
+    compile project(':data')
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
 }

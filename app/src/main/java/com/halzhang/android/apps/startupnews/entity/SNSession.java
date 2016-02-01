@@ -12,7 +12,7 @@ import java.io.Serializable;
  * StartupNews
  * <p>
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Apr 23, 2013
  */
@@ -49,4 +49,8 @@ public class SNSession implements Serializable {
         this.id = id;
     }
 
+    public void clear() {
+        user = null;
+        id = null;
+    }
 }

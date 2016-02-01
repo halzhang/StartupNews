@@ -16,33 +16,31 @@
     limitations under the License.
 */
 
-package com.loopj.android.http;
+package com.halzhang.android.startupnews.data.utils;
 
-import java.io.Serializable;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.IOException;
-import java.util.Date;
+import java.io.Serializable;
+import java.net.HttpCookie;
 
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.cookie.BasicClientCookie;
 
 /**
- * A wrapper class around {@link Cookie} and/or {@link BasicClientCookie}
+ * A wrapper class around {@link HttpCookie} and/or {@link HttpCookie}
  * designed for use in {@link PersistentCookieStore}.
  */
 public class SerializableCookie implements Serializable {
     private static final long serialVersionUID = 6374381828722046732L;
 
-    private transient final Cookie cookie;
-    private transient BasicClientCookie clientCookie;
+    private transient final HttpCookie cookie;
+    private transient HttpCookie clientCookie;
 
-    public SerializableCookie(Cookie cookie) {
+    public SerializableCookie(HttpCookie cookie) {
         this.cookie = cookie;
     }
 
-    public Cookie getCookie() {
-        Cookie bestCookie = cookie;
+    public HttpCookie getCookie() {
+        HttpCookie bestCookie = cookie;
         if(clientCookie != null) {
             bestCookie = clientCookie;
         }
@@ -54,19 +52,19 @@ public class SerializableCookie implements Serializable {
         out.writeObject(cookie.getValue());
         out.writeObject(cookie.getComment());
         out.writeObject(cookie.getDomain());
-        out.writeObject(cookie.getExpiryDate());
+        out.writeLong(cookie.getMaxAge());
         out.writeObject(cookie.getPath());
         out.writeInt(cookie.getVersion());
-        out.writeBoolean(cookie.isSecure());
+        out.writeBoolean(cookie.getSecure());
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         String name = (String)in.readObject();
         String value = (String)in.readObject();
-        clientCookie = new BasicClientCookie(name, value);
-        clientCookie.setComment((String)in.readObject());
-        clientCookie.setDomain((String)in.readObject());
-        clientCookie.setExpiryDate((Date)in.readObject());
+        clientCookie = new HttpCookie(name, value);
+        clientCookie.setComment((String) in.readObject());
+        clientCookie.setDomain((String) in.readObject());
+        clientCookie.setMaxAge(in.readLong());
         clientCookie.setPath((String)in.readObject());
         clientCookie.setVersion(in.readInt());
         clientCookie.setSecure(in.readBoolean());

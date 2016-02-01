@@ -9,32 +9,18 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.webkit.WebSettings;
 
 import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
+import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
-import com.halzhang.android.common.CDLog;
 import com.halzhang.android.mvp.presenter.Presenter;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 登录业务封装
@@ -44,10 +30,16 @@ public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPr
 
     private static final String LOG_TAG = LoginPresenter.class.getSimpleName();
 
+    /**
+     * 业务接口
+     */
     public interface ILoginCallback {
         public void onLogin();
     }
 
+    /**
+     * 业务回调
+     */
     public interface ILoginView extends Presenter.IView<ILoginCallback> {
 
         public String getUsername();
@@ -195,60 +187,16 @@ public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPr
         protected String doInBackground(Void... params) {
             Context context = getView().getContext();
             String user = null;
-            final HttpPost httpPost = new HttpPost(getView().getContext().getString(R.string.host, "/y"));
-            httpPost.addHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded");
-            httpPost.addHeader("Accept-Language", "zh-cn");
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-                httpPost.addHeader(HTTP.USER_AGENT,
-                        WebSettings.getDefaultUserAgent(context));
-            }
-            httpPost.addHeader("Accept", "*/*");
-            httpPost.addHeader("Accept-Encoding", "gzip,deflate");
-            httpPost.addHeader("Connection", "keep-alive");
-            ArrayList<NameValuePair> valuePairs = new ArrayList<NameValuePair>(3);
-            valuePairs.add(new BasicNameValuePair("fnid", mFnid));
-            valuePairs.add(new BasicNameValuePair("p", getView().getPassword()));
-            valuePairs.add(new BasicNameValuePair("u", getView().getUsername()));
-            try {
-                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(valuePairs, HTTP.UTF_8);
-                httpPost.setEntity(entity);
-            } catch (UnsupportedEncodingException e) {
-
-            }
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            httpClient.getCookieStore().clear();
-            try {
-                HttpResponse response = httpClient.execute(httpPost);
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode != HttpStatus.SC_OK && statusCode != HttpStatus.SC_MOVED_TEMPORARILY) {
-                    CDLog.w(LOG_TAG, "http response error,code: " + statusCode);
-                    return null;
-                }
-                List<Cookie> cookies = httpClient.getCookieStore().getCookies();
-                if (cookies == null || cookies.size() < 1) {
-                    return null;
-                }
-                CookieSyncManager.createInstance(context);
-                for (Cookie cookie : cookies) {
-                    if ("user".equals(cookie.getName())) {
-                        String value = cookie.getValue();
-                        CDLog.i(LOG_TAG, "Cookie name: user " + " Value: " + cookie.getValue());
-                        SessionManager.getInstance(context).storeSession(value,
-                                getView().getUsername());
-                        user = value;
-                    }
-                    // sync cookie to webview
-                    CookieManager cookieManager = CookieManager.getInstance();
-                    cookieManager.setCookie(getView().getContext().getString(R.string.host), cookie.getName() + "="
-                            + cookie.getValue());
-                    CookieSyncManager.getInstance().sync();
-                }
-            } catch (IOException e1) {
-                Tracker.getInstance().sendException("User login error!", e1, false);
-                CDLog.e(LOG_TAG, null, e1);
-                return user;
-            } finally {
-                httpClient.getConnectionManager().shutdown();
+            SNApi api = new SNApi();
+            user = api.login(getView().getContext().getString(R.string.host, "/y"), mFnid, getView().getUsername(), getView().getPassword());
+            if (!TextUtils.isEmpty(user)) {
+                SessionManager.getInstance(context).storeSession(user,
+                        getView().getUsername());
+                // sync cookie to webview
+                CookieManager cookieManager = CookieManager.getInstance();
+                cookieManager.setCookie(getView().getContext().getString(R.string.host), "user="
+                        + user);
+                CookieSyncManager.getInstance().sync();
             }
             return user;
         }

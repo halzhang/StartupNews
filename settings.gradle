@@ -1,4 +1,4 @@
-include ':3rdlib:android-async-http', ':data',
+include ':data',
         ':3rdlib:commonlog',
         ':3rdlib:commontoast',
         ':app'
