@@ -110,14 +110,14 @@ public abstract class BaseHTMLParser<T> {
             return null;
         }
 
-        String hnurl = "http://news.dbanotes.net/";
+        String snurl = "http://news.dbanotes.net/";
 
         if (url.startsWith("http") || url.startsWith("ftp")) {
             return url;
         } else if (url.startsWith("/")) {
-            return hnurl + url.substring(1);
+            return snurl + url.substring(1);
         } else {
-            return hnurl + url;
+            return snurl + url;
         }
     }
 

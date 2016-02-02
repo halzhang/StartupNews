@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -36,14 +37,13 @@ import com.halzhang.android.apps.startupnews.ui.tablet.DiscussFragment;
 import com.halzhang.android.apps.startupnews.ui.tablet.DiscussFragment.OnMenuSelectedListener;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
+import com.halzhang.android.apps.startupnews.utils.CustomTabsActivityHelper;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
 
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
-import java.io.IOException;
 
 /**
  * 主页
@@ -73,6 +73,8 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     @SuppressWarnings("unused")
     private LogoutTask mLogoutTask;
 
+    private CustomTabsActivityHelper mHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         CDLog.i(LOG_TAG, "MainActivity create!");
@@ -85,6 +87,19 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
         setupViews();
         mFeedbackEmailIntent = createEmailIntent();
         mSnApiHelper = new SNApiHelper(this);
+        mHelper = new CustomTabsActivityHelper();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mHelper.bindService(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mHelper.unBindService(this);
     }
 
     @Override
@@ -285,7 +300,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                         SessionManager.getInstance(getApplicationContext()).clear();
                         return true;
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     CDLog.w(LOG_TAG, null, e);
                     Tracker.getInstance().sendException("User Logout error!", e, false);
                 }
@@ -323,9 +338,18 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     }
 
     @Override
-    public void onNewsSelected(int position, SNNew snNew) {
+    public void onNewsSelected(int position, final SNNew snNew) {
         mSnNew = snNew;
-        ActivityUtils.openArticle(this, snNew);
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(mHelper.getSession());
+        //设置 toolbar 颜色
+        builder.setToolbarColor(0XFF33B5E5);
+        CustomTabsIntent customTabsIntent = builder.build();
+        mHelper.launchUrl(this, snNew.getUrl(), customTabsIntent, new CustomTabsActivityHelper.OnCustomTabsInvalidListener() {
+            @Override
+            public void onInvalid(String url) {
+                ActivityUtils.openArticle(MainActivity.this, snNew);
+            }
+        });
     }
 
     private void showBrowseFragment(SNNew snNew) {

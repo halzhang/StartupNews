@@ -7,21 +7,21 @@
     </style>
 
     <style name="AppPreferenceTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:colorPrimary" tools:ignore="NewApi">@android:color/holo_blue_light</item>
-        <item name="android:colorPrimaryDark" tools:ignore="NewApi">@android:color/holo_blue_dark</item>
-        <item name="android:colorAccent" tools:ignore="NewApi">@android:color/holo_blue_light</item>
-        <item name="colorPrimary">@android:color/holo_blue_light</item>
-        <item name="colorPrimaryDark">@android:color/holo_blue_dark</item>
-        <item name="colorAccent">@android:color/holo_blue_light</item>
+        <item name="android:colorPrimary" tools:ignore="NewApi">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark" tools:ignore="NewApi">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent" tools:ignore="NewApi">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:colorPrimary" tools:ignore="NewApi">@android:color/holo_blue_light</item>
-        <item name="android:colorPrimaryDark" tools:ignore="NewApi">@android:color/holo_blue_dark</item>
-        <item name="android:colorAccent" tools:ignore="NewApi">@android:color/holo_blue_light</item>
-        <item name="colorPrimary">@android:color/holo_blue_light</item>
-        <item name="colorPrimaryDark">@android:color/holo_blue_dark</item>
-        <item name="colorAccent">@android:color/holo_blue_light</item>
+        <item name="android:colorPrimary" tools:ignore="NewApi">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark" tools:ignore="NewApi">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent" tools:ignore="NewApi">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowTranslucentNavigation" tools:ignore="NewApi">false</item>
         <item name="android:fitsSystemWindows">false</item>
         <item name="android:navigationBarColor" tools:ignore="NewApi">@android:color/holo_blue_light</item>
