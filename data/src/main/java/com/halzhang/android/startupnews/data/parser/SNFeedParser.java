@@ -2,17 +2,17 @@
  * Copyright (C) 2013 HalZhang
  */
 
-package com.halzhang.android.apps.startupnews.parser;
+package com.halzhang.android.startupnews.data.parser;
 
-import com.halzhang.android.apps.startupnews.entity.SNFeed;
-import com.halzhang.android.apps.startupnews.entity.SNNew;
-import com.halzhang.android.apps.startupnews.entity.SNUser;
+import android.util.Log;
+
+import com.halzhang.android.startupnews.data.entity.SNFeed;
+import com.halzhang.android.startupnews.data.entity.SNNew;
+import com.halzhang.android.startupnews.data.entity.SNUser;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,7 @@ import java.util.ArrayList;
  * <p>
  * news解析
  * </p>
- * 
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 18, 2013
  */

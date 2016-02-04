@@ -28,15 +28,14 @@ import android.widget.Toast;
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
-import com.halzhang.android.apps.startupnews.entity.SNFeed;
-import com.halzhang.android.apps.startupnews.entity.SNNew;
-import com.halzhang.android.apps.startupnews.parser.SNFeedParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
-import com.halzhang.android.apps.startupnews.ui.MainActivity;
 import com.halzhang.android.apps.startupnews.ui.SNApiHelper;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
+import com.halzhang.android.startupnews.data.entity.SNFeed;
+import com.halzhang.android.startupnews.data.entity.SNNew;
+import com.halzhang.android.startupnews.data.parser.SNFeedParser;
 
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;

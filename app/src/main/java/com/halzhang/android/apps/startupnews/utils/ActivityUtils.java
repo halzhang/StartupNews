@@ -4,9 +4,6 @@
 
 package com.halzhang.android.apps.startupnews.utils;
 
-import com.halzhang.android.apps.startupnews.entity.SNNew;
-import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
-
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
@@ -19,6 +16,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+
+import com.halzhang.android.apps.startupnews.ui.phone.BrowseActivity;
+import com.halzhang.android.startupnews.data.entity.SNNew;
 
 import java.util.List;
 

@@ -19,12 +19,12 @@ import android.widget.Toast;
 
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
-import com.halzhang.android.apps.startupnews.entity.SNComment;
-import com.halzhang.android.apps.startupnews.entity.SNComments;
-import com.halzhang.android.apps.startupnews.parser.SNCommentsParser;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
 import com.halzhang.android.common.CDLog;
+import com.halzhang.android.startupnews.data.entity.SNComment;
+import com.halzhang.android.startupnews.data.entity.SNComments;
+import com.halzhang.android.startupnews.data.parser.SNCommentsParser;
 
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
@@ -51,7 +51,6 @@ public class CommentsListFragment extends SwipeRefreshRecyclerFragment {
     // private String mMoreUrl;
 
     private SNComments mSnComments = new SNComments();
-    ;
 
     private static final String NEWCOMMENTS_URL_PATH = "/newcomments";
 

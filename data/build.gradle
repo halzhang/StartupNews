@@ -31,4 +31,6 @@ dependencies {
     compile dataDependencies.gson
     compile dataDependencies.androidAnnotations
 
+    compile 'org.jsoup:jsoup:1.7.2'
+
 }

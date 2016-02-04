@@ -49,4 +49,9 @@ public class SNSession implements Serializable {
         this.id = id;
     }
 
+    public void clear() {
+        user = null;
+        id = null;
+    }
+
 }

@@ -6,12 +6,12 @@
 
 package com.halzhang.android.apps.startupnews.snkit;
 
-import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.entity.SNSession;
-import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
-
 import android.content.Context;
 import android.text.TextUtils;
+
+import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.utils.PreferenceUtils;
+import com.halzhang.android.startupnews.data.entity.SNSession;
 
 /**
  * StartupNews

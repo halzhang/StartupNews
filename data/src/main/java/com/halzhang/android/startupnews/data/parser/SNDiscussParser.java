@@ -2,12 +2,13 @@
  * Copyright (C) 2013 HalZhang
  */
 
-package com.halzhang.android.apps.startupnews.parser;
+package com.halzhang.android.startupnews.data.parser;
 
-import com.halzhang.android.apps.startupnews.entity.SNComment;
-import com.halzhang.android.apps.startupnews.entity.SNDiscuss;
-import com.halzhang.android.apps.startupnews.entity.SNNew;
-import com.halzhang.android.apps.startupnews.entity.SNUser;
+
+import com.halzhang.android.startupnews.data.entity.SNComment;
+import com.halzhang.android.startupnews.data.entity.SNDiscuss;
+import com.halzhang.android.startupnews.data.entity.SNNew;
+import com.halzhang.android.startupnews.data.entity.SNUser;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

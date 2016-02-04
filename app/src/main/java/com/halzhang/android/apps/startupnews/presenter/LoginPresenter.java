@@ -11,10 +11,10 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
 import com.halzhang.android.apps.startupnews.R;
-import com.halzhang.android.apps.startupnews.parser.BaseHTMLParser;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.mvp.presenter.Presenter;
+import com.halzhang.android.startupnews.data.parser.BaseHTMLParser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

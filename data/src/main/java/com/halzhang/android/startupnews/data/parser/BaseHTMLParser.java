@@ -2,15 +2,15 @@
  * Copyright (C) 2013 HalZhang
  */
 
-package com.halzhang.android.apps.startupnews.parser;
+package com.halzhang.android.startupnews.data.parser;
+
+import android.text.TextUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.w3c.dom.Node;
-
-import android.text.TextUtils;
 
 import java.net.URI;
 import java.util.List;
