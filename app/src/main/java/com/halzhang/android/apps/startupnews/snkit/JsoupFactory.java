@@ -46,7 +46,7 @@ public class JsoupFactory {
             return null;
         }
         Connection conn = null;
-        String user = SessionManager.getInstance(mContext).getSessionUser();
+        String user = SessionManager.getInstance().getSessionUser();
         if (TextUtils.isEmpty(user)) {
             Log.i(LOG_TAG, "user is empty!");
             conn = Jsoup.connect(url);

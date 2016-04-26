@@ -169,7 +169,7 @@ public class SNApi {
                 Elements elements = doc.select("a:matches(logout)");
                 if (elements.size() < 1) {
                     // cookie无效
-                    SessionManager.getInstance(context).clear();
+                    SessionManager.getInstance().clear();
                 }
             } catch (IOException e) {
                 Tracker.getInstance().sendException(e.getMessage(), e, false);

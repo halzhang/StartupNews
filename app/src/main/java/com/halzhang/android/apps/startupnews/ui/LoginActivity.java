@@ -11,7 +11,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +67,7 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter, LoginPre
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         setContentView(R.layout.activity_login);
-        SessionManager.getInstance(this).clear();
+        SessionManager.getInstance().clear();
         mLoginFragment = new LoginFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mLoginFragment)
                 .commit();
@@ -119,19 +117,6 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter, LoginPre
 
     public void onUserLoginTaskCancel() {
         mLoginFragment.showProgress(false);
-    }
-
-    public String getUsername() {
-        return mLoginFragment.mUsername;
-    }
-
-    public String getPassword() {
-        return mLoginFragment.mPassword;
-    }
-
-    @Override
-    public Context getContext() {
-        return getApplicationContext();
     }
 
     @Override
@@ -236,7 +221,7 @@ public class LoginActivity extends BaseFragmentActivity<LoginPresenter, LoginPre
             } else {
                 mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
                 showProgress(true);
-                mLoginActivityRef.get().mCallback.onLogin();
+                mLoginActivityRef.get().mCallback.onLogin(getContext(), mUsername, mPassword);
             }
         }
 

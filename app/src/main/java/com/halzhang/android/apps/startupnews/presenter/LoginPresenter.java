@@ -1,10 +1,9 @@
 package com.halzhang.android.apps.startupnews.presenter;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -34,19 +33,13 @@ public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPr
      * 业务接口
      */
     public interface ILoginCallback {
-        public void onLogin();
+        public void onLogin(Context context, String username, String password);
     }
 
     /**
      * 业务回调
      */
     public interface ILoginView extends Presenter.IView<ILoginCallback> {
-
-        public String getUsername();
-
-        public String getPassword();
-
-        public Context getContext();
 
         public void onLoginPreTaskPostExecute(String result);
 
@@ -76,8 +69,8 @@ public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPr
     public ILoginCallback createViewCallback(IView view) {
         return new ILoginCallback() {
             @Override
-            public void onLogin() {
-                doUserLoginTask();
+            public void onLogin(Context context, String username, String password) {
+                doUserLoginTask(context, username, password);
             }
         };
     }
@@ -110,54 +103,61 @@ public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPr
     /**
      * 登录
      */
-    public void doUserLoginTask() {
+    public void doUserLoginTask(Context context, String username, String password) {
         if (mUserLoginTask != null) {
             return;
         }
-        mUserLoginTask = new UserLoginTask();
+        mUserLoginTask = new UserLoginTask(context, username, password);
         mUserLoginTask.execute();
+    }
+
+    @WorkerThread
+    private String getFnid(Context context) {
+        String loginUrl = null;
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(context.getString(R.string.host, "/news")).get();
+            if (doc != null) {
+                Elements loginElements = doc.select("a:matches(Login/Register)");
+                if (loginElements.size() == 1) {
+                    loginUrl = BaseHTMLParser.resolveRelativeSNURL(loginElements.first().attr(
+                            "href"));
+                }
+            }
+        } catch (IOException e1) {
+            Log.w(LOG_TAG, e1);
+        }
+        Log.i(LOG_TAG, "Login Url: " + loginUrl);
+        String fnid = null;
+        if (!TextUtils.isEmpty(loginUrl)) {
+            try {
+                doc = Jsoup.connect(loginUrl).get();
+                if (doc != null) {
+                    Elements inputElements = doc.select("input[name=fnid]");
+                    if (inputElements != null && inputElements.size() > 0) {
+                        fnid = inputElements.first().attr("value");
+                        Log.i(LOG_TAG, "Login fnid: " + fnid);
+                    }
+                }
+            } catch (IOException e) {
+                return fnid;
+            }
+        }
+        return fnid;
     }
 
     /**
      * Parse login url and fnid
      *
      * @author Hal
+     * @deprecated
      */
     private class LoginPreTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
-            String loginUrl = null;
-            Document doc = null;
-            try {
-                doc = Jsoup.connect(getView().getContext().getString(R.string.host, "/news")).get();
-                if (doc != null) {
-                    Elements loginElements = doc.select("a:matches(Login/Register)");
-                    if (loginElements.size() == 1) {
-                        loginUrl = BaseHTMLParser.resolveRelativeSNURL(loginElements.first().attr(
-                                "href"));
-                    }
-                }
-            } catch (IOException e1) {
-                Log.w(LOG_TAG, e1);
-            }
-            Log.i(LOG_TAG, "Login Url: " + loginUrl);
-            String fnid = null;
-            if (!TextUtils.isEmpty(loginUrl)) {
-                try {
-                    doc = Jsoup.connect(loginUrl).get();
-                    if (doc != null) {
-                        Elements inputElements = doc.select("input[name=fnid]");
-                        if (inputElements != null && inputElements.size() > 0) {
-                            fnid = inputElements.first().attr("value");
-                            Log.i(LOG_TAG, "Login fnid: " + fnid);
-                        }
-                    }
-                } catch (IOException e) {
-                    return fnid;
-                }
-            }
-            return fnid;
+            // do nothing
+            return "";
         }
 
         @Override
@@ -181,20 +181,32 @@ public class LoginPresenter extends Presenter<LoginPresenter.ILoginView, LoginPr
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public class UserLoginTask extends AsyncTask<Void, Void, String> {
+
+        private Context mContext;
+        private String mUsername;
+        private String mPassword;
+
+        public UserLoginTask(Context context, String username, String password) {
+            mContext = context;
+            mUsername = username;
+            mPassword = password;
+        }
+
         @Override
         protected String doInBackground(Void... params) {
-            Context context = getView().getContext();
+            mFnid = getFnid(mContext);
+            if (TextUtils.isEmpty(mFnid)) {
+                return null;
+            }
             String user = null;
             SNApi api = new SNApi();
-            user = api.login(getView().getContext().getString(R.string.host, "/y"), mFnid, getView().getUsername(), getView().getPassword());
+            user = api.login(mContext.getString(R.string.host, "/y"), mFnid, mUsername, mPassword);
             if (!TextUtils.isEmpty(user)) {
-                SessionManager.getInstance(context).storeSession(user,
-                        getView().getUsername());
+                SessionManager.getInstance().storeSession(user, mUsername);
                 // sync cookie to webview
                 CookieManager cookieManager = CookieManager.getInstance();
-                cookieManager.setCookie(getView().getContext().getString(R.string.host), "user="
+                cookieManager.setCookie(mContext.getString(R.string.host), "user="
                         + user);
                 CookieSyncManager.getInstance().sync();
             }

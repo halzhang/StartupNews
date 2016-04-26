@@ -69,7 +69,7 @@ public class MyApplication extends Application {
         super.onCreate();
         Tracker.getInstance().init(this);
         CrashHandler.getInstance().init(this);
-        SessionManager.getInstance(this).initSession();
+        SessionManager.getInstance().initSession(this);
         mExecutorService = Executors.newSingleThreadExecutor(sThreadFactory);
         initHistory();
         if (BuildConfig.DEBUG) {
@@ -90,7 +90,7 @@ public class MyApplication extends Application {
         OkHttpClientManager.getInstance().init(this, new OkHttpClientManager.CookieFactory() {
             @Override
             public String getCookie() {
-                return SessionManager.getInstance(MyApplication.instance()).getCookieString();
+                return SessionManager.getInstance().getCookieString();
             }
         });
     }

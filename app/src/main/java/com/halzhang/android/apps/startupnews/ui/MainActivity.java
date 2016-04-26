@@ -78,7 +78,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         CDLog.i(LOG_TAG, "MainActivity create!");
-        requestWindowFeature(Window.FEATURE_PROGRESS);
         super.onCreate(savedInstanceState);
         if (isFinishing()) {
             return;
@@ -147,7 +146,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.removeItem(R.id.menu_login);
         menu.removeItem(R.id.menu_logout);
-        if (SessionManager.getInstance(getApplicationContext()).isValid()) {
+        if (SessionManager.getInstance().isValid()) {
             menu.add(Menu.NONE, R.id.menu_logout, Menu.NONE, R.string.menu_logout);
         } else {
             menu.add(Menu.NONE, R.id.menu_login, Menu.NONE, R.string.menu_login);
@@ -183,7 +182,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
             case R.id.menu_logout:
                 Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                         "mainactivity_menu_logout", 0L);
-                SessionManager.getInstance(this).clear();
+                SessionManager.getInstance().clear();
                 CDToast.showToast(this, R.string.tip_logout_success);
                 // mLogoutTask = new LogoutTask();
                 // mLogoutTask.execute((Void) null);
@@ -297,7 +296,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
                         logoutUrl = BaseHTMLParser.resolveRelativeSNURL(elements.attr("href"));
                     } else {
                         // 用户可能在pc注销了
-                        SessionManager.getInstance(getApplicationContext()).clear();
+                        SessionManager.getInstance().clear();
                         return true;
                     }
                 } catch (Exception e) {
@@ -314,7 +313,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
             SNApi api = new SNApi(getApplicationContext());
             boolean result = api.logout(logoutUrl);
             if (result) {
-                SessionManager.getInstance(getApplicationContext()).clear();
+                SessionManager.getInstance().clear();
             }
             return result;
         }

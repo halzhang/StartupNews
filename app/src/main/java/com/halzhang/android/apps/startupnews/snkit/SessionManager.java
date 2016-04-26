@@ -30,19 +30,19 @@ public class SessionManager {
 
     private Context mContext;
 
-    private SessionManager(Context context) {
-        mContext = context;
+    private SessionManager() {
         mSession = new SNSession();
     }
 
-    public static SessionManager getInstance(Context context) {
+    public static SessionManager getInstance() {
         if (me == null) {
-            me = new SessionManager(context.getApplicationContext());
+            me = new SessionManager();
         }
         return me;
     }
 
-    public void initSession() {
+    public void initSession(Context context) {
+        mContext = context;
         initSessionFromPref();
     }
 

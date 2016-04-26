@@ -47,7 +47,7 @@ public class SNApiHelper {
         if (activity == null) {
             return;
         }
-        SessionManager sm = SessionManager.getInstance(activity);
+        SessionManager sm = SessionManager.getInstance();
         if (sm.isValid()) {
             SNApi api = new SNApi(activity);
             final String url = activity.getString(R.string.vote_url, postID,

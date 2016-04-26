@@ -173,7 +173,7 @@ public class DiscussFragment extends Fragment implements OnItemClickListener {
         public void onClick(View v) {
             Tracker.getInstance().sendEvent("ui_action", "view_clicked",
                     "discussactivity_button_comment", 0L);
-            if (!SessionManager.getInstance(getActivity()).isValid()) {
+            if (!SessionManager.getInstance().isValid()) {
                 // 未登陆
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 startActivity(intent);
