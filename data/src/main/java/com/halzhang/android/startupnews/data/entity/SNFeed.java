@@ -4,6 +4,9 @@
 
 package com.halzhang.android.startupnews.data.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -15,7 +18,7 @@ import java.util.ArrayList;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 18, 2013
  */
-public class SNFeed implements Serializable {
+public class SNFeed implements Parcelable {
 
     private static final long serialVersionUID = 5171992791865009372L;
 
@@ -59,4 +62,36 @@ public class SNFeed implements Serializable {
         return mSnNews.size();
     }
 
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeList(this.mSnNews);
+        dest.writeString(this.mMoreUrl);
+    }
+
+    public SNFeed() {
+    }
+
+    protected SNFeed(Parcel in) {
+        this.mSnNews = new ArrayList<SNNew>();
+        in.readList(this.mSnNews, SNNew.class.getClassLoader());
+        this.mMoreUrl = in.readString();
+    }
+
+    public static final Creator<SNFeed> CREATOR = new Creator<SNFeed>() {
+        @Override
+        public SNFeed createFromParcel(Parcel source) {
+            return new SNFeed(source);
+        }
+
+        @Override
+        public SNFeed[] newArray(int size) {
+            return new SNFeed[size];
+        }
+    };
 }

@@ -4,6 +4,8 @@
 
 package com.halzhang.android.startupnews.data.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import java.io.Serializable;
@@ -16,12 +18,7 @@ import java.io.Serializable;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class SNNew implements Serializable {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -4629300319201201845L;
+public class SNNew implements Parcelable {
 
     private String url;
 
@@ -217,4 +214,54 @@ public class SNNew implements Serializable {
         return builder.toString();
     }
 
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.url);
+        dest.writeString(this.title);
+        dest.writeString(this.urlDomain);
+        dest.writeString(this.voteURL);
+        dest.writeInt(this.points);
+        dest.writeInt(this.commentsCount);
+        dest.writeString(this.subText);
+        dest.writeString(this.discussURL);
+        dest.writeSerializable(this.user);
+        dest.writeString(this.postID);
+        dest.writeByte(isDiscuss ? (byte) 1 : (byte) 0);
+        dest.writeString(this.text);
+        dest.writeString(this.createat);
+    }
+
+    protected SNNew(Parcel in) {
+        this.url = in.readString();
+        this.title = in.readString();
+        this.urlDomain = in.readString();
+        this.voteURL = in.readString();
+        this.points = in.readInt();
+        this.commentsCount = in.readInt();
+        this.subText = in.readString();
+        this.discussURL = in.readString();
+        this.user = (SNUser) in.readSerializable();
+        this.postID = in.readString();
+        this.isDiscuss = in.readByte() != 0;
+        this.text = in.readString();
+        this.createat = in.readString();
+    }
+
+    public static final Creator<SNNew> CREATOR = new Creator<SNNew>() {
+        @Override
+        public SNNew createFromParcel(Parcel source) {
+            return new SNNew(source);
+        }
+
+        @Override
+        public SNNew[] newArray(int size) {
+            return new SNNew[size];
+        }
+    };
 }
