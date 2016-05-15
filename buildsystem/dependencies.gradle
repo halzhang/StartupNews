@@ -22,6 +22,7 @@ ext {
     greenDaoVersion = '2.0.0'
     eventBusVersion = '2.4.0'
     retrofitVersion = '1.6.0'
+    mvpVersion = '1.0.2'
 
     presentationDependencies = [
             daggerCompiler: "com.google.dagger:dagger-compiler:${daggerVersion}",
