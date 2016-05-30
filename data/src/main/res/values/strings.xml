@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">data</string>
+    <string name="pref_key_cookie">pref_key_cookie</string>
 </resources>

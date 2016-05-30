@@ -20,7 +20,7 @@ public interface ISnApi {
 
     Observable<String> getFnid();
 
-    Observable<String> login(String username, String password);
+    Observable<String> login(String fnid, String username, String password);
 
 
 }

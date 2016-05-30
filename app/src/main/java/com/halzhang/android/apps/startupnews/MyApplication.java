@@ -13,7 +13,7 @@ import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.CrashHandler;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.startupnews.data.OkHttpClientModule;
-import com.halzhang.android.startupnews.data.net.SnApiModule;
+import com.halzhang.android.startupnews.data.SnApiModule;
 import com.halzhang.android.startupnews.data.utils.OkHttpClientHelper;
 import com.halzhang.android.startupnews.data.utils.OkHttpClientManager;
 import com.squareup.leakcanary.LeakCanary;

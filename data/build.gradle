@@ -29,6 +29,7 @@ dependencies {
     compile dataDependencies.rxJava
     compile dataDependencies.rxAndroid
     compile dataDependencies.okHttp
+    compile dataDependencies.okHttpUrlConnection
     compile dataDependencies.gson
     compile dataDependencies.androidAnnotations
     apt dataDependencies.daggerCompiler

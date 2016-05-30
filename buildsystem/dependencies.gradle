@@ -41,15 +41,16 @@ ext {
     ]
 
     dataDependencies = [
-            daggerCompiler    : "com.google.dagger:dagger-compiler:${daggerVersion}",
-            dagger            : "com.google.dagger:dagger:${daggerVersion}",
-            okHttp            : "com.squareup.okhttp:okhttp:${okHttpVersion}",
-            gson              : "com.google.code.gson:gson:${gsonVersion}",
-            rxJava            : "io.reactivex:rxjava:${rxJavaVersion}",
-            rxAndroid         : "io.reactivex:rxandroid:${rxAndroidVersion}",
-            androidAnnotations: "com.android.support:support-annotations:${androidSupportVersion}",
-            greenDao          : "de.greenrobot:greendao:${greenDaoVersion}",
-            retrofit          : "com.squareup.retrofit:retrofit:${retrofitVersion}"
+            daggerCompiler     : "com.google.dagger:dagger-compiler:${daggerVersion}",
+            dagger             : "com.google.dagger:dagger:${daggerVersion}",
+            okHttp             : "com.squareup.okhttp:okhttp:${okHttpVersion}",
+            okHttpUrlConnection: "com.squareup.okhttp:okhttp-urlconnection:${okHttpVersion}",
+            gson               : "com.google.code.gson:gson:${gsonVersion}",
+            rxJava             : "io.reactivex:rxjava:${rxJavaVersion}",
+            rxAndroid          : "io.reactivex:rxandroid:${rxAndroidVersion}",
+            androidAnnotations : "com.android.support:support-annotations:${androidSupportVersion}",
+            greenDao           : "de.greenrobot:greendao:${greenDaoVersion}",
+            retrofit           : "com.squareup.retrofit:retrofit:${retrofitVersion}"
     ]
 
 }
