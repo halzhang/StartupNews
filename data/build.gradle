@@ -31,7 +31,7 @@ dependencies {
     compile dataDependencies.okHttp
     compile dataDependencies.gson
     compile dataDependencies.androidAnnotations
-    compile dataDependencies.daggerCompiler
+    apt dataDependencies.daggerCompiler
     compile dataDependencies.dagger
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
