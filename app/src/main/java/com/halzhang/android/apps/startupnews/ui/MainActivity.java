@@ -202,7 +202,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     private void showDiscussFragment(SNNew snNew, String discussUrl) {
         Bundle args = new Bundle();
         if (snNew != null) {
-            args.putSerializable(DiscussActivity.ARG_SNNEW, snNew);
+            args.putParcelable(DiscussActivity.ARG_SNNEW, snNew);
             args.putString(DiscussActivity.ARG_DISCUSS_URL, mSnNew.getDiscussURL());
         } else {
             args.putString(DiscussActivity.ARG_DISCUSS_URL, discussUrl);

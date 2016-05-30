@@ -14,9 +14,9 @@ ext {
     //Libraries
     daggerVersion = '2.0'
     butterKnifeVersion = '7.0.1'
-    rxJavaVersion = '1.0.16'
-    rxAndroidVersion = '1.0.1'
-    gsonVersion = '2.3'
+    rxJavaVersion = '1.1.5'
+    rxAndroidVersion = '1.2.0'
+    gsonVersion = '2.4'
     okHttpVersion = '2.5.0'
     androidSupportVersion = '23.1.1'
     greenDaoVersion = '2.0.0'

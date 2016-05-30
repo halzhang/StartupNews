@@ -12,6 +12,9 @@ import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.CrashHandler;
 import com.halzhang.android.common.CDLog;
+import com.halzhang.android.startupnews.data.OkHttpClientModule;
+import com.halzhang.android.startupnews.data.net.SnApiModule;
+import com.halzhang.android.startupnews.data.utils.OkHttpClientHelper;
 import com.halzhang.android.startupnews.data.utils.OkHttpClientManager;
 import com.squareup.leakcanary.LeakCanary;
 
@@ -64,6 +67,8 @@ public class MyApplication extends Application {
         me = this;
     }
 
+    private SnApiComponent mSnApiComponent;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -93,7 +98,21 @@ public class MyApplication extends Application {
                 return SessionManager.getInstance().getCookieString();
             }
         });
+        mSnApiComponent = DaggerSnApiComponent.builder().applicationModule(new ApplicationModule(this, sCookieFactory))
+                .okHttpClientModule(new OkHttpClientModule())
+                .snApiModule(new SnApiModule()).build();
     }
+
+    public SnApiComponent getSnApiComponent() {
+        return mSnApiComponent;
+    }
+
+    private static OkHttpClientHelper.CookieFactory sCookieFactory = new OkHttpClientHelper.CookieFactory() {
+        @Override
+        public String getCookie() {
+            return SessionManager.getInstance().getCookieString();
+        }
+    };
 
     private void initHistory() {
         File file = new File(getFilesDir().getAbsolutePath() + File.separator
