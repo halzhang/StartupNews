@@ -7,7 +7,7 @@
 [本地下载](https://github.com/halzhang/StartupNews/raw/master/release/StartupNews-release.apk)
 支持系统
 ---
-Android 2.3以上
+Android 4.0+
 
 反馈
 ---
@@ -19,28 +19,25 @@ Android 2.3以上
 ---
 [HalZhang](http://weibo.com/halzhang)
 
-开放源代码
----
-[ActionBarSherlock](http://actionbarsherlock.com/)
-
-[Pull-to-Refresh](https://github.com/chrisbanes/Android-PullToRefresh)
-
-[ViewPagerIndicator](http://viewpagerindicator.com/)
-
-[Jsoup](http://www.jsoup.org)
-
-感谢以上作者的贡献.同时感谢  [@Fenng](http://www.weibo.com/fenng) 创建了Startup News.
+感谢  [@Fenng](http://www.weibo.com/fenng) 创建了Startup News.
 
 Changelog
 ---
 [changelog](https://github.com/halzhang/StartupNews/wiki/Changelog)
 
-Licenses
----
-[GPL 3.0](http://www.gnu.org/licenses/gpl-3.0.txt)
+License
+--------
 
-Donation
----
+    Copyright 2016 Zhang Hanguo
 
-[支付宝](http://me.alipay.com/halzhang)
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
