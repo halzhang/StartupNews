@@ -1,5 +1,6 @@
 package com.halzhang.android.startupnews.data.net;
 
+import com.halzhang.android.startupnews.data.entity.SNComments;
 import com.halzhang.android.startupnews.data.entity.SNFeed;
 
 import rx.Observable;
@@ -21,6 +22,8 @@ public interface ISnApi {
     Observable<String> getFnid();
 
     Observable<String> login(String fnid, String username, String password);
+
+    Observable<SNComments> getSNComments(String url);
 
 
 }

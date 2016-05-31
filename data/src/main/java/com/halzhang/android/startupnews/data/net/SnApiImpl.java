@@ -5,8 +5,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.halzhang.android.startupnews.data.Constant;
+import com.halzhang.android.startupnews.data.entity.SNComments;
 import com.halzhang.android.startupnews.data.entity.SNFeed;
 import com.halzhang.android.startupnews.data.parser.BaseHTMLParser;
+import com.halzhang.android.startupnews.data.parser.SNCommentsParser;
 import com.halzhang.android.startupnews.data.parser.SNFeedParser;
 import com.halzhang.android.startupnews.data.utils.SessionManager;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -106,7 +108,6 @@ public class SnApiImpl implements ISnApi {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                String user = null;
                 FormEncodingBuilder builder = new FormEncodingBuilder();
                 builder.addEncoded("fnid", fnid).addEncoded("u", username).addEncoded("p", password);
                 Request request = new Request.Builder().url(Constant.LOGIN_URL).post(builder.build())
@@ -116,6 +117,7 @@ public class SnApiImpl implements ISnApi {
                         .addHeader("Connection", "keep-alive")
                         .build();
                 try {
+                    String user = null;
                     Response response = mOkHttpClient.newCall(request).execute();
                     if (response.isSuccessful()) {
                         Map<String, List<String>> cookiesMap = mOkHttpClient.getCookieHandler().get(request.uri(), OkHeaders.toMultimap(request.headers(), null));
@@ -125,17 +127,37 @@ public class SnApiImpl implements ISnApi {
                                 String[] cookie = TextUtils.split(s, "=");
                                 if (cookie.length == 2 && "user".equals(cookie[0])) {
                                     user = cookie[1];
+                                    break;
                                 }
                             }
                         }
                     }
+                    mSessionManager.storeSession(user, username);
+                    subscriber.onNext(user);
+                    subscriber.onCompleted();
                 } catch (IOException e) {
-                    e.printStackTrace();
                     subscriber.onError(e);
                 }
-                mSessionManager.storeSession(user, username);
-                subscriber.onNext(user);
-                subscriber.onCompleted();
+
+            }
+        });
+    }
+
+    @Override
+    public Observable<SNComments> getSNComments(final String url) {
+        return Observable.create(new Observable.OnSubscribe<SNComments>() {
+            @Override
+            public void call(Subscriber<? super SNComments> subscriber) {
+                try {
+                    Connection conn = mJsoupConnector.newJsoupConnection(url);
+                    Document doc = conn.get();
+                    SNCommentsParser parser = new SNCommentsParser();
+                    SNComments comments = parser.parseDocument(doc);
+                    subscriber.onNext(comments);
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
             }
         });
     }
