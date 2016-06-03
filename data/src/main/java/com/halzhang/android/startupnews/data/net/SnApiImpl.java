@@ -1,17 +1,20 @@
 package com.halzhang.android.startupnews.data.net;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.halzhang.android.startupnews.data.Constant;
 import com.halzhang.android.startupnews.data.entity.SNComments;
 import com.halzhang.android.startupnews.data.entity.SNFeed;
+import com.halzhang.android.startupnews.data.entity.Status;
 import com.halzhang.android.startupnews.data.parser.BaseHTMLParser;
 import com.halzhang.android.startupnews.data.parser.SNCommentsParser;
 import com.halzhang.android.startupnews.data.parser.SNFeedParser;
 import com.halzhang.android.startupnews.data.utils.SessionManager;
 import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -156,6 +159,47 @@ public class SnApiImpl implements ISnApi {
                     subscriber.onNext(comments);
                     subscriber.onCompleted();
                 } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<Status> upVote(final int postId) {
+        return Observable.create(new Observable.OnSubscribe<Status>() {
+            @Override
+            public void call(Subscriber<? super Status> subscriber) {
+                try {
+                    HttpUrl httpUrl = new HttpUrl.Builder()
+                            .scheme(Constant.SCHEME)
+                            .host(Constant.HOST)
+                            .addPathSegment("vote")
+                            .addQueryParameter("for", String.valueOf(postId))
+                            .addQueryParameter("dir", "up")
+                            .addQueryParameter("by", mSessionManager.getSessionId())
+                            .addQueryParameter("auth", mSessionManager.getSessionUser())
+                            .addQueryParameter("whence", "news")
+                            .build();
+                    Request request = new Request.Builder().url(httpUrl).build();
+                    Response response = mOkHttpClient.newCall(request).execute();
+                    Status status = new Status();
+                    if (response.isSuccessful()) {
+                        status.code = 1;
+                    } else {
+                        String content = response.body().string();
+
+                        if (content.contains("mismatch")) {
+                            // 用户cookie无效
+                            status.code = 2;
+                        } else {
+                            status.code = 3;
+                        }
+                    }
+                    subscriber.onNext(status);
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    e.printStackTrace();
                     subscriber.onError(e);
                 }
             }

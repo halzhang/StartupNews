@@ -2,6 +2,7 @@ package com.halzhang.android.startupnews.data.net;
 
 import com.halzhang.android.startupnews.data.entity.SNComments;
 import com.halzhang.android.startupnews.data.entity.SNFeed;
+import com.halzhang.android.startupnews.data.entity.Status;
 
 import rx.Observable;
 
@@ -24,6 +25,14 @@ public interface ISnApi {
     Observable<String> login(String fnid, String username, String password);
 
     Observable<SNComments> getSNComments(String url);
+
+    /**
+     * 投票
+     *
+     * @param postId 文章 id
+     * @return 状态，成功与否
+     */
+    Observable<Status> upVote(int postId);
 
 
 }
