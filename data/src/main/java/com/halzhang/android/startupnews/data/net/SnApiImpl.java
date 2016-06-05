@@ -9,14 +9,17 @@ import com.halzhang.android.startupnews.data.Constant;
 import com.halzhang.android.startupnews.data.entity.SNComments;
 import com.halzhang.android.startupnews.data.entity.SNFeed;
 import com.halzhang.android.startupnews.data.entity.Status;
+import com.halzhang.android.startupnews.data.exception.NetworkException;
 import com.halzhang.android.startupnews.data.parser.BaseHTMLParser;
 import com.halzhang.android.startupnews.data.parser.SNCommentsParser;
 import com.halzhang.android.startupnews.data.parser.SNFeedParser;
 import com.halzhang.android.startupnews.data.utils.SessionManager;
 import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.internal.http.OkHeaders;
 
@@ -185,19 +188,60 @@ public class SnApiImpl implements ISnApi {
                     Response response = mOkHttpClient.newCall(request).execute();
                     Status status = new Status();
                     if (response.isSuccessful()) {
-                        status.code = 1;
+                        status.code = Status.CODE_SUCCESS;
                     } else {
                         String content = response.body().string();
 
                         if (content.contains("mismatch")) {
                             // 用户cookie无效
-                            status.code = 2;
+                            status.code = Status.CODE_COOKIE_VALID;
                         } else {
-                            status.code = 3;
+                            status.code = Status.CODE_REPEAT;
                         }
                     }
                     subscriber.onNext(status);
                     subscriber.onCompleted();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<Status> comment(final String text, final String fnid) {
+        return Observable.create(new Observable.OnSubscribe<Status>() {
+            @Override
+            public void call(Subscriber<? super Status> subscriber) {
+                try {
+                    RequestBody body = new FormEncodingBuilder().add("fnid", fnid).add("text", text).build();
+                    Request request = new Request.Builder().url(Constant.COMMENT_URL).post(body).build();
+                    Response response = mOkHttpClient.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        String refreerLocation = null;
+                        Headers headers = response.headers();
+                        for (int i = 0; i < headers.size(); i++) {
+                            if ("Refreer-Location".equals(headers.name(i))) {
+                                refreerLocation = headers.value(i);
+                            }
+                        }
+                        Status status = new Status();
+                        if (TextUtils.isEmpty(refreerLocation) || refreerLocation.contains("fnid")) {
+                            //Location:fnid=xxxxx Cookie失效，重新登陆
+                            status.code = Status.CODE_COOKIE_VALID;
+                        } else if (refreerLocation.contains("item")) {
+                            status.code = Status.CODE_SUCCESS;
+                        } else {
+                            status.code = Status.CODE_FAILURE;
+                        }
+                        subscriber.onNext(status);
+                        subscriber.onCompleted();
+                    } else {
+                        NetworkException networkException = new NetworkException(response.code(),
+                                response.message());
+                        subscriber.onError(networkException);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     subscriber.onError(e);

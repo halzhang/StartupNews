@@ -34,5 +34,14 @@ public interface ISnApi {
      */
     Observable<Status> upVote(int postId);
 
+    /**
+     * 评论
+     *
+     * @param text 评论内容
+     * @param fnid 主题的 find
+     * @return 状态
+     */
+    Observable<Status> comment(String text, String fnid);
+
 
 }

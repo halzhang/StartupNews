@@ -6,6 +6,7 @@ import com.halzhang.android.startupnews.data.SessionManagerModule;
 import com.halzhang.android.startupnews.data.net.ISnApi;
 import com.halzhang.android.startupnews.data.SnApiModule;
 import com.halzhang.android.startupnews.data.net.JsoupConnector;
+import com.halzhang.android.startupnews.data.utils.SessionManager;
 
 import javax.inject.Singleton;
 
@@ -19,5 +20,7 @@ import dagger.Component;
 public interface SnApiComponent {
 
     ISnApi getSnApi();
+
+    SessionManager getSessionManager();
 
 }

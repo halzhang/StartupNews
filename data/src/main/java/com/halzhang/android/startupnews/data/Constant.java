@@ -18,4 +18,6 @@ public class Constant {
 
     public static final String VOTE_URL = BASE_URL + "/vote";
 
+    public static final String COMMENT_URL = BASE_URL + "/r";
+
 }
