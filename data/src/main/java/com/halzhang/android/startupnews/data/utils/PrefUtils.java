@@ -4,7 +4,7 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 
 /**
- * Created by zhanghanguo@yy.com on 2016/5/30.
+ * Created by Hal on 2016/5/30.
  */
 public class PrefUtils {
 

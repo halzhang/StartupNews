@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  * 新闻列表
- * Created by zhanghanguo@yy.com on 2016/5/12.
+ * Created by Hal on 2016/5/12.
  */
 public class NewsListPresenter extends Presenter<NewsListPresenter.INewsListView, NewsListPresenter.INewsListCallback> {
 

@@ -11,7 +11,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by zhanghanguo@yy.com on 2016/5/30.
+ * Created by Hal on 2016/5/30.
  */
 @Module
 public class OkHttpClientModule {

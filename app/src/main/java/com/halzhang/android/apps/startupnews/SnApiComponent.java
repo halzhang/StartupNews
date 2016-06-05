@@ -12,7 +12,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 /**
- * Created by zhanghanguo@yy.com on 2016/5/30.
+ * Created by Hal on 2016/5/30.
  */
 @Singleton
 @Component(modules = {ApplicationModule.class, SnApiModule.class, OkHttpClientModule.class, SessionManagerModule.class, JsoupConnectorModule.class})

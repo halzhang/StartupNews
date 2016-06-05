@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * okhttp
- * Created by zhanghanguo@yy.com on 2015/11/12.
+ * Created by Hal on 2015/11/12.
  *
  * @deprecated 使用dagger提供单例
  */

@@ -1,7 +1,8 @@
 package com.halzhang.android.startupnews.data;
 
 /**
- * Created by zhanghanguo@yy.com on 2016/5/30.
+ * 常量
+ * Created by Hal on 2016/5/30.
  */
 public class Constant {
 

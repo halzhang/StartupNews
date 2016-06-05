@@ -22,7 +22,7 @@ import javax.inject.Singleton;
 
 /**
  * okhttp
- * Created by zhanghanguo@yy.com on 2015/11/12.
+ * Created by Hal on 2015/11/12.
  */
 @Singleton
 public class OkHttpClientHelper {
