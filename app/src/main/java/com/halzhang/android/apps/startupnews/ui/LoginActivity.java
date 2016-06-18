@@ -16,9 +16,8 @@ import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.SnApiComponent;
 import com.halzhang.android.apps.startupnews.presenter.DaggerLoginComponent;
-import com.halzhang.android.apps.startupnews.presenter.LoginPresenterModule;
 import com.halzhang.android.apps.startupnews.presenter.LoginPresenter;
-import com.halzhang.android.apps.startupnews.snkit.SessionManager;
+import com.halzhang.android.apps.startupnews.presenter.LoginPresenterModule;
 import com.halzhang.android.apps.startupnews.ui.fragment.LoginFragment;
 
 import javax.inject.Inject;
@@ -32,7 +31,6 @@ import javax.inject.Inject;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Apr 20, 2013
  */
-
 public class LoginActivity extends BaseActivity {
 
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
@@ -50,7 +48,6 @@ public class LoginActivity extends BaseActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         setContentView(R.layout.activity_login);
-        SessionManager.getInstance().clear();
         mLoginFragment = LoginFragment.newInstance();
         SnApiComponent snApiComponent = ((MyApplication) getApplication()).getSnApiComponent();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mLoginFragment).commit();

@@ -22,6 +22,7 @@ import com.halzhang.android.startupnews.data.entity.SNSession;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Apr 23, 2013
  */
+@Deprecated
 public class SessionManager {
 
     private SNSession mSession;
