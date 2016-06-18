@@ -5,6 +5,7 @@ import com.halzhang.android.startupnews.data.entity.SNFeed;
 import com.halzhang.android.startupnews.data.entity.Status;
 
 import rx.Observable;
+import rx.subscriptions.BooleanSubscription;
 
 /**
  * api
@@ -42,6 +43,13 @@ public interface ISnApi {
      * @return 状态
      */
     Observable<Status> comment(String text, String fnid);
+
+    /**
+     * 登出
+     *
+     * @return true 登出成功
+     */
+    Observable<Boolean> logout();
 
 
 }

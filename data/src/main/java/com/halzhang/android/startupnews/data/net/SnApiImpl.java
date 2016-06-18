@@ -36,6 +36,7 @@ import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action0;
 
 /**
  * api impl
@@ -138,6 +139,7 @@ public class SnApiImpl implements ISnApi {
                             }
                         }
                     }
+                    response.body().close();
                     mSessionManager.storeSession(user, username);
                     subscriber.onNext(user);
                     subscriber.onCompleted();
@@ -145,6 +147,11 @@ public class SnApiImpl implements ISnApi {
                     subscriber.onError(e);
                 }
 
+            }
+        }).doOnSubscribe(new Action0() {
+            @Override
+            public void call() {
+                mSessionManager.clear();
             }
         });
     }
@@ -244,6 +251,38 @@ public class SnApiImpl implements ISnApi {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<Boolean> logout() {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                try {
+                    String logoutUrl = null;
+                    Boolean result = false;
+                    Connection conn = mJsoupConnector.newJsoupConnection(Constant.HOST + "/news");
+                    Document doc = conn.get();
+                    Elements elements = doc.select("a:matches(logout)");
+                    if (elements.size() > 0) {
+                        logoutUrl = BaseHTMLParser.resolveRelativeSNURL(elements.attr("href"));
+                    } else {
+                        // 用户可能在pc注销了
+                        mSessionManager.clear();
+                        result = true;
+                    }
+                    if (!TextUtils.isEmpty(logoutUrl)) {
+                        Request request = new Request.Builder().url(logoutUrl).build();
+                        Response response = mOkHttpClient.newCall(request).execute();
+                        result = response.isSuccessful();
+                    }
+                    subscriber.onNext(result);
+                    subscriber.onCompleted();
+                } catch (Exception e) {
                     subscriber.onError(e);
                 }
             }
