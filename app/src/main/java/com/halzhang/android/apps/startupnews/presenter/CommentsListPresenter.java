@@ -3,7 +3,7 @@ package com.halzhang.android.apps.startupnews.presenter;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.halzhang.android.startupnews.data.entity.SNFeed;
+import com.halzhang.android.startupnews.data.entity.SNComments;
 import com.halzhang.android.startupnews.data.net.ISnApi;
 
 import javax.inject.Inject;
@@ -13,21 +13,19 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * 最新文章列表
- * Created by Hal on 2016/5/12.
+ * Created by Hal on 16/8/14.
  */
-public class NewsListPresenter implements NewsListContract.Presenter {
+public class CommentsListPresenter implements CommentsListContract.Presenter {
 
     @NonNull
     private final ISnApi mSnApi;
-
     @NonNull
-    private final NewsListContract.View mView;
+    private final CommentsListContract.View mView;
 
-    private SNFeed mSNFeed;
+    private SNComments mComments;
 
     @Inject
-    public NewsListPresenter(ISnApi snApi, NewsListContract.View view) {
+    public CommentsListPresenter(@NonNull ISnApi snApi, @NonNull CommentsListContract.View view) {
         mSnApi = snApi;
         mView = view;
     }
@@ -38,16 +36,11 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     }
 
     @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void getFeed(String url) {
-        mSnApi.getSNFeed(url)
+    public void getComments(String url) {
+        mSnApi.getSNComments(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<SNFeed>() {
+                .subscribe(new Subscriber<SNComments>() {
                     @Override
                     public void onCompleted() {
 
@@ -61,11 +54,11 @@ public class NewsListPresenter implements NewsListContract.Presenter {
                     }
 
                     @Override
-                    public void onNext(SNFeed snFeed) {
-                        if (snFeed != null) {
-                            mSNFeed = snFeed;
+                    public void onNext(SNComments snComments) {
+                        if (snComments != null) {
+                            mComments = snComments;
                             if (mView.isActive()) {
-                                mView.onSuccess(mSNFeed.getSnNews());
+                                mView.onSuccess(mComments.getSnComments());
                             }
                         }
                     }
@@ -73,12 +66,16 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     }
 
     @Override
-    public void getMoreFeed() {
-        if (mSNFeed != null && !TextUtils.isEmpty(mSNFeed.getMoreUrl())) {
-            mSnApi.getSNFeed(mSNFeed.getMoreUrl())
+    public void getMoreComments() {
+        if (mComments == null || TextUtils.isEmpty(mComments.getMoreURL())) {
+            if (mView.isActive()) {
+                mView.onAtEnd();
+            }
+        } else {
+            mSnApi.getSNComments(mComments.getMoreURL())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<SNFeed>() {
+                    .subscribe(new Subscriber<SNComments>() {
                         @Override
                         public void onCompleted() {
 
@@ -92,24 +89,25 @@ public class NewsListPresenter implements NewsListContract.Presenter {
                         }
 
                         @Override
-                        public void onNext(SNFeed snFeed) {
-                            if (snFeed != null) {
-                                if (mSNFeed == null) {
-                                    mSNFeed = snFeed;
+                        public void onNext(SNComments snComments) {
+                            if (snComments != null) {
+                                if (mComments == null) {
+                                    mComments = snComments;
                                 } else {
-                                    mSNFeed.setMoreUrl(snFeed.getMoreUrl());
-                                    mSNFeed.addNews(snFeed.getSnNews());
+                                    mComments.addComments(snComments.getSnComments());
+                                    mComments.setMoreURL(snComments.getMoreURL());
                                 }
                                 if (mView.isActive()) {
-                                    mView.onSuccess(mSNFeed.getSnNews());
+                                    mView.onSuccess(mComments.getSnComments());
                                 }
                             }
                         }
                     });
-        } else {
-            if (mView.isActive()) {
-                mView.onAtEnd();
-            }
         }
+    }
+
+    /* no-op */
+    @Override
+    public void start() {
     }
 }

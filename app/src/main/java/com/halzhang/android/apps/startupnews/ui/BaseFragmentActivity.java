@@ -18,11 +18,12 @@ import android.view.WindowManager;
  * StartupNews
  * <p>
  * </p>
+ *
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 13, 2013
  */
-public class BaseFragmentActivity<PresenterType extends Presenter,IViewCallback> extends MVPAppCompatActivity<PresenterType> {
-    
+public class BaseFragmentActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
@@ -32,13 +33,13 @@ public class BaseFragmentActivity<PresenterType extends Presenter,IViewCallback>
 //            w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 //        }
     }
-    
+
     @Override
     protected void onStart() {
         super.onStart();
         EasyTracker.getInstance(this).activityStart(this);
     }
-    
+
     @Override
     protected void onStop() {
         super.onStop();

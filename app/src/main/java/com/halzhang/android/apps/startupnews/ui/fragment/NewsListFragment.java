@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -26,19 +25,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.halzhang.android.apps.startupnews.Constants.IntentAction;
+import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.SnApiComponent;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
-import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
+import com.halzhang.android.apps.startupnews.presenter.DaggerNewsListFragmentComponent;
+import com.halzhang.android.apps.startupnews.presenter.NewsListContract;
+import com.halzhang.android.apps.startupnews.presenter.NewsListPresenter;
+import com.halzhang.android.apps.startupnews.presenter.NewsListPresenterModule;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
-import com.halzhang.android.apps.startupnews.ui.SNApiHelper;
 import com.halzhang.android.apps.startupnews.utils.AppUtils;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.startupnews.data.entity.SNFeed;
 import com.halzhang.android.startupnews.data.entity.SNNew;
-import com.halzhang.android.startupnews.data.parser.SNFeedParser;
 
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
+import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 /**
  * StartupNews
@@ -48,9 +51,45 @@ import org.jsoup.nodes.Document;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class NewsListFragment extends SwipeRefreshRecyclerFragment {
+public class NewsListFragment extends SwipeRefreshRecyclerFragment implements NewsListContract.View {
 
     private static final String LOG_TAG = NewsListFragment.class.getSimpleName();
+
+    @Inject
+    NewsListPresenter mNewsListPresenter;
+
+    private NewsListContract.Presenter mPresenter;
+
+    @Override
+    public void setPresenter(NewsListContract.Presenter presenter) {
+        mPresenter = presenter;
+    }
+
+    @Override
+    public boolean isActive() {
+        return isAdded();
+    }
+
+    @Override
+    public void onSuccess(ArrayList<SNNew> snNews) {
+        onRefreshComplete();
+        mSnFeed.setSnNews(snNews);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onFailure(Throwable e) {
+        CDLog.w(LOG_TAG, "", e);
+        onRefreshComplete();
+        Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_LONG).show();
+        Tracker.getInstance().sendException("NewsTask", e, false);
+    }
+
+    @Override
+    public void onAtEnd() {
+        onRefreshComplete();
+        Toast.makeText(getActivity(), R.string.tip_last_page, Toast.LENGTH_SHORT).show();
+    }
 
     /**
      * {@link NewsListFragment}选中监听器
@@ -67,7 +106,6 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
 
     private OnNewsSelectedListener mNewsSelectedListener;
 
-    private NewsTask mNewsTask;
 
     private String mNewsURL;
 
@@ -77,9 +115,17 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
 
     private NewsAdapter mAdapter;
 
-    private JsoupFactory mJsoupFactory;
+    public NewsListFragment() {
 
-    private SNApiHelper mSnApiHelper;
+    }
+
+    public static NewsListFragment newInstance(String url) {
+        NewsListFragment fragment = new NewsListFragment();
+        Bundle args = new Bundle(1);
+        args.putString(ARG_URL, url);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
@@ -89,12 +135,7 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
             if (IntentAction.ACTION_LOGIN.equals(action)) {
                 String user = intent.getStringExtra(IntentAction.EXTRA_LOGIN_USER);
                 if (!TextUtils.isEmpty(user)) {
-                    if (mNewsTask != null) {
-                        mNewsTask.cancel(true);
-                        mNewsTask = null;
-                    }
-                    mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
-                    mNewsTask.execute(mNewsURL);
+                    mPresenter.getFeed(mNewsURL);
                 }
             }
         }
@@ -103,7 +144,6 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mSnApiHelper = new SNApiHelper(activity);
         try {
             mNewsSelectedListener = (OnNewsSelectedListener) activity;
         } catch (ClassCastException e) {
@@ -131,7 +171,9 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction(IntentAction.ACTION_LOGIN);
         getActivity().registerReceiver(mReceiver, filter);
-        mJsoupFactory = JsoupFactory.getInstance(getActivity().getApplicationContext());
+        SnApiComponent snApiComponent = ((MyApplication) getActivity().getApplication()).getSnApiComponent();
+        DaggerNewsListFragmentComponent.builder().snApiComponent(snApiComponent)
+                .newsListPresenterModule(new NewsListPresenterModule(this)).build().inject(this);
     }
 
     @Override
@@ -143,9 +185,8 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mRecyclerView.setAdapter(mAdapter);
-        if (mNewsTask == null && mAdapter.isEmpty()) {
-            mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
-            mNewsTask.execute(mNewsURL);
+        if (mAdapter.isEmpty()) {
+            mPresenter.getFeed(mNewsURL);
             mSwipeRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
@@ -164,10 +205,6 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mNewsTask != null) {
-            mNewsTask.cancel(true);
-            mNewsTask = null;
-        }
         getActivity().unregisterReceiver(mReceiver);
     }
 
@@ -190,7 +227,9 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
             case R.id.menu_up_vote:
                 Tracker.getInstance().sendEvent("ui_action", "context_item_selected",
                         "newslistfragment_menu_upvote", 0L);
-                mSnApiHelper.upVote(snNew.getPostID());
+
+                // TODO: 16/8/14 投票操作
+
                 return true;
             default:
                 break;
@@ -202,29 +241,16 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
     protected void onRefreshData() {
         super.onRefreshData();
         Tracker.getInstance().sendEvent("ui_action", "pull_down_list_view_refresh", "news_list_fragment_pull_down_list_view_refresh", 0L);
-        if (mNewsTask != null) {
-            return;
-        }
-        mNewsTask = new NewsTask(NewsTask.TYPE_REFRESH);
-        mNewsTask.execute(mNewsURL);
+        mPresenter.getFeed(mNewsURL);
     }
 
     @Override
     protected void onLoadMore() {
         super.onLoadMore();
         Tracker.getInstance().sendEvent("ui_action", "pull_up_list_view_refresh", "news_list_fragment_pull_up_list_view_refresh", 0L);
-        if (mNewsTask != null) {
-            return;
-        }
-        if (TextUtils.isEmpty(mSnFeed.getMoreUrl())) {
-            Toast.makeText(getActivity(), R.string.tip_last_page, Toast.LENGTH_SHORT).show();
-            onRefreshComplete();
-        } else {
-            mNewsTask = new NewsTask(NewsTask.TYPE_LOADMORE);
-            mNewsTask.execute(mSnFeed.getMoreUrl());
-        }
-    }
 
+        mPresenter.getMoreFeed();
+    }
 
     private void openArticle(int position, SNNew snNew) {
         if (mNewsSelectedListener != null) {
@@ -240,63 +266,6 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment {
         intent.putExtra(DiscussActivity.ARG_SNNEW, snNew);
         intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, snNew.getDiscussURL());
         startActivity(intent);
-    }
-
-    private class NewsTask extends AsyncTask<String, Void, Boolean> {
-
-        public static final int TYPE_REFRESH = 1;
-
-        public static final int TYPE_LOADMORE = 2;
-
-        private int mType = 0;
-
-        public NewsTask(int type) {
-            mType = type;
-        }
-
-        @Override
-        protected Boolean doInBackground(String... params) {
-            try {
-                Connection conn = mJsoupFactory.newJsoupConnection(params[0]);
-                if (conn == null) {
-                    return false;
-                }
-                Document doc = conn.get();
-                SNFeedParser parser = new SNFeedParser();
-                SNFeed feed = parser.parseDocument(doc);
-                if (mType == TYPE_REFRESH && mSnFeed.size() > 0) {
-                    mSnFeed.clear();
-                }
-                mSnFeed.addNews(feed.getSnNews());
-                mSnFeed.setMoreUrl(feed.getMoreUrl());
-                return true;
-            } catch (Exception e) {
-                CDLog.w(LOG_TAG, "", e);
-                Tracker.getInstance().sendException("NewsTask", e, false);
-                return false;
-            }
-
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if (result) {
-                mAdapter.notifyDataSetChanged();
-            } else {
-                Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_LONG).show();
-            }
-            mNewsTask = null;
-            onRefreshComplete();
-            super.onPostExecute(result);
-        }
-
-        @Override
-        protected void onCancelled() {
-            onRefreshComplete();
-            mNewsTask = null;
-            super.onCancelled();
-        }
-
     }
 
     private class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {

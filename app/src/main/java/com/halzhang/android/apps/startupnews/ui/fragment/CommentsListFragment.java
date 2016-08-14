@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
+import com.halzhang.android.apps.startupnews.presenter.CommentsListContract;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
 import com.halzhang.android.common.CDLog;
@@ -29,6 +30,8 @@ import com.halzhang.android.startupnews.data.parser.SNCommentsParser;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
+import java.util.ArrayList;
+
 /**
  * StartupNews
  * <p>
@@ -38,29 +41,32 @@ import org.jsoup.nodes.Document;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version Mar 7, 2013
  */
-public class CommentsListFragment extends SwipeRefreshRecyclerFragment {
+public class CommentsListFragment extends SwipeRefreshRecyclerFragment implements CommentsListContract.View {
 
     private static final String LOG_TAG = CommentsListFragment.class.getSimpleName();
 
     // private ArrayList<SNComment> mComments = new ArrayList<SNComment>(24);
 
+    private CommentsListContract.Presenter mPresenter;
+
     private CommentsAdapter mAdapter;
 
-    private CommentsTask mTask;
-
-    // private String mMoreUrl;
 
     private SNComments mSnComments = new SNComments();
 
     private static final String NEWCOMMENTS_URL_PATH = "/newcomments";
 
-    private JsoupFactory mJsoupFactory;
+    public CommentsListFragment() {
+    }
+
+    public static CommentsListFragment newInstance() {
+        return new CommentsListFragment();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new CommentsAdapter();
-        mJsoupFactory = JsoupFactory.getInstance(getActivity().getApplicationContext());
     }
 
     @Override
@@ -72,19 +78,14 @@ public class CommentsListFragment extends SwipeRefreshRecyclerFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mRecyclerView.setAdapter(mAdapter);
-        if (mTask == null && mAdapter.isEmpty()) {
-            mTask = new CommentsTask(CommentsTask.TYPE_REFRESH);
-            mTask.execute(getString(R.string.host, NEWCOMMENTS_URL_PATH));
+        if (mAdapter.isEmpty()) {
+            mPresenter.getComments(getString(R.string.host, NEWCOMMENTS_URL_PATH));
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mTask != null) {
-            mTask.cancel(true);
-            mTask = null;
-        }
     }
 
     @Override
@@ -97,11 +98,8 @@ public class CommentsListFragment extends SwipeRefreshRecyclerFragment {
         super.onRefreshData();
         Tracker.getInstance().sendEvent("ui_action", "pull_down_list_view_refresh",
                 "comments_list_fragment_pull_down_list_view_refresh", 0L);
-        if (mTask != null) {
-            return;
-        }
-        mTask = new CommentsTask(CommentsTask.TYPE_REFRESH);
-        mTask.execute(getString(R.string.host, NEWCOMMENTS_URL_PATH));
+        mPresenter.getComments(getString(R.string.host, NEWCOMMENTS_URL_PATH));
+
     }
 
     @Override
@@ -109,75 +107,38 @@ public class CommentsListFragment extends SwipeRefreshRecyclerFragment {
         super.onLoadMore();
         Tracker.getInstance().sendEvent("ui_action", "pull_up_list_view_refresh",
                 "comments_list_fragment_pull_up_list_view_refresh", 0L);
-        if (mTask != null) {
-            return;
-        }
-        if (TextUtils.isEmpty(mSnComments.getMoreURL())) {
-            Toast.makeText(getActivity(), R.string.tip_last_page, Toast.LENGTH_SHORT).show();
-            onRefreshComplete();
-        } else {
-            mTask = new CommentsTask(CommentsTask.TYPE_LOADMORE);
-            mTask.execute(mSnComments.getMoreURL());
-        }
+        mPresenter.getMoreComments();
     }
 
-    private class CommentsTask extends AsyncTask<String, Void, Boolean> {
+    @Override
+    public void onSuccess(ArrayList<SNComment> snComments) {
+        onRefreshComplete();
+        mSnComments.setSnComments(snComments);
+        mAdapter.notifyDataSetChanged();
+    }
 
-        public static final int TYPE_REFRESH = 1;
+    @Override
+    public void onFailure(Throwable e) {
+        Log.e(LOG_TAG, "", e);
+        onRefreshComplete();
+        Tracker.getInstance().sendException("CommentsTask", e, false);
+        Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_LONG).show();
+    }
 
-        public static final int TYPE_LOADMORE = 2;
+    @Override
+    public void onAtEnd() {
+        onRefreshComplete();
+        Toast.makeText(getActivity(), R.string.tip_last_page, Toast.LENGTH_SHORT).show();
+    }
 
-        private int mType = 0;
+    @Override
+    public void setPresenter(CommentsListContract.Presenter presenter) {
+        mPresenter = presenter;
+    }
 
-        public CommentsTask(int type) {
-            mType = type;
-        }
-
-        @Override
-        protected Boolean doInBackground(String... params) {
-            try {
-                Connection conn = mJsoupFactory.newJsoupConnection(params[0]);
-                if (conn == null) {
-                    return false;
-                }
-                Document doc = conn.get();
-                // long start = System.currentTimeMillis();
-                SNCommentsParser parser = new SNCommentsParser();
-                SNComments comments = parser.parseDocument(doc);
-                if (mType == TYPE_REFRESH && mSnComments.size() > 0) {
-                    mSnComments.clear();
-                }
-                mSnComments.addComments(comments.getSnComments());
-                mSnComments.setMoreURL(comments.getMoreURL());
-                // Log.i(LOG_TAG, "Take Time: " + (System.currentTimeMillis() -
-                // start));
-                return true;
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "", e);
-                Tracker.getInstance().sendException("CommentsTask", e, false);
-                return false;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if (result) {
-                mAdapter.notifyDataSetChanged();
-            } else {
-                Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_LONG).show();
-            }
-            onRefreshComplete();
-            mTask = null;
-            super.onPostExecute(result);
-        }
-
-        @Override
-        protected void onCancelled() {
-            onRefreshComplete();
-            mTask = null;
-            super.onCancelled();
-        }
-
+    @Override
+    public boolean isActive() {
+        return isAdded();
     }
 
     private class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder> {

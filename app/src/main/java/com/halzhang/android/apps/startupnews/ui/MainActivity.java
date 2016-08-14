@@ -18,11 +18,15 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.Toast;
 
+import com.halzhang.android.apps.startupnews.MyApplication;
 import com.halzhang.android.apps.startupnews.R;
+import com.halzhang.android.apps.startupnews.SnApiComponent;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
+import com.halzhang.android.apps.startupnews.presenter.CommentsListPresenter;
+import com.halzhang.android.apps.startupnews.presenter.CommentsListPresenterModule;
+import com.halzhang.android.apps.startupnews.presenter.DaggerMainComponent;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
@@ -44,6 +48,8 @@ import com.halzhang.android.startupnews.data.parser.BaseHTMLParser;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
+import javax.inject.Inject;
 
 /**
  * 主页
@@ -75,6 +81,13 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
     private CustomTabsActivityHelper mHelper;
 
+    private NewsListFragment mHotNewsListFragment;
+    private NewsListFragment mNewsListFragment;
+    private CommentsListFragment mCommentsListFragment;
+
+    @Inject
+    CommentsListPresenter mCommentsListPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         CDLog.i(LOG_TAG, "MainActivity create!");
@@ -87,6 +100,11 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
         mFeedbackEmailIntent = createEmailIntent();
         mSnApiHelper = new SNApiHelper(this);
         mHelper = new CustomTabsActivityHelper();
+
+        SnApiComponent snApiComponent = ((MyApplication) getApplication()).getSnApiComponent();
+        DaggerMainComponent.builder().snApiComponent(snApiComponent)
+                .commentsListPresenterModule(new CommentsListPresenterModule(mCommentsListFragment)).build().inject(this);
+
     }
 
     @Override
@@ -107,6 +125,11 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     }
 
     private void setupViews() {
+
+        mHotNewsListFragment = NewsListFragment.newInstance(getString(R.string.host, "/news"));
+        mNewsListFragment = NewsListFragment.newInstance(getString(R.string.host, "/newest"));
+        mCommentsListFragment = CommentsListFragment.newInstance();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         final ActionBar ab = getSupportActionBar();
@@ -230,25 +253,16 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
         @Override
         public Fragment getItem(int arg0) {
-            Fragment fragment = null;
-            Bundle args = new Bundle();
             switch (arg0) {
                 case 0:
-                    fragment = new NewsListFragment();
-                    args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/news"));
-                    fragment.setArguments(args);
-                    break;
+                    return mHotNewsListFragment;
                 case 1:
-                    fragment = new NewsListFragment();
-                    args.putString(NewsListFragment.ARG_URL, getString(R.string.host, "/newest"));
-                    fragment.setArguments(args);
-                    break;
+                    return mNewsListFragment;
                 case 2:
-                    fragment = new CommentsListFragment();
+                    return mCommentsListFragment;
                 default:
-                    break;
+                    throw new IllegalArgumentException();
             }
-            return fragment;
         }
 
         @Override
