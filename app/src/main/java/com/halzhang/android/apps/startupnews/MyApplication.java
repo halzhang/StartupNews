@@ -12,6 +12,7 @@ import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.CrashHandler;
 import com.halzhang.android.common.CDLog;
+import com.halzhang.android.startupnews.data.CookieFactoryModule;
 import com.halzhang.android.startupnews.data.OkHttpClientModule;
 import com.halzhang.android.startupnews.data.SnApiModule;
 import com.halzhang.android.startupnews.data.utils.OkHttpClientHelper;
@@ -92,27 +93,23 @@ public class MyApplication extends Application {
                     .build());
             LeakCanary.install(this);
         }
+
+        mSnApiComponent = DaggerSnApiComponent.builder().applicationModule(new ApplicationModule(this))
+                .okHttpClientModule(new OkHttpClientModule())
+                .snApiModule(new SnApiModule())
+                .cookieFactoryModule(new CookieFactoryModule()).build();
+
         OkHttpClientManager.getInstance().init(this, new OkHttpClientManager.CookieFactory() {
             @Override
             public String getCookie() {
-                return SessionManager.getInstance().getCookieString();
+                return mSnApiComponent.getSessionManager().getCookieString();
             }
         });
-        mSnApiComponent = DaggerSnApiComponent.builder().applicationModule(new ApplicationModule(this, sCookieFactory))
-                .okHttpClientModule(new OkHttpClientModule())
-                .snApiModule(new SnApiModule()).build();
     }
 
     public SnApiComponent getSnApiComponent() {
         return mSnApiComponent;
     }
-
-    private static OkHttpClientHelper.CookieFactory sCookieFactory = new OkHttpClientHelper.CookieFactory() {
-        @Override
-        public String getCookie() {
-            return SessionManager.getInstance().getCookieString();
-        }
-    };
 
     private void initHistory() {
         File file = new File(getFilesDir().getAbsolutePath() + File.separator

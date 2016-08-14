@@ -15,11 +15,9 @@ public class ApplicationModule {
 
     private final Context mContext;
 
-    private final OkHttpClientHelper.CookieFactory mCookieFactory;
 
-    public ApplicationModule(Context context, OkHttpClientHelper.CookieFactory cookieFactory) {
+    public ApplicationModule(Context context) {
         mContext = context;
-        mCookieFactory = cookieFactory;
     }
 
     @Provides
@@ -27,8 +25,4 @@ public class ApplicationModule {
         return mContext;
     }
 
-    @Provides
-    OkHttpClientHelper.CookieFactory provideCookieFactory() {
-        return mCookieFactory;
-    }
 }

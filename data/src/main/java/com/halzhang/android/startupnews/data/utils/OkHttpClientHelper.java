@@ -35,7 +35,7 @@ public class OkHttpClientHelper {
      * USER-AGENT
      */
     public static final String USER_AGENT = "Mozilla/5.0 (Linux; Android " + Build.VERSION.RELEASE
-            + "; " + Build.MODEL + " Build/" + Build.DISPLAY + ")";
+            + "; " + Build.MODEL + " Build/" + Build.ID + ")";
 
     private static final long SIZE_OF_CACHE = 10 * 1024 * 1024; // 10 MB
 
