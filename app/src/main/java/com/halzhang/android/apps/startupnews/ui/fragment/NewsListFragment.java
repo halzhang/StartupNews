@@ -262,10 +262,8 @@ public class NewsListFragment extends SwipeRefreshRecyclerFragment implements Ne
         if (snNew == null) {
             return;
         }
-        Intent intent = new Intent(getActivity(), DiscussActivity.class);
-        intent.putExtra(DiscussActivity.ARG_SNNEW, snNew);
-        intent.putExtra(DiscussActivity.ARG_DISCUSS_URL, snNew.getDiscussURL());
-        startActivity(intent);
+
+        DiscussActivity.start(getActivity(),snNew.getDiscussURL(),snNew);
     }
 
     private class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {

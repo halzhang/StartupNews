@@ -110,4 +110,9 @@ public class CommentsListPresenter implements CommentsListContract.Presenter {
     @Override
     public void start() {
     }
+
+    @Override
+    public void stop() {
+
+    }
 }

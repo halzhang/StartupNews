@@ -43,6 +43,11 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     }
 
     @Override
+    public void stop() {
+
+    }
+
+    @Override
     public void getFeed(String url) {
         mSnApi.getSNFeed(url)
                 .subscribeOn(Schedulers.io())

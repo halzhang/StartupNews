@@ -1,6 +1,7 @@
 package com.halzhang.android.startupnews.data.net;
 
 import com.halzhang.android.startupnews.data.entity.SNComments;
+import com.halzhang.android.startupnews.data.entity.SNDiscuss;
 import com.halzhang.android.startupnews.data.entity.SNFeed;
 import com.halzhang.android.startupnews.data.entity.Status;
 
@@ -50,6 +51,13 @@ public interface ISnApi {
      * @return true 登出成功
      */
     Observable<Boolean> logout();
+
+    /**
+     * 获取讨论列表
+     *
+     * @param url
+     */
+    Observable<SNDiscuss> getDiscuss(String url);
 
 
 }

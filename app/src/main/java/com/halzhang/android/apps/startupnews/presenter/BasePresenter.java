@@ -6,5 +6,6 @@ package com.halzhang.android.apps.startupnews.presenter;
 public interface BasePresenter {
 
     void start();
+    void stop();
 
 }

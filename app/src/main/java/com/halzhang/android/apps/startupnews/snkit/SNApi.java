@@ -39,6 +39,7 @@ import java.util.Map;
  * @author <a href="http://weibo.com/halzhang">Hal</a>
  * @version May 4, 2013
  */
+@Deprecated
 public class SNApi {
 
     private static final String LOG_TAG = SNApi.class.getSimpleName();

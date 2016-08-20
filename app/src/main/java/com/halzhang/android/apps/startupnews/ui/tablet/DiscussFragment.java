@@ -1,25 +1,7 @@
-/*
- * Copyright (C) 2013  HalZhang
- *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.halzhang.android.apps.startupnews.ui.tablet;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -45,34 +27,102 @@ import android.widget.Toast;
 
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
+import com.halzhang.android.apps.startupnews.presenter.DiscussContract;
 import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.snkit.SNApi;
-import com.halzhang.android.apps.startupnews.snkit.SessionManager;
-import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
 import com.halzhang.android.apps.startupnews.ui.LoginActivity;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.common.CDToast;
 import com.halzhang.android.startupnews.data.entity.SNComment;
 import com.halzhang.android.startupnews.data.entity.SNDiscuss;
 import com.halzhang.android.startupnews.data.entity.SNNew;
-import com.halzhang.android.startupnews.data.parser.SNDiscussParser;
+import com.halzhang.android.startupnews.data.entity.Status;
+import com.halzhang.android.startupnews.data.utils.SessionManager;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
-
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 /**
  * 查看评论
  * Created by Hal on 13-5-26.
  */
-public class DiscussFragment extends Fragment implements OnItemClickListener {
+public class DiscussFragment extends Fragment implements OnItemClickListener, DiscussContract.View {
+
+    public static final String ARG_DISCUSS_URL = "discuss_url";
+    public static final String ARG_SNNEW = "snnew";
 
     private static final String LOG_TAG = DiscussFragment.class.getSimpleName();
+
+
+    private DiscussContract.Presenter mPresenter;
+
+    @Override
+    public void setPresenter(DiscussContract.Presenter presenter) {
+        mPresenter = presenter;
+    }
+
+    @Override
+    public boolean isActive() {
+        return isAdded();
+    }
+
+    @Override
+    public void onGetDiscuss(SNDiscuss snDiscuss) {
+        mSnDiscuss.clearComments();
+        mSnDiscuss.copy(snDiscuss);
+        setRefreshActionButtonState(false);
+        wrapHeaderView(mSnDiscuss.getSnNew());
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onGetDiscussFailure(Throwable e) {
+        Tracker.getInstance().sendException("DiscussTask", e, false);
+        Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCommentSuccess(Status status) {
+
+        switch (status.code){
+            case Status.CODE_COOKIE_VALID:
+                CDToast.showToast(getActivity(), R.string.tip_cookie_invalid);
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+                Tracker.getInstance().sendEvent("ui_action_feedback",
+                        "comment_feedback", getString(R.string.tip_cookie_invalid),
+                        0L);
+                break;
+            case Status.CODE_SUCCESS:
+                mCommentEdit.setText(null);
+                CDToast.showToast(getActivity(), R.string.tip_comment_success);
+                Tracker.getInstance().sendEvent("ui_action_feedback",
+                        "comment_feedback", "success", 0L);
+                loadData();
+                break;
+            default:
+                Tracker.getInstance().sendEvent("ui_action_feedback",
+                        "comment_feedback", status.message, 0L);
+                CDToast.showToast(getActivity(), R.string.tip_comment_failure);
+                break;
+        }
+    }
+
+    @Override
+    public void onCommentFailure(Throwable e) {
+        CDToast.showToast(getActivity(), R.string.tip_comment_failure);
+        Tracker.getInstance().sendException("comment error!", e, false);
+    }
+
+    @Override
+    public void onSessionExpired() {
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        startActivity(intent);
+    }
 
     public interface OnMenuSelectedListener {
         public void onShowArticleSelected(SNNew snNew);
@@ -88,8 +138,6 @@ public class DiscussFragment extends Fragment implements OnItemClickListener {
 
     private DiscussCommentAdapter mAdapter;
 
-    private DiscussTask mDiscussTask;
-
     private TextView mTitle;
 
     private TextView mSubTitle;
@@ -102,14 +150,27 @@ public class DiscussFragment extends Fragment implements OnItemClickListener {
 
     private ImageButton mSendBtn;
 
-    private JsoupFactory mJsoupFactory;
-
     private OnMenuSelectedListener mListener;
+
+    @Inject
+    SessionManager mSessionManager;
+
+    public DiscussFragment() {
+
+    }
+
+    public static DiscussFragment newInstance(String discussURL, SNNew snNew) {
+        DiscussFragment fragment = new DiscussFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_DISCUSS_URL, discussURL);
+        args.putParcelable(ARG_SNNEW, snNew);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mJsoupFactory = JsoupFactory.getInstance(activity.getApplicationContext());
         if (activity instanceof OnMenuSelectedListener) {
             mListener = (OnMenuSelectedListener) activity;
         }
@@ -124,13 +185,13 @@ public class DiscussFragment extends Fragment implements OnItemClickListener {
         mSnDiscuss = new SNDiscuss();
         Bundle args = getArguments();
         SNNew snNew = null;
-        if (args != null && args.containsKey(DiscussActivity.ARG_DISCUSS_URL)) {
-            mDiscussURL = args.getString(DiscussActivity.ARG_DISCUSS_URL);
+        if (args != null && args.containsKey(ARG_DISCUSS_URL)) {
+            mDiscussURL = args.getString(ARG_DISCUSS_URL);
         } else {
             throw new IllegalArgumentException("Discuss URL is required!");
         }
-        if (args.containsKey(DiscussActivity.ARG_SNNEW)) {
-            snNew = (SNNew) args.getSerializable(DiscussActivity.ARG_SNNEW);
+        if (args.containsKey(ARG_SNNEW)) {
+            snNew = args.getParcelable(ARG_SNNEW);
             mSnDiscuss.setSnNew(snNew);
         }
         mAdapter = new DiscussCommentAdapter();
@@ -173,66 +234,13 @@ public class DiscussFragment extends Fragment implements OnItemClickListener {
         public void onClick(View v) {
             Tracker.getInstance().sendEvent("ui_action", "view_clicked",
                     "discussactivity_button_comment", 0L);
-            if (!SessionManager.getInstance().isValid()) {
-                // 未登陆
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent);
-                return;
-            }
-            SNApi api = new SNApi(getActivity());
-
-            api.comment(getActivity(), mSnDiscuss.getFnid(), mCommentEdit.getText().toString(), new Callback() {
-                @Override
-                public void onFailure(Request request, IOException e) {
-                    CDToast.showToast(getActivity(), R.string.tip_comment_failure);
-                    Tracker.getInstance().sendException("comment error!", e, false);
-                }
-
-                @Override
-                public void onResponse(Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        String refreerLocation = null;
-                        Headers headers = response.headers();
-                        for (int i = 0; i < headers.size(); i++) {
-                            if ("Refreer-Location".equals(headers.name(i))) {
-                                refreerLocation = headers.value(i);
-                            }
-                        }
-
-                        if (TextUtils.isEmpty(refreerLocation)
-                                || refreerLocation.contains("fnid")) {
-                                /*
-                                 * Location:fnid=xxxxx Cookie失效，重新登陆
-                                 */
-                            CDToast.showToast(getActivity(), R.string.tip_cookie_invalid);
-                            startActivity(new Intent(getActivity(), LoginActivity.class));
-                            Tracker.getInstance().sendEvent("ui_action_feedback",
-                                    "comment_feedback", getString(R.string.tip_cookie_invalid),
-                                    0L);
-                        } else if (refreerLocation.contains("item")) {
-                            mCommentEdit.setText(null);
-                            CDToast.showToast(getActivity(), R.string.tip_comment_success);
-                            Tracker.getInstance().sendEvent("ui_action_feedback",
-                                    "comment_feedback", "success", 0L);
-                            loadData();
-                        } else {
-                            Tracker.getInstance().sendEvent("ui_action_feedback",
-                                    "comment_feedback", response.body().string(), 0L);
-                            CDToast.showToast(getActivity(), R.string.tip_comment_failure);
-                        }
-                    }
-                }
-            });
+            mPresenter.comment(mCommentEdit.getText().toString());
         }
     };
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mDiscussTask != null) {
-            mDiscussTask.cancel(true);
-            mDiscussTask = null;
-        }
     }
 
     @Override
@@ -272,20 +280,15 @@ public class DiscussFragment extends Fragment implements OnItemClickListener {
     }
 
     public void loadData() {
-        if (mDiscussTask != null) {
-            return;
-        }
+        mPresenter.getDiscuss(mDiscussURL);
         setRefreshActionButtonState(true);
-        mDiscussTask = new DiscussTask();
-        mDiscussTask.execute(mDiscussURL);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_refresh:
-                Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
-                        "discussactivity_menu_refresh", 0L);
+                Tracker.getInstance().sendEvent("ui_action", "options_item_selected", "discussactivity_menu_refresh", 0L);
                 loadData();
                 return true;
             case R.id.menu_show_article:
@@ -299,50 +302,6 @@ public class DiscussFragment extends Fragment implements OnItemClickListener {
                 }
             default:
                 return super.onOptionsItemSelected(item);
-        }
-
-    }
-
-    private class DiscussTask extends AsyncTask<String, Void, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(String... params) {
-            try {
-                Connection conn = mJsoupFactory.newJsoupConnection(params[0]);
-                if (conn == null) {
-                    return false;
-                }
-                Document doc = conn.get();
-                SNDiscussParser parser = new SNDiscussParser();
-                SNDiscuss discuss = parser.parseDocument(doc);
-                mSnDiscuss.clearComments();
-                mSnDiscuss.copy(discuss);
-            } catch (Exception e) {
-                // Log.e(LOG_TAG, "", e);
-                Tracker.getInstance().sendException("DiscussTask", e, false);
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            setRefreshActionButtonState(false);
-            if (result) {
-                wrapHeaderView(mSnDiscuss.getSnNew());
-                mAdapter.notifyDataSetChanged();
-            } else {
-                Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
-            }
-            // mListView.getEmptyView().setVisibility(View.GONE);
-            mDiscussTask = null;
-            super.onPostExecute(result);
-        }
-
-        @Override
-        protected void onCancelled() {
-            mDiscussTask = null;
-            super.onCancelled();
         }
 
     }

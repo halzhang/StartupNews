@@ -7,11 +7,13 @@ import android.util.Log;
 
 import com.halzhang.android.startupnews.data.Constant;
 import com.halzhang.android.startupnews.data.entity.SNComments;
+import com.halzhang.android.startupnews.data.entity.SNDiscuss;
 import com.halzhang.android.startupnews.data.entity.SNFeed;
 import com.halzhang.android.startupnews.data.entity.Status;
 import com.halzhang.android.startupnews.data.exception.NetworkException;
 import com.halzhang.android.startupnews.data.parser.BaseHTMLParser;
 import com.halzhang.android.startupnews.data.parser.SNCommentsParser;
+import com.halzhang.android.startupnews.data.parser.SNDiscussParser;
 import com.halzhang.android.startupnews.data.parser.SNFeedParser;
 import com.halzhang.android.startupnews.data.utils.SessionManager;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -285,6 +287,26 @@ public class SnApiImpl implements ISnApi {
                 } catch (Exception e) {
                     subscriber.onError(e);
                 }
+            }
+        });
+    }
+
+    @Override
+    public Observable<SNDiscuss> getDiscuss(final String url) {
+        return Observable.create(new Observable.OnSubscribe<SNDiscuss>() {
+            @Override
+            public void call(Subscriber<? super SNDiscuss> subscriber) {
+                try {
+                    Connection conn = mJsoupConnector.newJsoupConnection(url);
+                    Document doc = conn.get();
+                    SNDiscussParser parser = new SNDiscussParser();
+                    SNDiscuss discuss = parser.parseDocument(doc);
+                    subscriber.onNext(discuss);
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+
             }
         });
     }
