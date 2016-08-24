@@ -2,10 +2,8 @@
 package com.halzhang.android.apps.startupnews.ui;
 
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.TabLayout;
@@ -15,7 +13,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -27,9 +24,9 @@ import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.presenter.CommentsListPresenter;
 import com.halzhang.android.apps.startupnews.presenter.CommentsListPresenterModule;
 import com.halzhang.android.apps.startupnews.presenter.DaggerMainComponent;
-import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
-import com.halzhang.android.apps.startupnews.snkit.SNApi;
-import com.halzhang.android.apps.startupnews.snkit.SessionManager;
+import com.halzhang.android.apps.startupnews.presenter.MainActivityContract;
+import com.halzhang.android.apps.startupnews.presenter.MainActivityPresenter;
+import com.halzhang.android.apps.startupnews.presenter.MainActivityPresenterModule;
 import com.halzhang.android.apps.startupnews.ui.fragment.CommentsListFragment;
 import com.halzhang.android.apps.startupnews.ui.fragment.NewsListFragment;
 import com.halzhang.android.apps.startupnews.ui.fragment.NewsListFragment.OnNewsSelectedListener;
@@ -43,11 +40,8 @@ import com.halzhang.android.apps.startupnews.utils.CustomTabsActivityHelper;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.common.CDToast;
 import com.halzhang.android.startupnews.data.entity.SNNew;
-import com.halzhang.android.startupnews.data.parser.BaseHTMLParser;
-
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import com.halzhang.android.startupnews.data.entity.Status;
+import com.halzhang.android.startupnews.data.utils.SessionManager;
 
 import javax.inject.Inject;
 
@@ -56,7 +50,7 @@ import javax.inject.Inject;
  *
  * @author Hal
  */
-public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener, OnMenuSelectedListener {
+public class MainActivity extends BaseFragmentActivity implements OnNewsSelectedListener, OnMenuSelectedListener, MainActivityContract.View {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -72,13 +66,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
     private Intent mFeedbackEmailIntent;
 
-    private SNApiHelper mSnApiHelper;
-
     private SNNew mSnNew;
-
-    @SuppressWarnings("unused")
-    private LogoutTask mLogoutTask;
-
     private CustomTabsActivityHelper mHelper;
 
     private NewsListFragment mHotNewsListFragment;
@@ -87,6 +75,12 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
     @Inject
     CommentsListPresenter mCommentsListPresenter;
+
+    @Inject
+    MainActivityPresenter mMainActivityPresenter;
+
+    @Inject
+    SessionManager mSessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +92,13 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
         setContentView(R.layout.activity_main);
         setupViews();
         mFeedbackEmailIntent = createEmailIntent();
-        mSnApiHelper = new SNApiHelper(this);
         mHelper = new CustomTabsActivityHelper();
 
         SnApiComponent snApiComponent = ((MyApplication) getApplication()).getSnApiComponent();
         DaggerMainComponent.builder().snApiComponent(snApiComponent)
-                .commentsListPresenterModule(new CommentsListPresenterModule(mCommentsListFragment)).build().inject(this);
+                .commentsListPresenterModule(new CommentsListPresenterModule(mCommentsListFragment))
+                .mainActivityPresenterModule(new MainActivityPresenterModule(this))
+                .build().inject(this);
 
     }
 
@@ -169,7 +164,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.removeItem(R.id.menu_login);
         menu.removeItem(R.id.menu_logout);
-        if (SessionManager.getInstance().isValid()) {
+        if (mSessionManager.isValid()) {
             menu.add(Menu.NONE, R.id.menu_logout, Menu.NONE, R.string.menu_logout);
         } else {
             menu.add(Menu.NONE, R.id.menu_login, Menu.NONE, R.string.menu_login);
@@ -205,10 +200,9 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
             case R.id.menu_logout:
                 Tracker.getInstance().sendEvent("ui_action", "options_item_selected",
                         "mainactivity_menu_logout", 0L);
-                SessionManager.getInstance().clear();
+                mSessionManager.clear();
                 CDToast.showToast(this, R.string.tip_logout_success);
-                // mLogoutTask = new LogoutTask();
-                // mLogoutTask.execute((Void) null);
+                mMainActivityPresenter.logout();
                 return true;
             case R.id.menu_show_comment:
                 showDiscussFragment();
@@ -240,6 +234,47 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onLogoutResult(boolean result) {
+        CDToast.showToast(getApplicationContext(), result ? R.string.tip_logout_success
+                : R.string.tip_logout_failure);
+    }
+
+    @Override
+    public void onUpVoteFailure(Throwable e) {
+        Tracker.getInstance().sendException("up vote error!", e, false);
+        CDToast.showToast(this, getString(R.string.tip_vote_failure));
+    }
+
+    @Override
+    public void onUpVoteSuccess(Status status) {
+        switch (status.code) {
+            case Status.CODE_COOKIE_VALID:
+                startActivity(new Intent(this, LoginActivity.class));
+                CDToast.showToast(this, R.string.tip_cookie_invalid);
+                break;
+            case Status.CODE_REPEAT:
+                CDToast.showToast(this, getString(R.string.tip_vote_duplicate));
+                break;
+            case Status.CODE_SUCCESS:
+                CDToast.showToast(this, R.string.tip_vote_success);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /* no-op */
+    @Override
+    public void setPresenter(MainActivityContract.Presenter presenter) {
+
+    }
+
+    @Override
+    public boolean isActive() {
+        return !isFinishing();
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -278,74 +313,6 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
         @Override
         public long getItemId(int position) {
             return super.getItemId(position);
-        }
-
-    }
-
-    private class LogoutTask extends AsyncTask<Void, Void, Boolean> {
-
-        private ProgressDialog mDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            if (mDialog != null && mDialog.isShowing()) {
-                mDialog.dismiss();
-                mDialog = null;
-            }
-            mDialog = ProgressDialog.show(MainActivity.this, null, getString(R.string.tip_logout));
-            mDialog.setCancelable(false);
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            String logoutUrl = null;
-            JsoupFactory jsoupFactory = JsoupFactory.getInstance(getApplicationContext());
-            Connection conn = jsoupFactory.newJsoupConnection(getString(R.string.host, "/news"));
-            if (conn != null) {
-                try {
-                    Document doc = conn.get();
-                    Elements elements = doc.select("a:matches(logout)");
-                    if (elements.size() > 0) {
-                        logoutUrl = BaseHTMLParser.resolveRelativeSNURL(elements.attr("href"));
-                    } else {
-                        // 用户可能在pc注销了
-                        SessionManager.getInstance().clear();
-                        return true;
-                    }
-                } catch (Exception e) {
-                    CDLog.w(LOG_TAG, null, e);
-                    Tracker.getInstance().sendException("User Logout error!", e, false);
-                }
-
-            }
-
-            if (TextUtils.isEmpty(logoutUrl)) {
-                return false;
-            }
-
-            SNApi api = new SNApi(getApplicationContext());
-            boolean result = api.logout(logoutUrl);
-            if (result) {
-                SessionManager.getInstance().clear();
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            mLogoutTask = null;
-            mDialog.dismiss();
-            mDialog = null;
-            CDToast.showToast(getApplicationContext(), result ? R.string.tip_logout_success
-                    : R.string.tip_logout_failure);
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            mLogoutTask = null;
         }
 
     }
@@ -392,7 +359,7 @@ public class MainActivity extends BaseFragmentActivity implements OnNewsSelected
 
     @Override
     public void onUpVoteSelected(String postId) {
-        mSnApiHelper.upVote(postId);
+        mMainActivityPresenter.upVote(postId);
     }
 
 }

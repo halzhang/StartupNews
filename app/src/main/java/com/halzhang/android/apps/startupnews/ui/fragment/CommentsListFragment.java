@@ -6,10 +6,8 @@ package com.halzhang.android.apps.startupnews.ui.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,15 +18,9 @@ import android.widget.Toast;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.presenter.CommentsListContract;
-import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
 import com.halzhang.android.apps.startupnews.ui.DiscussActivity;
-import com.halzhang.android.common.CDLog;
 import com.halzhang.android.startupnews.data.entity.SNComment;
 import com.halzhang.android.startupnews.data.entity.SNComments;
-import com.halzhang.android.startupnews.data.parser.SNCommentsParser;
-
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
 

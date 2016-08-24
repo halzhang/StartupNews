@@ -9,14 +9,11 @@ import android.os.StrictMode;
 import android.text.TextUtils;
 
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
-import com.halzhang.android.apps.startupnews.snkit.SessionManager;
 import com.halzhang.android.apps.startupnews.utils.CrashHandler;
 import com.halzhang.android.common.CDLog;
 import com.halzhang.android.startupnews.data.CookieFactoryModule;
 import com.halzhang.android.startupnews.data.OkHttpClientModule;
 import com.halzhang.android.startupnews.data.SnApiModule;
-import com.halzhang.android.startupnews.data.utils.OkHttpClientHelper;
-import com.halzhang.android.startupnews.data.utils.OkHttpClientManager;
 import com.squareup.leakcanary.LeakCanary;
 
 import java.io.BufferedReader;
@@ -75,7 +72,6 @@ public class MyApplication extends Application {
         super.onCreate();
         Tracker.getInstance().init(this);
         CrashHandler.getInstance().init(this);
-        SessionManager.getInstance().initSession(this);
         mExecutorService = Executors.newSingleThreadExecutor(sThreadFactory);
         initHistory();
         if (BuildConfig.DEBUG) {
@@ -98,13 +94,7 @@ public class MyApplication extends Application {
                 .okHttpClientModule(new OkHttpClientModule())
                 .snApiModule(new SnApiModule())
                 .cookieFactoryModule(new CookieFactoryModule()).build();
-
-        OkHttpClientManager.getInstance().init(this, new OkHttpClientManager.CookieFactory() {
-            @Override
-            public String getCookie() {
-                return mSnApiComponent.getSessionManager().getCookieString();
-            }
-        });
+        mSnApiComponent.getSessionManager().initSession(this);
     }
 
     public SnApiComponent getSnApiComponent() {

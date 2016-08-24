@@ -178,7 +178,7 @@ public class SnApiImpl implements ISnApi {
     }
 
     @Override
-    public Observable<Status> upVote(final int postId) {
+    public Observable<Status> upVote(final String postId) {
         return Observable.create(new Observable.OnSubscribe<Status>() {
             @Override
             public void call(Subscriber<? super Status> subscriber) {
@@ -187,7 +187,7 @@ public class SnApiImpl implements ISnApi {
                             .scheme(Constant.SCHEME)
                             .host(Constant.HOST)
                             .addPathSegment("vote")
-                            .addQueryParameter("for", String.valueOf(postId))
+                            .addQueryParameter("for", postId)
                             .addQueryParameter("dir", "up")
                             .addQueryParameter("by", mSessionManager.getSessionId())
                             .addQueryParameter("auth", mSessionManager.getSessionUser())
@@ -211,7 +211,6 @@ public class SnApiImpl implements ISnApi {
                     subscriber.onNext(status);
                     subscriber.onCompleted();
                 } catch (Exception e) {
-                    e.printStackTrace();
                     subscriber.onError(e);
                 }
             }

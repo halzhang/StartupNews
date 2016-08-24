@@ -11,7 +11,8 @@ import dagger.Component;
  * Created by Hal on 16/8/14.
  */
 @ActivityScoped
-@Component(dependencies = SnApiComponent.class, modules = CommentsListPresenterModule.class)
+@Component(dependencies = SnApiComponent.class, modules = {CommentsListPresenterModule.class,
+        MainActivityPresenterModule.class})
 public interface MainComponent {
 
     void inject(MainActivity mainActivity);

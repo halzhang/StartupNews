@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.Html;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,8 +27,6 @@ import android.widget.Toast;
 import com.halzhang.android.apps.startupnews.R;
 import com.halzhang.android.apps.startupnews.analytics.Tracker;
 import com.halzhang.android.apps.startupnews.presenter.DiscussContract;
-import com.halzhang.android.apps.startupnews.snkit.JsoupFactory;
-import com.halzhang.android.apps.startupnews.snkit.SNApi;
 import com.halzhang.android.apps.startupnews.ui.LoginActivity;
 import com.halzhang.android.apps.startupnews.utils.ActivityUtils;
 import com.halzhang.android.common.CDToast;
@@ -38,12 +35,6 @@ import com.halzhang.android.startupnews.data.entity.SNDiscuss;
 import com.halzhang.android.startupnews.data.entity.SNNew;
 import com.halzhang.android.startupnews.data.entity.Status;
 import com.halzhang.android.startupnews.data.utils.SessionManager;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import java.io.IOException;
 
 import javax.inject.Inject;
 

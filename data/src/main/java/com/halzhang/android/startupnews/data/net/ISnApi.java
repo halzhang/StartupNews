@@ -34,7 +34,7 @@ public interface ISnApi {
      * @param postId 文章 id
      * @return 状态，成功与否
      */
-    Observable<Status> upVote(int postId);
+    Observable<Status> upVote(String postId);
 
     /**
      * 评论
